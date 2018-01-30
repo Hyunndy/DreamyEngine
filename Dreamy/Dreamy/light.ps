@@ -1,0 +1,103 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: light.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+// 조명의 색과 방향을 담는 용도로 새로운 전역변수가 있다
+// 이 두 변수들은 새로운 LightClass객체에 의해 값이 설정된다.
+// 01.22 방향광+주변광+정반사광(specular color, specularPower)
+
+cbuffer LightBuffer
+{
+	float4 ambientColor;
+	float4 diffuseColor;
+    float3 lightDirection;
+    float specularPower;
+    float4 specularColor;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+	float3 viewDirection : TEXCOORD1;
+	 //정점 셰이더에서 VIEW(보는방향)벡터를 가져왔다!
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 LightPixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 textureColor;
+	float3 lightDir;
+	float lightIntensity;
+	float4 color;
+	float3 reflection;
+    float4 specular;
+
+
+	// Sample the pixel color from the texture using the sampler at this texture coordinate location.
+	textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+	// 결과의 색상값을 기본으로 주변광 값으로 맞춘다.
+	// 이제 모든 픽셀들은 최소한 주변광 값을 갖게된다.
+	color = ambientColor;
+
+	//반사빛의 색
+	specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// 조명 방정식이 구현된다.
+	// 빛의 조도가 삼각형의 법선 벡터, 그리고 빛의 방향 벡터사이의 내적으로 계산된다.
+
+	// Invert the light direction for calculations.
+    lightDir = -lightDirection;
+
+    // Calculate the amount of light on this pixel.
+	//saturate : 내적함수
+    lightIntensity = saturate(dot(input.normal, lightDir));
+
+	// 계산된 빛의 세기가 텍스쳐 픽셀의 값과 조합되어 최종 색상이 만들어 진다.
+	// 법선과 빛의 방향의 내적이 0보다 큰지 확인한다.
+	// 크다면 조명값을 주변광에 더하고, 그렇지 않다면 조명값을 더하지 않도록 해야한다.
+	// 왜? 간혹 음수로 계산되는 빛의 밝기값이 주변광 값을 깎아먹는 경우가 생기기 때문에. (이렇게 되면 주변광보다 어두운 부분이 생기게된다. 최소한 주변광 값을 가져야 하는데!)
+	if(lightIntensity>0.0f)
+	{
+		// 디퓨즈 컬러와 빛의 조도 양아 떼라 최종 디퓨즈 컬러를 결정한다.
+		color += (diffuseColor * lightIntensity);
+
+		//주변광과 조명의 조합의 결과가 1의 넘을 수 있으므로 saturate함수로 최종 색상이 적절한 값이 되도록 잘라낸다.
+		color = saturate(color);
+
+		//픽셀 셰이더에서의 refelection(반사광벡터)는 주어진 빛의 강도가 0보다 큰 경우에만 여기서 계산된다.
+        reflection = normalize(2 * lightIntensity * input.normal - lightDir); 
+
+		//정반사광의 총량은 반사벡터와 보는 방향 벡터를 통해 계산된다.
+		//광원과 카메라의 방향 사이의 각도가 작을수록 더 많은 정반사광이 들어온다.
+		//그런결과는 specularPower값만큼의 제곱으로 나타내게 한다.
+		//specularPower의 값이 작을수록 마지막에 빛이 더 많이 들어온다 (얘는 무조건 1보다 커야된다.)
+        specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+	}
+
+
+
+    //텍스쳐 컬러와 최종 ㅣㄷ퓨즈 컬러를 섞어준다. 텍스처랑 섞여야되니까!
+    color = color * textureColor;
+
+    color = saturate(color + specular);
+
+
+    return color;
+}

@@ -1,0 +1,53 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: multitexture.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+
+//혼합 할 두 텍스처가 저장될 2개짜리 텍스처 배열.(DX10부터 지원)
+//텍스처 배열을 사용하면 GPU성능에 매우 큰 도움이 된다.
+Texture2D shaderTexture[2];
+SamplerState SampleType;
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+
+
+//1. 두 텍스처에서 현재 텍스처 좌표에 해당하는 픽셀을 샘플링한다.
+//2. 픽셀값들이 감마 보정 때문에 비선형적인 값을 가지므로 일단 곱셈으로 이 둘을 혼합한다.
+//   혼합하면서 감마값도 곱해준다. (감마값은 모니터 마다 다르다.)
+//3. 혼합된 픽셀값이 구해지면 0~1사이의 값을 가지도록 잘라내고 리턴한다.
+//4. 또한 텍스처 배열의 각 텍스쳐는 []연산자를 사용하여 접근한다.
+
+float4 MultiTexturePixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 color;
+    float4 color2;
+    float4 blendColor;
+
+    color = shaderTexture[0].Sample(SampleType, input.tex);
+    color2 = shaderTexture[1].Sample(SampleType, input.tex);
+
+    blendColor = color*color2*2.0f;
+
+    blendColor = saturate(blendColor);
+
+    return blendColor;
+}

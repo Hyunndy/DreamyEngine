@@ -1,0 +1,82 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: bumpmap.ps
+////////////////////////////////////////////////////////////////////////////////
+
+//범프맵 픽셀셰이더에서 할 일은
+// 1. 색상 텍스처와 노멀 맵에서 픽셀값을 샘플링한다.
+// 2. 그리고 24비트로 압축됬던 데이터들을 다시 [-1,1]범위의 단위벡터로 만들어야 한다.
+// 3. 변환된 법선을 계산한다.
+// 4. 변환된 법선은 정규화 되어 나중에 빛의 방향과의 내적으로 빛의 밝기를 계산할 때 쓰인다.
+// 5. 픽셀의 빛의 밝기가 구해졌다면 범프 매핑은 끝!
+// 6. 빛의 강도와 색상, 텍스처 색상을 곱하여 픽셀의 최종 색상을 구한다.
+
+/////////////
+// GLOBALS //
+/////////////
+
+//색상 텍스쳐, 노말 맵 텍스처 2개
+Texture2D shaderTextures[2];
+
+SamplerState SampleType;
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+// 다른 조명 셰이더들 처럼 조명 계산에 빛의 방향과 색상이 필요하다.
+cbuffer LightBuffer
+{
+    float4 diffuseColor;
+    float3 lightDirection;
+}
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+
+float4 BumpMapPixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 textureColor;
+    float4 bumpMap;
+    float3 bumpNormal;
+    float3 lightDir;
+    float lightIntensity;
+    float4 color;
+
+    textureColor = shaderTextures[0].Sample(SampleType, input.tex);
+
+    //노말맵에 저장되어있던 법선 벡터를 뽑아낸다.
+    bumpMap = shaderTextures[1].Sample(SampleType, input.tex);
+
+    //압축되어있던 픽셀의 텍스처 좌표를 [-1,1] 단위벡터로 만들어준다.
+   bumpMap = (bumpMap * 2.0f) - 1.0f;
+
+   bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
+
+
+    bumpNormal = normalize(bumpNormal);
+
+    lightDir = -lightDirection;
+
+    //노말 맵의 법선 벡터의 값에 기초해서 이 픽셀의 빛의 강도를 계산한다.
+    lightIntensity = saturate(dot(bumpNormal, lightDir));
+
+    // 빛의 색상과 빛의 강도로 최종 빛 색상을 결정한다.
+    color = saturate(diffuseColor * lightIntensity);
+
+    // 최종 빛 색상과 텍스처 색상을 섞어서 픽셀의 최종 색상을 정한다.
+    color = color * textureColor;
+
+	return color;
+}

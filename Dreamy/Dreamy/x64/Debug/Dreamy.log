@@ -1,0 +1,32 @@
+﻿  TextureShaderClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  TextureClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  TextClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  SystemClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  ShaderManagerClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  ModelClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\modelclass.h(12): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx10math.h': No such file or directory
+  Main.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  InputClass.cpp
+  graphicsclass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  D3DClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  LightShaderClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  LightClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  ImageClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  FontShaderClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  FontClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\stdafx.h(4): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx11tex.h': No such file or directory
+  CameraClass.cpp
+c:\users\user\desktop\졸업작품\dreamy\dreamy\cameraclass.h(11): fatal error C1083: 포함 파일을 열 수 없습니다. 'd3dx10math.h': No such file or directory
+  코드를 생성하고 있습니다...
