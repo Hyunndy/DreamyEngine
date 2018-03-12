@@ -1,0 +1,94 @@
+newmtl Exported_windowsDoors1:plastic_white_plastic_whiteSG
+illum 4
+Kd 0.95 0.95 0.95
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl blinn2SG
+illum 4
+Kd 0.31 0.31 0.33
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl blinn3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl cloth_terracotta_cloth_terracottaSG
+illum 4
+Kd 0.75 0.68 0.64
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl initialShadingGroup
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl lambert2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd 063.JPG
+bump 063.JPG -bm 1
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl lambert3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd campiangatebrick1.jpg
+bump campiangatebrick1_bump.jpg -bm -0.137
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl lambert4SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+bump HighBuild_texture.jpg -bm 0.099
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl lambert5SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd panTiles_1024_more_red.jpg
+bump panTiles_1024_more_red.jpg -bm 0.3722
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl lambert6SG
+illum 4
+Kd 0.94 0.93 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+bump stones006x04.jpg -bm 0.005
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong1SG
+illum 4
+Kd 0.10 0.15 0.09
+Ka 0.00 0.00 0.00
+Tf 0.77 0.77 0.77
+Ni 1.00
+Ks 0.55 0.55 0.55
+Ns 18.00

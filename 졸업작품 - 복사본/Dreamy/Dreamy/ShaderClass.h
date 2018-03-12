@@ -1,0 +1,67 @@
+#pragma once
+/*
+	#ifndef
+	#endif
+	#ifdef
+	#pragma once
+
+	-전처리기들
+*/
+
+
+#include <d3d11.h>
+#include <d3dx11tex.h>
+#include <d3dx10math.h>
+#include <D3DX11async.h>
+#include <fstream>
+using namespace std;
+
+/*
+	추상 클래스(abstract Class)
+	- 기초 클래스로서만 의미를 가질 뿐, 객체의 생성을 목적으로 정의된 클래스가 아니다.
+	- 클래스 중에서 객체 생성을 목적으로 정의되지 않은 클래스.
+	- 순수 가상 함수를 하나라도 가지고 있으면 추상 클래스 이다.
+
+	순수 가상 함수(pure virtual function)
+	- 함수의 몸체가 정의되지 않은 함수
+	- virtual이 붙은 가상함수의 원형 뒤에 = 0;이 붙은 함수
+	- 자식 클래스에서 "무조건" 재정의가 되어야한다.
+
+*/
+class ShaderClass
+{
+private:
+	
+protected:
+
+	struct MatrixBufferType
+	{
+		D3DXMATRIX world;
+		D3DXMATRIX view;
+		D3DXMATRIX projection;
+	};
+
+	ID3D11VertexShader* m_vertexShader;
+	ID3D11PixelShader* m_pixelShader;
+	ID3D11InputLayout* m_layout;
+	ID3D11Buffer* m_matrixBuffer;
+	ID3D11SamplerState* m_sampleState;
+
+
+	virtual bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*) =0;
+	virtual void ShutdownShader() = 0;
+	
+	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
+	void RenderShader(ID3D11DeviceContext*, int);
+
+public:
+	ShaderClass();
+	ShaderClass(const ShaderClass&);
+	~ShaderClass();
+
+
+	virtual bool Initialize(ID3D11Device*, HWND) = 0;
+	void Shutdown();
+
+};
+

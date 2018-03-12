@@ -1,0 +1,63 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: Skydome.ps
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+픽셀 쉐이더는 스카이돔 렌더링의 모든 실제 작업을 수행한다.
+GradientBuffer은 꼭지점과 중심 색을 설정하여 Gradient를 만들 수 있는 두 가지 색상을 갖는다. (그라데이션)
+
+픽셀 쉐이더 함수에서 현재 돔의 위치를 결정하기 위해 현재 픽셀의 높이를 취한다.
+이 높이를 보간 값으로 사용하고 꼭지점과 중심색 사이의 보간을 수행한다.
+
+높이 값이 높을수록 정점 색상(ApexColor)이 더 많이 나타난다.
+높이 값이 낮을수록 센터 색상(CenterColor)이 더 많이 표시된다.
+
+Skydome의 반지름 2.0이었으므로 픽셀 쉐이더 -1.0f에서 +1.0f 범위를 얻을 수 있다.
+다른 반경을 사용하면 여기에 있는 값을 변경하거나 자신의 상수 버퍼에서 보내야 한다.
+*/
+
+/////////////
+// GLOBALS //
+/////////////
+
+cbuffer GradientBuffer
+{
+    float4 apexColor;
+    float4 centerColor;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float4 domePosition : TEXCOORD0;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+
+float4 SkyDomePixelShader(PixelInputType input) : SV_TARGET
+{
+    float height;
+    float4 outputColor;
+
+    //이 픽셀이 있는 스카이돔에서 위치를 결정한다.   
+    height = input.domePosition.y;
+    
+    //값의 범위는 -1.0f에서 +1.0f이므로 양수 값만 변경한다.
+    if(height < 0.0)
+    {
+        height = 0.0f;
+    }
+
+    // 스카이 돔에서 픽셀의 높이를 기준으로 정점과 중심을 보정하여 그라디언트 색상을 결정한다.
+  outputColor = lerp(centerColor, apexColor, height);
+
+    return outputColor;
+}

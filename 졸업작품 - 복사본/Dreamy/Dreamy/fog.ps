@@ -1,0 +1,52 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: fog.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float fogFactor : FOG;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+
+
+float4 FogPixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 textureColor;
+    float4 fogColor;
+    float4 finalColor;
+
+    // 셰이더 텍스처의 한 부분을 샘플로 가져온다.
+    textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+    // 안개 색을 회색으로 맞춘다.
+    fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
+
+    // 안개 색상 공식은 안개 인자 값을 이용해 텍스처 색상과 색상간의 선형 보간이다.
+    // 알파텍스처 알파값 곱하는거랑 비슷하다!
+    finalColor = input.fogFactor * textureColor + (1.0 - input.fogFactor) * fogColor;
+
+    return finalColor;
+
+
+
+}
