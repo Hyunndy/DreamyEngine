@@ -19,6 +19,9 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{d1e2e1ed-91ce-46cc-92a6-af1df657c355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{39584a7f-e49b-4f20-b177-2b9b41861423}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -48,16 +51,10 @@
     <ClCompile Include="FontClass.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="FontShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="ImageClass.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="LightClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="LightShaderClass.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="ModelClass.cpp">
@@ -69,31 +66,13 @@
     <ClCompile Include="TextureClass.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="TextureShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="TimerClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ModelManagerClass.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="MultiTextureShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="AlphaMapShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="BumpMapShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="FogShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="FrustumClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="SpecMapShaderClass.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="RTTTextureClass.cpp">
@@ -105,20 +84,8 @@
     <ClCompile Include="ShaderManagerClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="CameraClass.cpp">
       <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="TranslateShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="TransparentShaderClass.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="ReflectionShaderClass.cpp">
-      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MoveClass.cpp">
       <Filter>소스 파일</Filter>
@@ -126,19 +93,7 @@
     <ClCompile Include="TerrainClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ColorShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="SkyClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyDomeShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyPlaneShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TextureManagerClass.cpp">
@@ -148,6 +103,66 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FBXModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaMapShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="BumpMapShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="FogShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="FontShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="LightShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiTextureShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SpecMapShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="TranslateShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="TransparentShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyDomeShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyPlaneShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RefractionShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterReflectionShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,16 +191,10 @@
     <ClInclude Include="FontClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="FontShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="ImageClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="LightClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="LightShaderClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="ModelClass.h">
@@ -197,25 +206,10 @@
     <ClInclude Include="TextureClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="TextureShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="TimerClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ModelManagerClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiTextureShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="AlphaMapShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="BumpMapShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="FogShaderClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="FrustumClass.h">
@@ -227,13 +221,7 @@
     <ClInclude Include="RTTTextureClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="SpecMapShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderManagerClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SoundClass.h">
@@ -242,34 +230,13 @@
     <ClInclude Include="CameraClass.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="TranslateShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="TransparentShaderClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="ReflectionShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="MoveClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TerrainClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ColorShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SkyClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyDomeShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyPlaneShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TextureManagerClass.h">
@@ -279,6 +246,66 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FBXModel.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="AlphaMapShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="BumpMapShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="FogShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="FontShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="LightShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiTextureShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SpecMapShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TranslateShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TransparentShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyPlaneShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyDomeShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RefractionShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterReflectionShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -114,8 +114,10 @@ public:
 
 	bool Initialize(ID3D11Device*, ID3D11DeviceContext*, char*, CHAR*, CHAR*);
 	void Shutdown();
-	//bool Render(ID3D11DeviceContext*);
-	
+	//호수용Render
+	bool Initializeforwater(ID3D11Device*, ID3D11DeviceContext*, char*, CHAR*, CHAR*);
+	bool Renderforwater(ID3D11DeviceContext*);
+	void Shutdownforwater();
 
 	int GetVertexCount();
 	int GetIndexCount();
@@ -166,9 +168,11 @@ private:
 	// 컬러 맵
 	bool LoadColorMap();
 
-	//bool InitializeBuffer(ID3D11Device*);
-	//void RenderBuffers(ID3D11DeviceContext*);
-	//void ShutdownBuffer();
+	//호수용
+	bool InitializeBufferforwater(ID3D11Device*);
+	void RenderBuffersforwater(ID3D11DeviceContext*);
+	void ShutdownBufferforwater();
+
 
 	//Terrain Cell
 	bool LoadTerrainCells(ID3D11Device*);
@@ -184,7 +188,7 @@ private:
 
 	char *m_terrainFilename, *m_colorMapFilename;
 	
-	//ID3D11Buffer* m_vertexBuffer, *m_indexBuffer;
+	ID3D11Buffer* m_vertexBuffer, *m_indexBuffer;
 	// 높이 맵 파일에서 읽은 데이터를 저장한다.
 	HeightMapType* m_heightMap;
 	ModelType* m_terrainModel;

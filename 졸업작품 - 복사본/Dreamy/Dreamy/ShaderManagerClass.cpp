@@ -13,6 +13,9 @@ ShaderManagerClass::ShaderManagerClass()
 	m_TranslateShader = 0;
 	m_TransparentShader = 0;
 	m_ReflectionShader = 0;
+	m_RefractionShader = 0;
+	m_WaterShader = 0;
+	m_WaterReflectionShader = 0;
 	m_ColorShader = 0;
 	m_SkydomeShader = 0;
 	m_CloudShader = 0;
@@ -113,6 +116,24 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 	result = m_ReflectionShader->Initialize(device, hwnd);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the m_ReflectionShader object.", L"Error", MB_OK); return false; }
 
+	m_RefractionShader = new RefractionShaderClass;
+	if (!m_RefractionShader) { return false;}
+
+	result = m_RefractionShader->Initialize(device, hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the m_RefractionShader object.", L"Error", MB_OK); return false; }
+
+	m_WaterShader = new WaterShaderClass;
+	if (!m_WaterShader) { return false; }
+
+	result = m_WaterShader->Initialize(device, hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the m_waterShader object.", L"Error", MB_OK); return false; }
+
+	m_WaterReflectionShader = new WaterReflectionShaderClass;
+	if (!m_WaterReflectionShader) { return false; }
+
+	result = m_WaterReflectionShader->Initialize(device, hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the m_WaterReflectionShader object.", L"Error", MB_OK); return false; }
+
 	m_SkydomeShader = new SkyDomeShaderClass;
 	if (!m_SkydomeShader) { return true; }
 
@@ -135,7 +156,9 @@ void ShaderManagerClass::Shutdown()
 	if (m_ColorShader) { m_ColorShader->Shutdown(); delete m_ColorShader; m_ColorShader = 0; }
 	// 라이트 쉐이더 객체를 해제합니다.
 	if (m_LightShader) {m_LightShader->Shutdown();delete m_LightShader;m_LightShader = 0;}
-
+	if (m_RefractionShader) { m_RefractionShader->Shutdown(); delete m_RefractionShader; m_RefractionShader = 0; }
+	if (m_WaterShader) { m_WaterShader->Shutdown(); delete m_WaterShader; m_WaterShader = 0; }
+	if (m_WaterReflectionShader) { m_WaterReflectionShader->Shutdown(); delete m_WaterReflectionShader; m_WaterReflectionShader = 0; }
 	// 텍스처 쉐이더 객체를 해제한다.
 	if (m_TextureShader) {m_TextureShader->Shutdown();delete m_TextureShader;m_TextureShader = 0;}
 	if (m_ReflectionShader) { m_ReflectionShader->Shutdown(); delete m_ReflectionShader; m_ReflectionShader = 0; }
@@ -236,4 +259,31 @@ bool ShaderManagerClass::RenderCloudShader(ID3D11DeviceContext* deviceContext, i
 	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ, float brightness)
 {
 	return m_CloudShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, firstTranslationX, firstTranslationZ, secondTranslationX, secondTranslationZ, brightness);
+}
+
+bool ShaderManagerClass::RenderRefractionShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture,
+	D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,
+	D3DXVECTOR4 clipPlane)
+{
+	return m_RefractionShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor, diffuseColor, clipPlane);
+
+}
+
+bool ShaderManagerClass::RenderWaterShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, D3DXMATRIX reflectionMatrix, ID3D11ShaderResourceView* refractionTexture,
+	ID3D11ShaderResourceView* reflectionTexture, ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
+	D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale, D3DXVECTOR4 refractionTint,
+	D3DXVECTOR3 lightDirection, float specularShininess)
+{
+	return m_WaterShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture, reflectionTexture,
+		normalTexture, cameraPosition, normalMapTiling, waterTranslation, reflectRefractScale, refractionTint, lightDirection,
+		specularShininess);
+}
+
+bool ShaderManagerClass::RenderWaterReflectionShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* colorTexture, ID3D11ShaderResourceView* normalTexture,
+	D3DXVECTOR4 lightDiffuseColor, D3DXVECTOR3 lightDirection, float colorTextureBrightness, D3DXVECTOR4 clipPlane)
+{
+	return m_WaterReflectionShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, colorTexture, normalTexture, lightDiffuseColor, lightDirection, colorTextureBrightness, clipPlane);
 }

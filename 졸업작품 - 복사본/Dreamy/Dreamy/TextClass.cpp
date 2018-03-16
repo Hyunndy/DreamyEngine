@@ -12,6 +12,10 @@ TextClass::TextClass()
 	m_sentence1 = 0;
 	m_sentence2 = 0;
 	m_sentence3 = 0;
+
+	m_sentence4 = 0;
+	m_sentence5 = 0;
+	m_sentence6 = 0;
 }
 
 
@@ -80,6 +84,15 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	if (!result) { return false; }
 
 	result = InitializeSentence(&m_sentence3, 16, device);
+	if (!result) { return false; }
+
+	result = InitializeSentence(&m_sentence4, 16, device);
+	if (!result) { return false; }
+
+	result = InitializeSentence(&m_sentence5, 16, device);
+	if (!result) { return false; }
+
+	result = InitializeSentence(&m_sentence6, 16, device);
 	if (!result) { return false; }
 
 	// 사용할 문장을 업데이트 한다.
@@ -340,6 +353,9 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatri
 	result = RenderSentence(deviceContext, m_sentence1, worldMatrix, orthoMatrix);
 	result = RenderSentence(deviceContext, m_sentence2, worldMatrix, orthoMatrix);
 	result = RenderSentence(deviceContext, m_sentence3, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_sentence5, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
 	if (!result) {	return false;	}
 
 	return true;
@@ -377,6 +393,9 @@ void TextClass::Shutdown()
 	ReleaseSentence(&m_sentence1);
 	ReleaseSentence(&m_sentence2);
 	ReleaseSentence(&m_sentence3);
+	ReleaseSentence(&m_sentence4);
+	ReleaseSentence(&m_sentence5);
+	ReleaseSentence(&m_sentence6);
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -397,22 +416,62 @@ void TextClass::Shutdown()
 	return;
 }
 
-bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext)
+bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceContext* deviceContext)
 {
+	int positionX, positionY, positionZ;
 	char tempString[16];
-	char mouseString[16];
+	char dataString[16];
 	bool result;
-	
-	// Convert the mouseX integer to string format.
-	_itoa_s(mouseX, tempString, 10);
 
-	// Setup the mouseX string.
-	strcpy_s(mouseString, "Mouse X: ");
-	strcat_s(mouseString, tempString); 
 
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence1, mouseString, 20, 20, 1.0f, 1.0f, 1.0f, deviceContext);
-	if(!result) { return false; } 
+	// Convert the position from floating point to integer.
+	positionX = (int)posX;
+	positionY = (int)posY;
+	positionZ = (int)posZ;
+
+	// Truncate the position if it exceeds either 9999 or -9999.
+	if (positionX > 9999) { positionX = 9999; }
+	if (positionY > 9999) { positionY = 9999; }
+	if (positionZ > 9999) { positionZ = 9999; }
+
+	if (positionX < -9999) { positionX = -9999; }
+	if (positionY < -9999) { positionY = -9999; }
+	if (positionZ < -9999) { positionZ = -9999; }
+
+	// Setup the X position string.
+	_itoa_s(positionX, tempString, 10);
+	strcpy_s(dataString, "X: ");
+	strcat_s(dataString, tempString);
+
+	// 1535, 35
+	// 1535, 55, 0.0f, 1.0f, 0.0f
+	result = UpdateSentence(m_sentence4, dataString, 1535, 75, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Setup the Y position string.
+	_itoa_s(positionY, tempString, 10);
+	strcpy_s(dataString, "Y: ");
+	strcat_s(dataString, tempString);
+
+	result = UpdateSentence(m_sentence5, dataString, 1535, 95, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Setup the Z position string.
+	_itoa_s(positionZ, tempString, 10);
+	strcpy_s(dataString, "Z: ");
+	strcat_s(dataString, tempString);
+
+	result = UpdateSentence(m_sentence6, dataString, 1535, 115, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
 
 	return true;
 

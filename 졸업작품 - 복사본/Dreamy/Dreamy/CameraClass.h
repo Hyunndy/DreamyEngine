@@ -18,6 +18,11 @@
 	18.02.09 반사 예제 진행 중
 	평면 반사를 다루기 위해 추가 사항 있음.
 
+	18.03.14 Water 예제 진행 중
+	reflection view matrix를 생성한다.
+
+	뷰행렬을 만들기 위해 필요한 것 = 카메라의 위치+카메라가 보는 방향+카메라의 up벡터
+
 */
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +47,17 @@ public:
 	//셰이더에서 렌더링에 사용할 수 있도록 카메라 객체의 뷰 행렬을 받아온다.
 	void GetViewMatrix(D3DXMATRIX&);
 
-	//평면 반사를 위한 두 함수.
-	void RenderReflection(float, float);
+	//거울 평면 반사를 위한 두 함수.
+	//void RenderReflection(float, float);
+	void RenderReflection(float);
+
+	//물 평면 반사를 위한 함수
+	void RenderWaterReflection(float);
+
+	void GenerateBaseViewMatrix();
+	void GetBaseViewMatrix(D3DXMATRIX&);
+
+	void GetWaterReflectionViewMatrix(D3DXMATRIX&);
 	D3DXMATRIX GetReflectionViewMatrix();
 
 private:
@@ -53,8 +67,8 @@ private:
 	D3DXVECTOR3 m_position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 m_rotation = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	D3DXMATRIX m_viewMatrix;
-	D3DXMATRIX m_reflectionViewMatrix;
+	D3DXMATRIX m_viewMatrix, m_baseViewMatrix, m_reflectionViewMatrix;
+	D3DXMATRIX m_WaterReflectionViewMatrix;
 };
 
 #endif

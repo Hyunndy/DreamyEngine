@@ -45,7 +45,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	m_screenHeight = screenHeight;
 
 	m_mouseX = 800;
-	m_mouseY = 300;
+	m_mouseY = 450;
 
 	// DirectInput의 인터페이스를 초기화한다.
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);

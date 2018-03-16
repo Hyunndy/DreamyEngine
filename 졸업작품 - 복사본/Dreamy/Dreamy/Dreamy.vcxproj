@@ -177,6 +177,7 @@
     <ClCompile Include="MoveClass.cpp" />
     <ClCompile Include="MultiTextureShaderClass.cpp" />
     <ClCompile Include="ReflectionShaderClass.cpp" />
+    <ClCompile Include="RefractionShaderClass.cpp" />
     <ClCompile Include="RTTClass.cpp" />
     <ClCompile Include="RTTTextureClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
@@ -197,6 +198,9 @@
     <ClCompile Include="TimerClass.cpp" />
     <ClCompile Include="TranslateShaderClass.cpp" />
     <ClCompile Include="TransparentShaderClass.cpp" />
+    <ClCompile Include="WaterClass.cpp" />
+    <ClCompile Include="WaterReflectionShaderClass.cpp" />
+    <ClCompile Include="WaterShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlphaMapShaderClass.h" />
@@ -221,6 +225,7 @@
     <ClInclude Include="MoveClass.h" />
     <ClInclude Include="MultiTextureShaderClass.h" />
     <ClInclude Include="ReflectionShaderClass.h" />
+    <ClInclude Include="RefractionShaderClass.h" />
     <ClInclude Include="RTTClass.h" />
     <ClInclude Include="RTTTextureClass.h" />
     <ClInclude Include="ShaderClass.h" />
@@ -242,6 +247,9 @@
     <ClInclude Include="TimerClass.h" />
     <ClInclude Include="TranslateShaderClass.h" />
     <ClInclude Include="TransparentShaderClass.h" />
+    <ClInclude Include="WaterClass.h" />
+    <ClInclude Include="WaterReflectionShaderClass.h" />
+    <ClInclude Include="WaterShaderClass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="alphamap.ps" />

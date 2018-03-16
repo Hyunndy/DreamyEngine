@@ -273,6 +273,11 @@ void SystemClass::Run()
 
 bool SystemClass::HandleInput(float frametime)
 {
+	bool result;
+
+	// 키보드&마우스 상태를 갱신하도록 한다.
+	result = m_Input->Frame();
+	if (!result) { return false; }
 
 	//매 프레임 마다 프레임 시간을 갱신한다.
 	m_Move->SetFrameTime(frametime);
@@ -281,12 +286,13 @@ bool SystemClass::HandleInput(float frametime)
 	//m_Move->TurnRight(m_Input->IsRightPressed());
 	m_Move->TurnLeft(m_Input->IsLeftTurned());
 	m_Move->TurnRight(m_Input->IsRightTurned());
+	m_Move->LookUpward(m_Input->IsLookUpTurned());
+	m_Move->LookDownward(m_Input->IsLookDownTurned());
 	m_Move->GoForward(m_Input->IsUpPressed());
 	m_Move->GoBackward(m_Input->IsDownPressed());
 	//m_Move->LookUpward(m_Input->IsLookUpPressed());
 	//m_Move->LookDownward(m_Input->IsLookDownPressed());
-	m_Move->LookUpward(m_Input->IsLookUpTurned());
-	m_Move->LookDownward(m_Input->IsLookDownTurned());
+
 
 
 	m_Move->GetPosition(pos);
@@ -307,11 +313,6 @@ bool SystemClass::Frame()
 	m_Timer->Frame();
 	m_FPS->Frame();
 	m_Cpu->Frame();
-
-
-	// 키보드&마우스 상태를 갱신하도록 한다.
-	result = m_Input->Frame();
-	if (!result) { return false; }
 
 	result = HandleInput(m_Timer->GetTime());
 	if (!result) { return false; }

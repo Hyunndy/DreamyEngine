@@ -80,6 +80,8 @@ public:
 	// RTT기능을 쓸 수 있게 해주는 함수.
 	ID3D11DepthStencilView* GetDepthStencilView();
 	void SetBackBufferRenderTarget();
+	void ResetViewport();
+
 	
 private:
 
@@ -103,6 +105,7 @@ private:
 
 
 	D3DXMATRIX m_projectionMatrix;
+	D3D11_VIEWPORT m_viewport;
 	D3DXMATRIX m_worldMatrix;
 	D3DXMATRIX m_orthoMatrix;
 

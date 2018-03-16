@@ -16,11 +16,13 @@ using namespace std;
 #include "FogShaderClass.h"
 #include "TranslateShaderClass.h"
 #include "TransparentShaderClass.h"
-#include "ReflectionShaderClass.h"
 #include "ColorShaderClass.h"
 #include "SkyDomeShaderClass.h"
 #include "SkyPlaneShaderClass.h"
-
+#include "RefractionShaderClass.h"
+#include "ReflectionShaderClass.h"
+#include "WaterShaderClass.h"
+#include "WaterReflectionShaderClass.h"
 
 class ShaderManagerClass
 {
@@ -55,6 +57,14 @@ public:
 
 	bool RenderReflectionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXMATRIX);
 
+	bool RenderRefractionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR4);
+
+	bool RenderWaterShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
+		ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR2, float, float, D3DXVECTOR4, D3DXVECTOR3, float);
+
+	bool RenderWaterReflectionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR4,
+		D3DXVECTOR3, float, D3DXVECTOR4);
+
 	bool RenderSkydomeShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR4, D3DXVECTOR4);
 
 	bool RenderCloudShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float, float,
@@ -71,9 +81,13 @@ private:
 	FogShaderClass* m_FogShader = nullptr;
 	TranslateShaderClass* m_TranslateShader = nullptr;
 	TransparentShaderClass* m_TransparentShader = nullptr;
-	ReflectionShaderClass* m_ReflectionShader = nullptr;
 	SkyDomeShaderClass* m_SkydomeShader = nullptr;
 	SkyPlaneShaderClass* m_CloudShader = nullptr;
+	ReflectionShaderClass* m_ReflectionShader = nullptr;
+	RefractionShaderClass* m_RefractionShader = nullptr;
+	WaterShaderClass* m_WaterShader = nullptr;
+	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
+
 
 };
 

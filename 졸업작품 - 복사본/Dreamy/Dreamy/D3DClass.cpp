@@ -19,6 +19,7 @@ D3DClass::D3DClass()
 	m_alphaEnableBlendingState = 0;
 	m_alphaDisableBlendingState = 0;
 	m_alphaBlendState2 = 0;
+
 }
 
 
@@ -67,7 +68,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
 
-	D3D11_VIEWPORT viewport;
+	//D3D11_VIEWPORT viewport;
 
 	D3D11_BLEND_DESC blendStateDescription;
 
@@ -471,15 +472,15 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	 뷰포트 영역은 윈도우 영역의 일부 영역만을 지정할 수도 있다.
 	 물체는 클리핑 공간에서와 같은 크기로 보이게 되서 영역이 작으면 확대, 크면 잘려서 보이게 된다.
 	*/
-	viewport.Width = (float)screenWidth;
-	viewport.Height = (float)screenHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
+	m_viewport.Width = (float)screenWidth;
+	m_viewport.Height = (float)screenHeight;
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
+	m_viewport.TopLeftX = 0.0f;
+	m_viewport.TopLeftY = 0.0f;
 
 	// 뷰포트를 생성한다.
-	m_deviceContext->RSSetViewports(1, &viewport);
+	m_deviceContext->RSSetViewports(1, &m_viewport);
 
 	/*
 	1. 투영행렬
@@ -925,4 +926,14 @@ ID3D11DepthStencilView* D3DClass::GetDepthStencilView()
 void D3DClass::SetBackBufferRenderTarget()
 {
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+
+	return;
+}
+
+void D3DClass::ResetViewport()
+{
+	// Set the viewport.
+	m_deviceContext->RSSetViewports(1, &m_viewport);
+
+	return;
 }

@@ -127,12 +127,12 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 /*------------------------------------------------------------------------------------------------------
 이름: RenderReflection()
 용도:
+- *****거울용*******
  - 보통 Render함수에서 뷰행렬을 생성하는것과 같은 방법으로 반사 행렬을 만든다.
  - 한 가지 차이점은 Z축에 있는 원점과의 카메라 간의 distance를 인자로 받아 반사를 위해 이 값을 역전시킨다.
  - 이렇게 하여 셰이더에 사용할 반사 뷰 행렬을 만들어 낸다.
-
 ------------------------------------------------------------------------------------------------------*/
-void CameraClass::RenderReflection(float distance, float object)
+void CameraClass::RenderReflection(float height)//float distance, float object)
 {
 	D3DXVECTOR3 up, position, lookAt;
 
@@ -147,7 +147,8 @@ void CameraClass::RenderReflection(float distance, float object)
 	// 월드에 카메라 위치를 설정합니다.
 	// 평면 반사를 위해 카메라의 Y값을 역전시킵니다.
 	position.x = m_positionX;
-	position.y = -object + (distance * 2.0f);
+	//position.y = -object + (distance * 2.0f);
+	position.y = -m_positionY + (height *2.0f);
 	position.z = m_positionZ; 
 	
 	
@@ -165,7 +166,116 @@ void CameraClass::RenderReflection(float distance, float object)
 	return;
 }
 
+/*------------------------------------------------------------------------------------------------------
+이름: RenderWaterReflection()
+용도:
+- *****호수용*******
+- 호수에 사용될 반사 뷰 행렬을 만드는데 사용된다.
+- regular view matrix와 차이점은 이것은 plane의 높이를 베이스로 Y축을 반전시킨다. pitch(X축)도 반전시킨다.
+
+- 뷰행렬을 생성하는데 필요한 것: 카메라의 위치+카메라가 보는 방향+카메라의 up벡터
+- 카메라가 보는 방향, up은 모두 벡터이며 카메라의 위치로 rotationMatrix로 변환되어야한다.
+------------------------------------------------------------------------------------------------------*/
+void CameraClass::RenderWaterReflection(float height)
+{
+	D3DXVECTOR3 up, position, lookAt;
+	float yaw, pitch, roll;
+	D3DXMATRIX rotationMatrix;
+	//카메라의 좌표축
+	up.x = 0.0f;
+	up.y = 1.0f;
+	up.z = 0.0f;
+
+	position.x = m_positionX;
+	position.y = -m_positionY + (height * 2.0f); // planer한 반사를 위해 카메라의 y축을 뒤집어준다.(하늘에서 쏴야하니까 height)
+	position.z = m_positionZ;
+
+	// 카메라가 보는 곳
+	lookAt.x = 0.0f;
+	lookAt.y = 0.0f;
+	lookAt.z = 1.0f;
+
+	//좌표축들을 회전시켜준다.
+	//X축을 반전시켜준다.
+	pitch = -m_rotationX * 0.0174532925f;
+	yaw = m_rotationY * 0.0174532925f;
+	roll = m_rotationZ * 0.0174532925f;
+
+	//rotation행렬을 만들어낸다.
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, yaw, pitch, roll);
+
+	//보는 방향 벡터를 rotation matrix로 전환시킨다. 
+	D3DXVec3TransformCoord(&lookAt, &lookAt, &rotationMatrix);
+	D3DXVec3TransformCoord(&up, &up, &rotationMatrix);
+
+	
+	//보는 사람의 위치에 맞게 카메라의 위치를 이동시킨다.
+	//벡터는 방향을 포함한다.
+	lookAt = position + lookAt;
+
+	//카메라의 위치, 카메라가 보는 방향, 카메라의 up벡터를 혼합해서 뷰행렬을 만든다.
+	D3DXMatrixLookAtLH(&m_reflectionViewMatrix, &position, &lookAt, &up);
+
+	return;
+}
+
+void CameraClass::GetWaterReflectionViewMatrix(D3DXMATRIX& viewMatrix)
+{
+	viewMatrix =  m_WaterReflectionViewMatrix;
+}
+
 D3DXMATRIX CameraClass::GetReflectionViewMatrix()
 {
 	return m_reflectionViewMatrix;
+	
+}
+
+void CameraClass::GenerateBaseViewMatrix()
+{
+	D3DXVECTOR3 up, position, lookAt;
+	float yaw, pitch, roll;
+	D3DXMATRIX rotationMatrix;
+
+
+	// Setup the vector that points upwards.
+	up.x = 0.0f;
+	up.y = 1.0f;
+	up.z = 0.0f;
+
+	// Setup the position of the camera in the world.
+	position.x = m_positionX;
+	position.y = m_positionY;
+	position.z = m_positionZ;
+
+	// Setup where the camera is looking by default.
+	lookAt.x = 0.0f;
+	lookAt.y = 0.0f;
+	lookAt.z = 1.0f;
+
+	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
+	pitch = m_rotationX * 0.0174532925f;
+	yaw = m_rotationY * 0.0174532925f;
+	roll = m_rotationZ * 0.0174532925f;
+
+	// Create the rotation matrix from the yaw, pitch, and roll values.
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, yaw, pitch, roll);
+
+	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
+	D3DXVec3TransformCoord(&lookAt, &lookAt, &rotationMatrix);
+	D3DXVec3TransformCoord(&up, &up, &rotationMatrix);
+
+	// Translate the rotated camera position to the location of the viewer.
+	lookAt = position + lookAt;
+
+	// Finally create the view matrix from the three updated vectors.
+	D3DXMatrixLookAtLH(&m_baseViewMatrix, &position, &lookAt, &up);
+
+	return;
+}
+
+
+void CameraClass::GetBaseViewMatrix(D3DXMATRIX& viewMatrix)
+{
+	viewMatrix = m_baseViewMatrix;
+	return;
 }

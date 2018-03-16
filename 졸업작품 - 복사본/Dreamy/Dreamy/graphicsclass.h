@@ -19,13 +19,12 @@
 #include "TextClass.h"
 #include "FrustumClass.h"
 #include "ModelManagerClass.h"
-#include "RTTClass.h"
 #include "RTTTextureClass.h"
 #include "TerrainClass.h"
 #include "TerrainShaderClass.h"
-
 #include "SkyClass.h"
 #include "FBXModel.h"
+#include "WaterClass.h"
 
 
 
@@ -74,6 +73,9 @@ private:
 	bool RenderToTexture();
 	bool RenderRTTScene();
 	bool RenderRunningScene(bool);
+	bool RenderRefractionToTexture(); // 호수 굴절 텍스처
+	bool RenderReflectionToTexture(); // 호수 반사 텍스처
+
 
 private:
 
@@ -99,12 +101,13 @@ private:
 
 	ImageClass* m_2D_Love;
 	ImageClass* m_Loading;
+	ImageClass* m_CrossHair;
 
 	TextClass* m_Title;
 
 	FrustumClass* m_Frustum;
 
-	RTTClass* m_RTT;
+
 	RTTTextureClass* m_RTTTexture;
 	
 	TerrainClass* m_Terrain;
@@ -119,6 +122,11 @@ private:
 
 	FBXModel* m_fbx;
 
+	//호수
+	RTTTextureClass* m_RefractionTexture, *m_ReflectionTexture;
+	WaterClass* m_Water;
+	TerrainClass* m_WaterTerrain;
+	TerrainShaderClass* m_WaterTerrainShader;
 
 
 

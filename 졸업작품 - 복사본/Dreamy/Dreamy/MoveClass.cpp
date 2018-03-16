@@ -79,22 +79,22 @@ void MoveClass::TurnLeft(bool keydown)
 	// If the key is pressed increase the speed at which the camera turns left. If not slow down the turn speed.
 	if (keydown)
 	{
-		m_leftTurnSpeed += m_frameTime * 0.01f;
+		//m_leftTurnSpeed += m_frameTime * 0.01f;
 
-		if (m_leftTurnSpeed > (m_frameTime * 0.15f))
-		{
+		//if (m_leftTurnSpeed > (m_frameTime * 0.15f))
+		//{
 			m_leftTurnSpeed = m_frameTime * 0.15f;
-		}
+		//}
 	}
 
 	else
 	{
-		m_leftTurnSpeed -= m_frameTime* 0.005f;
+		//m_leftTurnSpeed -= m_frameTime* 0.005f;
 
-		if (m_leftTurnSpeed < 0.0f)
-		{
+		//if (m_leftTurnSpeed < 0.0f)
+		//{
 			m_leftTurnSpeed = 0.0f;
-		}
+		//}
 	}
 
 	m_rotation.y -= m_leftTurnSpeed;
@@ -111,22 +111,22 @@ void MoveClass::TurnRight(bool keydown)
 	// If the key is pressed increase the speed at which the camera turns right. If not slow down the turn speed.
 	if (keydown)
 	{
-		m_rightTurnSpeed += m_frameTime * 0.01f;
+		//m_rightTurnSpeed += m_frameTime * 0.01f;
 
-		if (m_rightTurnSpeed > (m_frameTime * 0.15f))
+		//if (m_rightTurnSpeed > (m_frameTime * 0.15f))
 
-		{
+		//{
 			m_rightTurnSpeed = m_frameTime * 0.15f;
-		}
+		//}
 	}
 
 	else
 	{
-		m_rightTurnSpeed -= m_frameTime* 0.005f;
-		if (m_rightTurnSpeed < 0.0f)
-		{
+		//m_rightTurnSpeed -= m_frameTime* 0.005f;
+		//if (m_rightTurnSpeed < 0.0f)
+		//{
 			m_rightTurnSpeed = 0.0f;
-		}
+		//}
 	}
 
 	m_rotation.y += m_rightTurnSpeed;
@@ -142,22 +142,22 @@ void MoveClass::LookUpward(bool keydown)
 	// If the key is pressed increase the speed at which the camera turns right. If not slow down the turn speed.
 	if (keydown)
 	{
-		m_lookUpSpeed += m_frameTime * 0.01f;
+		//m_lookUpSpeed += m_frameTime * 0.01f;
 
-		if (m_lookUpSpeed > (m_frameTime * 0.15f))
+		//if (m_lookUpSpeed > (m_frameTime * 0.15f))
 
-		{
+		//{
 			m_lookUpSpeed = m_frameTime * 0.15f;
-		}
+		//}
 	}
 
 	else
 	{
-		m_lookUpSpeed -= m_frameTime* 0.005f;
-		if (m_lookUpSpeed < 0.0f)
-		{
+		//m_lookUpSpeed -= m_frameTime* 0.005f;
+		//if (m_lookUpSpeed < 0.0f)
+		//{
 			m_lookUpSpeed = 0.0f;
-		}
+		//}
 	}
 
 	m_rotation.x -= m_lookUpSpeed;
@@ -173,22 +173,22 @@ void MoveClass::LookDownward(bool keydown)
 	// If the key is pressed increase the speed at which the camera turns right. If not slow down the turn speed.
 	if (keydown)
 	{
-		m_lookDownSpeed += m_frameTime * 0.01f;
+		//m_lookDownSpeed += m_frameTime * 0.01f;
 
-		if (m_lookDownSpeed > (m_frameTime * 0.15f))
+		//if (m_lookDownSpeed > (m_frameTime * 0.15f))
 
-		{
+		//{
 			m_lookDownSpeed = m_frameTime * 0.15f;
-		}
+		//}
 	}
 
 	else
 	{
-		m_lookDownSpeed -= m_frameTime* 0.005f;
-		if (m_lookDownSpeed < 0.0f)
-		{
+		//m_lookDownSpeed -= m_frameTime* 0.005f;
+		//if (m_lookDownSpeed < 0.0f)
+		//{
 			m_lookDownSpeed = 0.0f;
-		}
+		//}
 	}
 
 	m_rotation.x += m_lookDownSpeed;
