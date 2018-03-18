@@ -83,7 +83,7 @@ void MoveClass::TurnLeft(bool keydown)
 
 		//if (m_leftTurnSpeed > (m_frameTime * 0.15f))
 		//{
-			m_leftTurnSpeed = m_frameTime * 0.15f;
+			m_leftTurnSpeed = m_frameTime * 0.13f;
 		//}
 	}
 
@@ -116,7 +116,7 @@ void MoveClass::TurnRight(bool keydown)
 		//if (m_rightTurnSpeed > (m_frameTime * 0.15f))
 
 		//{
-			m_rightTurnSpeed = m_frameTime * 0.15f;
+			m_rightTurnSpeed = m_frameTime * 0.13f;
 		//}
 	}
 
@@ -204,11 +204,11 @@ void MoveClass::GoForward(bool keydown)
 	// If the key is pressed increase the speed at which the camera turns left. If not slow down the turn speed.
 	if (keydown)
 	{
-		m_ForwardSpeed += m_frameTime * 0.001f;
+		m_ForwardSpeed += m_frameTime * 0.01f;
 
-		if (m_ForwardSpeed > (m_frameTime * 0.03f))
+		if (m_ForwardSpeed > (m_frameTime * 0.05f))
 		{
-			m_ForwardSpeed = m_frameTime * 0.03f;
+			m_ForwardSpeed = m_frameTime * 0.05f;
 		}
 	}
 
@@ -238,11 +238,11 @@ void MoveClass::GoBackward(bool keydown)
 	// If the key is pressed increase the speed at which the camera turns left. If not slow down the turn speed.
 	if (keydown)
 	{
-		m_backwardSpeed += m_frameTime * 0.001f;
+		m_backwardSpeed += m_frameTime * 0.01f;
 
-		if (m_backwardSpeed  > (m_frameTime * 0.03f))
+		if (m_backwardSpeed  > (m_frameTime * 0.05f))
 		{
-			m_backwardSpeed = m_frameTime * 0.03f;
+			m_backwardSpeed = m_frameTime * 0.05f;
 		}
 	}
 

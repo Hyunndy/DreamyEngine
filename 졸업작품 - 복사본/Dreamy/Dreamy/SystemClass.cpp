@@ -169,8 +169,8 @@ bool SystemClass::Loading()
 	m_Move = new MoveClass;
 	if (!m_Move) { return false; }
 
-	m_Move->SetPosition(512.5f, 30.0f, 300.0f);
-	m_Move->SetRotation(0.0f, 0.0f, 0.0f);
+	m_Move->SetPosition(449, 75.0f, 624.0f);
+	m_Move->SetRotation(22.0f, 0.0f, 0.0f);
 	//-------------------------------------------------------------------------------------
 
 

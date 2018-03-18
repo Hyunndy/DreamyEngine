@@ -326,7 +326,8 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 
 bool InputClass::IsLeftTurned()
 {
-	if (m_mouseX >= 0 && m_mouseX < (m_screenWidth/4))
+	//if (m_mouseX >= 0 && m_mouseX < (m_screenWidth/4))
+	if(m_mouseX <=0)
 		return true;
 	else
 		return false;
@@ -334,7 +335,8 @@ bool InputClass::IsLeftTurned()
 
 bool InputClass::IsRightTurned()
 {
-	if (m_mouseX > (m_screenWidth/4)*3 && m_mouseX <= m_screenWidth)
+	//if (m_mouseX > (m_screenWidth/4)*3 && m_mouseX <= m_screenWidth)
+	if(m_mouseX>=m_screenWidth)
 		return true;
 	else
 		return false;

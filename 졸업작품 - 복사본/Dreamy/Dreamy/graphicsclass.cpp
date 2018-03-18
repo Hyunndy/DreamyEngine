@@ -50,7 +50,7 @@ GraphicsClass::GraphicsClass()
 
 	//호수
 	m_Water = 0;
-	m_ReflectionTexture = 0;
+	//m_ReflectionTexture = 0;
 	m_RefractionTexture = 0;
 	m_WaterTerrain = 0;
 	m_WaterTerrainShader = 0;
@@ -172,40 +172,38 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	// 3D모델 객체 생성
 	//-------------------------------------------------------------------------------------
-	//m_Model_Circle = new ModelClass;
-	//
-	//result = m_Model_Circle->Initialize(m_D3D->GetDevice(), "../Dreamy/sphere.txt", L"../Dreamy/seafloor.dds");
-	//if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
-	//
+	m_Model_Circle = new ModelClass;
+	
+	result = m_Model_Circle->Initialize(m_D3D->GetDevice(), "../Dreamy/sphere.txt", L"../Dreamy/seafloor.dds");
+	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
+	
 	//m_Model_Plane = new ModelClass;
 	//
 	//result = m_Model_Plane->InitializeTriple(m_D3D->GetDevice(), "../Dreamy/plane01.txt", L"../Dreamy/dirt01.dds", L"../Dreamy/stone01.dds", L"../Dreamy/alpha01.dds");
 	//if (!result) { MessageBox(hwnd, L"Could not initialize mo456456del object", L"Error", MB_OK); return false; }
 	//
 	//
-	//m_Model_Cube = new ModelClass;
-	//
-	//result = m_Model_Cube->InitializeBumpMap(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/stone01.dds", L"../Dreamy/bump01.dds");
-	//if (!result) { MessageBox(hwnd, L"Could not initializddwqdkqwpdkp[l object", L"Error", MB_OK); return false; }
-	//
-	////result = m_Model_Cube->Initialize(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/seafloor.dds");
-	////if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
-	//
-	//m_Model_Cube2 = new ModelClass;
-	//
-	//result = m_Model_Cube2->Initialize(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/seafloor.dds");
-	//if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
-	//
+	m_Model_Cube = new ModelClass;
+	
+	result = m_Model_Cube->InitializeTriple(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/dirt01.dds", L"../Dreamy/stone01.dds", L"../Dreamy/alpha01.dds");
+	if (!result) { MessageBox(hwnd, L"Could not m_Model_Cube1 object", L"Error", MB_OK); return false; }
+	
+	
+	m_Model_Cube2 = new ModelClass;
+	
+	result = m_Model_Cube2->Initialize(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/seafloor.dds");
+	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
+	
 	m_Model_Cube3 = new ModelClass;
 	
 	result = m_Model_Cube3->InitializeSpecMap(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/stone02.dds", L"../Dreamy/bump02.dds", L"../Dreamy/spec02.dds");
 	if (!result) { MessageBox(hwnd, L"Could not tranlsmad object", L"Error", MB_OK); return false; }
 	
-	//m_Model_Plane2 = new ModelClass;
-	//
-	//result = m_Model_Plane2->Initialize(m_D3D->GetDevice(), "../Dreamy/plane01.txt", L"../Dreamy/fog01.png");
-	//if (!result) { MessageBox(hwnd, L"Could not initialize fogplane object", L"Error", MB_OK); return false; }
-	//
+	m_Model_Plane2 = new ModelClass;
+	
+	result = m_Model_Plane2->Initialize(m_D3D->GetDevice(), "../Dreamy/plane01.txt", L"../Dreamy/fog01.png");
+	if (!result) { MessageBox(hwnd, L"Could not initialize fogplane object", L"Error", MB_OK); return false; }
+	
 	//m_Model_Mirror = new ModelClass;
 	//
 	//result = m_Model_Mirror->Initialize(m_D3D->GetDevice(), "../Dreamy/floor.txt", L"../Dreamy/blue01.dds");
@@ -270,20 +268,20 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the reflection render to texture object.
-	m_ReflectionTexture = new RTTTextureClass;
-	if (!m_ReflectionTexture)
-	{
-		return false;
-	}
-
-	// Initialize the reflection render to texture object.
-	result = m_ReflectionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the reflection render to texture object.", L"Error", MB_OK);
-		return false;
-	}
+	//// Create the reflection render to texture object.
+	//m_ReflectionTexture = new RTTTextureClass;
+	//if (!m_ReflectionTexture)
+	//{
+	//	return false;
+	//}
+	//
+	//// Initialize the reflection render to texture object.
+	//result = m_ReflectionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+	//if (!result)
+	//{
+	//	MessageBox(hwnd, L"Could not initialize the reflection render to texture object.", L"Error", MB_OK);
+	//	return false;
+	//}
 	// Create the water object.
 	m_Water = new WaterClass;
 	if (!m_Water)
@@ -292,7 +290,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the water object.
-	result = m_Water->Initialize(m_D3D->GetDevice(), L"../Dreamy/Data/waternormal.dds", 13.0f, 110.0f);
+	result = m_Water->Initialize(m_D3D->GetDevice(), L"../Dreamy/Data/waternormal.dds", 33.0f, 100.0f);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK);
@@ -326,12 +324,12 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
     // ModelList객체 생성
     //-------------------------------------------------------------------------------------
-	//m_Model_CircleList = new ModelManagerClass;
-	//if (!m_Model_CircleList) { return false; }
-	//
-	//// 구 4개를 만들자!
-	//m_Model_CircleList->Initialize(4);
-	//if (!result) { MessageBox(hwnd, L"리스트 만드는데 실패함", L"Error", MB_OK); return false; }
+	m_Model_CircleList = new ModelManagerClass;
+	if (!m_Model_CircleList) { return false; }
+	
+	// 구 4개를 만들자!
+	m_Model_CircleList->Initialize(5);
+	if (!result) { MessageBox(hwnd, L"리스트 만드는데 실패함", L"Error", MB_OK); return false; }
 
 	//-------------------------------------------------------------------------------------
 
@@ -383,7 +381,7 @@ void GraphicsClass::Shutdown()
 	//if (m_QuadTree) { m_QuadTree->Shutdown(); delete m_QuadTree; m_QuadTree = 0; }
 	// Release the texture manager object.
 	if (m_Water) { m_Water->Shutdown(); delete m_Water; m_Water = 0; }
-	if (m_ReflectionTexture) { m_ReflectionTexture->Shutdown(); delete m_ReflectionTexture; m_ReflectionTexture = 0; }
+	//if (m_ReflectionTexture) { m_ReflectionTexture->Shutdown(); delete m_ReflectionTexture; m_ReflectionTexture = 0; }
 	if (m_RefractionTexture) { m_RefractionTexture->Shutdown(); delete m_RefractionTexture; m_RefractionTexture = 0; }
 	if (m_TerrainShader) { m_TerrainShader->Shutdown(); delete m_TerrainShader; m_TerrainShader = 0; }
 	if (m_WaterTerrainShader) { m_WaterTerrainShader->Shutdown(); delete m_WaterTerrainShader; m_WaterTerrainShader = 0; }
@@ -468,7 +466,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	foundHeight = m_Terrain->GetHeightAtPosition(CharacterPos.x, CharacterPos.z, Characterheight);
 	if (foundHeight)
 	{
-		CharacterPos.y = Characterheight + 10.0f;
+		CharacterPos.y = Characterheight + 20.0f;
 
 	}
 
@@ -482,7 +480,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	m_Water->Frame();
 
 	//구름의 프레임 처리를 수행한다.
-	m_Sky->Frame(frameTime*0.00009f, 0.0f, frameTime*0.00008f, 0.0f);
+	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f);
 
 
 
@@ -504,18 +502,14 @@ bool GraphicsClass::Render( bool Pressed)
 	//-------------------------------------------------------------------------------------
 	//result = RenderToTexture(); // 거울
 	//if (!result) { return false; }
-
-	//if (fps % 30 == 0)
-	//{
 	
 	//호수의 굴절 텍스처
 	result = RenderRefractionToTexture();
 	if (!result) { return false; }
 
 	//호수의 반사 텍스처
-	result = RenderReflectionToTexture();
-	if (!result) { return false; }
-	//}
+	//result = RenderReflectionToTexture();
+	//if (!result) { return false; }
 	//-------------------------------------------------------------------------------------
 
 	// 메인씬 그림
@@ -558,8 +552,9 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMATRIX TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix, Plane2worldMatrix, CircleworldMatrix, Cube1worldMatrix, Cube2worldMatrix, Cube3worldMatrix, MirrorworldMatrix;
 	D3DXMATRIX CrossHairworldMatrix;
 	D3DXMATRIX FBXworldMatrix, FBXRotationMatrix;
-	D3DXMATRIX TranslationMatrix, TranslationMatrix2, RotationMatrix;
+	D3DXMATRIX TranslationMatrix, TranslationMatrix2, Cube3RotationMatrix;
 	D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, reflectionMatrix,WaterreflectionViewMatrix;
+	D3DXMATRIX ScaleMatrix;
 
 	D3DXMATRIX TextworldMatrix;
 
@@ -570,7 +565,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 텍스처 이동
 	static float textureTranslation = 0.0f;
-	textureTranslation += 0.0001f;
+	textureTranslation += 0.003f;
 	if (textureTranslation > 1.0f) { textureTranslation -= 1.0f; }
 
 	//RTT시작
@@ -583,7 +578,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	fogColor = 0.0f;
 	fogStart = 0.0f;
-	fogEnd = 10.0f;
+	fogEnd = 270.0f;
 	//-------------------------------------------------------------------------------------
 
 	//시작
@@ -634,10 +629,8 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	// 스케일링->회전->이동 순으로 합쳐야 한다.
 	D3DXMatrixTranslation(&SkyworldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-	//큐브3 텍스처이동하는애
-	D3DXMatrixTranslation(&Cube3worldMatrix, CharacterPos.x, CharacterPos.y, CharacterPos.z);
-	D3DXMatrixRotationYawPitchRoll(&RotationMatrix, yaw, pitch, roll);
-	D3DXMatrixMultiply(&Cube3worldMatrix, &RotationMatrix, &Cube3worldMatrix);
+
+
 	// FBX모델
 	D3DXMatrixTranslation(&FBXworldMatrix, CharacterPos.x+2.0f, CharacterPos.y+1.0f, CharacterPos.z);
 	D3DXMatrixRotationX(&FBXRotationMatrix, 180.0f);
@@ -704,33 +697,137 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	m_Camera->RenderWaterReflection(m_Water->GetWaterHeight());
 	m_Camera->GetWaterReflectionViewMatrix(WaterreflectionViewMatrix);
-
-	D3DXMatrixTranslation(&WaterworldMatrix, 530.0f, m_Water->GetWaterHeight(), 187.0f);
+	D3DXMATRIX WaterRotationMatrix;
+	D3DXMatrixTranslation(&WaterworldMatrix, 440.0f, m_Water->GetWaterHeight(), 750.0f);
+	D3DXMatrixRotationY(&WaterRotationMatrix, 70.0f);
+	D3DXMatrixMultiply(&WaterworldMatrix, &WaterRotationMatrix, &WaterworldMatrix);
 	m_Water->Render(m_D3D->GetDeviceContext());
 
 	result = m_Shader->RenderWaterShader(m_D3D->GetDeviceContext(), m_Water->GetIndexCount(), WaterworldMatrix, viewMatrix, projectionMatrix, WaterreflectionViewMatrix,
-		m_RefractionTexture->GetShaderResourceView(), m_ReflectionTexture->GetShaderResourceView(), m_Water->GetTexture(),
+		m_RefractionTexture->GetShaderResourceView(), m_Sky->GetCloudTexture2(), m_Water->GetTexture(),
 		m_Camera->GetPosition(), m_Water->GetNormalMapTiling(), m_Water->GetWaterTranslation(), m_Water->GetReflectRefractScale(),
 		m_Water->GetRefractionTint(), m_Light->GetDirection(), m_Water->GetSpecularShininess());
 	if (!result) { return false; }
 	//-------------------------------------------------------------------------------------
 
+	//구 리스트 변수들 초기화
+	//-------------------------------------------------------------------------------------
+	CircleCount = m_Model_CircleList->GetModelCount();
+	m_D3D->GetWorldMatrix(ScaleMatrix);
+	D3DXMatrixScaling(&ScaleMatrix, 1.5f, 1.5f, 1.5f);
+	//-------------------------------------------------------------------------------------
 
 	// Scene 출력 모델
 	//-------------------------------------------------------------------------------------
-	//큐브3 텍스처 이동+spec맵
+	//프러스텀 컬링 들어간 구 모델 리스트
+	for (Circleindex = 0; Circleindex < CircleCount; Circleindex++)
+	{
+		//리스트에 있는것들 차례대로 데이터를 읽어온다.
+		m_Model_CircleList->GetData(Circleindex, positionX, positionY, positionZ, color);
+
+		radius = 1.0f;
+
+		//Frustum Culling(프러스텀 컬링)
+		//3D모델에 경계볼륨을 씌워서 절두체에 보이는지 체크한다.
+		Circlerender = m_Frustum->CheckSphere(positionX + 580.0f, positionY + 20.0f, positionZ + 295.0f, radius);
+
+		if (Circlerender)
+		{
+			//리스트에서 정의된대로 위치 변환
+			D3DXMatrixTranslation(&CircleworldMatrix, positionX + 580.0f, positionY + 20.0f, positionZ + 295.0f);
+			D3DXMatrixMultiply(&CircleworldMatrix, &ScaleMatrix, &CircleworldMatrix);
+
+			//3D모델(구체) 렌더링
+			m_Model_Circle->Render(m_D3D->GetDeviceContext());
+
+			//셰이더 렌더링
+			result = m_Shader->RenderLightShader(m_D3D->GetDeviceContext(), m_Model_Circle->GetIndexCount(), CircleworldMatrix, viewMatrix, projectionMatrix
+				, m_Model_Circle->GetTexture(),m_Light->GetDirection(), m_Light->GetAmbientColor(), color
+				, m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			if (!result) { return false; }
+
+			//구가 각자 다른 위치를 가져야 하니까 reset시킨다!
+			m_D3D->GetWorldMatrix(CircleworldMatrix);
+			
+			
+		}
+
+	}
+
+
+	//큐브3 텍스처이동하는애
+	D3DXMatrixTranslation(&Cube3worldMatrix, 600.0f, 15.0f, 338.0f);
+	D3DXMatrixRotationY(&Cube3RotationMatrix, -40.0f);
+	D3DXMatrixScaling(&ScaleMatrix, 7.0f, 7.0f, 7.0f);
+
+	D3DXMatrixMultiply(&Cube3worldMatrix, &Cube3RotationMatrix, &Cube3worldMatrix);
+	D3DXMatrixMultiply(&Cube3worldMatrix, &ScaleMatrix, &Cube3worldMatrix);
+
+	//큐브3 텍스처 이동+spec맵	
+	m_Model_Cube3->Render(m_D3D->GetDeviceContext());
+	
+	result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3worldMatrix, viewMatrix, projectionMatrix
+		, m_Model_Cube3->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
+	if (!result) { return false; }	
+
+	//큐브2 안개
+	D3DXMatrixTranslation(&Cube2worldMatrix, 613.0f, 15.0f, 350.0f);
+	D3DXMatrixMultiply(&Cube2worldMatrix, &Cube3RotationMatrix, &Cube2worldMatrix);
+	D3DXMatrixMultiply(&Cube2worldMatrix, &ScaleMatrix, &Cube2worldMatrix);
+
+	//큐브2 안개 
+	m_Model_Cube2->Render(m_D3D->GetDeviceContext());
+
+	result = m_Shader->RenderFogShader(m_D3D->GetDeviceContext(), m_Model_Cube2->GetIndexCount(), Cube2worldMatrix, viewMatrix, projectionMatrix,
+		m_Model_Cube2->GetTexture(), fogStart, fogEnd);
+	if (!result) { return false; }
+
+	//큐브1 노말맵(범프맵)
+	D3DXMatrixTranslation(&Cube1worldMatrix, 626.0f, 15.0f, 363.0f);
+	D3DXMatrixMultiply(&Cube1worldMatrix, &ScaleMatrix, &Cube1worldMatrix);
+	D3DXMatrixMultiply(&Cube1worldMatrix, &Cube3RotationMatrix, &Cube1worldMatrix);
+
+	//큐브1 노말맵(범프맵)
+	m_Model_Cube->Render(m_D3D->GetDeviceContext());
+
+	result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
+		, m_Model_Cube->GetTripleTextureArray());
+	if (!result) { return false; }
+	//result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
+	//	, m_Model_Cube->GetTexture());
+
+	//평면2 투명
+	m_D3D->GetWorldMatrix(TranslationMatrix);
+	D3DXMatrixRotationX(&Plane2worldMatrix, D3DXToRadian(90));
+	//D3DXMatrixMultiply(&Plane2worldMatrix, &Plane2worldMatrix, &Cube3RotationMatrix);
+	D3DXMATRIX Plane2RotationMatrix;
+	D3DXMatrixRotationY(&Plane2RotationMatrix, D3DXToRadian(-45));
+	D3DXMatrixMultiply(&Plane2worldMatrix, &Plane2worldMatrix, &Plane2RotationMatrix);
+	D3DXMatrixTranslation(&TranslationMatrix, 633.0f, 30.0f, 334.0f);
+	D3DXMatrixMultiply(&TranslationMatrix, &ScaleMatrix, &TranslationMatrix);
+	D3DXMatrixMultiply(&TranslationMatrix, &Plane2worldMatrix, &TranslationMatrix);
+
+
+	//평면2 투명안개
+	m_D3D->TurnOnAlphaBlending();
+
+	m_Model_Plane2->Render(m_D3D->GetDeviceContext());
+
+	result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), TranslationMatrix, viewMatrix, projectionMatrix
+		, m_Model_Plane2->GetTexture(), 0.7f);
+	if (!result) { return false; }
+
+	m_D3D->TurnOffAlphaBlending();
+
+
+
+
+	//fbx모델
 	//m_D3D->TurnOffCulling();
 	//m_fbx->Render(m_D3D->GetDeviceContext());
 	//result = m_Shader->RenderColorShader(m_D3D->GetDeviceContext(), m_fbx->GetIndexCount(), FBXworldMatrix, viewMatrix, projectionMatrix);
 	//m_D3D->TurnOnCulling();
-	//
-	//
-	//m_Model_Cube3->Render(m_D3D->GetDeviceContext());
-	//
-	//result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3worldMatrix, viewMatrix, projectionMatrix
-	//	, m_Model_Cube3->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-	//	m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
-	//if (!result) { return false; }
 
 	//-------------------------------------------------------------------------------------
 
@@ -744,18 +841,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixTranslation(&TranslationMatrix, -3, 4.5, -8);
 	D3DXMatrixMultiply(&Cube1worldMatrix, &Cube1worldMatrix, &TranslationMatrix);
 
-	//큐브2 움직이는애
-	D3DXMatrixRotationY(&RotationMatrix, 0.6f);
-	//D3DXMatrixTranslation(&TranslationMatrix2, Speed2*0.01f, 4.5, Speed*0.01f - 6);
-	D3DXMatrixMultiply(&Cube2worldMatrix, &RotationMatrix, &TranslationMatrix2);
-
-
-
-	//plane2
-	m_D3D->GetWorldMatrix(TranslationMatrix);
-	D3DXMatrixRotationX(&Plane2worldMatrix, D3DXToRadian(-90));
-	D3DXMatrixTranslation(&TranslationMatrix, 0, 4, 0);
-	D3DXMatrixMultiply(&Plane2worldMatrix, &Plane2worldMatrix, &TranslationMatrix);
 
 	//거울
 	D3DXMatrixTranslation(&MirrorworldMatrix, -2.7, 3.8, -8.9);
@@ -764,47 +849,8 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixMultiply(&MirrorworldMatrix, &Scale, &MirrorworldMatrix);
 
 
-	//구 리스트 변수들 초기화
-	//-------------------------------------------------------------------------------------
-	CircleCount = m_Model_CircleList->GetModelCount();
-	//-------------------------------------------------------------------------------------
-
 	//기본 행렬 변환, 3D모델, 셰이더 렌더링, 프러스텀 컬링
 	//-------------------------------------------------------------------------------------
-
-
-
-	//프러스텀 컬링 들어간 구 모델 리스트
-	for (Circleindex = 0; Circleindex < CircleCount; Circleindex++)
-	{
-		//리스트에 있는것들 차례대로 데이터를 읽어온다.
-		m_Model_CircleList->GetData(Circleindex, positionX, positionY, positionZ, color);
-
-		radius = 1.0f;
-
-		//Frustum Culling(프러스텀 컬링)
-		//3D모델에 경계볼륨을 씌워서 절두체에 보이는지 체크한다.
-		Circlerender = m_Frustum->CheckSphere(positionX, positionY, positionZ, radius);
-
-		if (Circlerender)
-		{
-			//리스트에서 정의된대로 위치 변환
-			D3DXMatrixTranslation(&CircleworldMatrix, positionX, positionY, positionZ);
-
-			//3D모델(구체) 렌더링
-			m_Model_Circle->Render(m_D3D->GetDeviceContext());
-
-			//셰이더 렌더링
-			result = m_Shader->RenderLightShader(m_D3D->GetDeviceContext(), m_Model_Circle->GetIndexCount(), CircleworldMatrix, viewMatrix, projectionMatrix
-				, m_Model_Circle->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), color
-				, m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-			if (!result) { return false; }
-
-			//구가 각자 다른 위치를 가져야 하니까 reset시킨다!
-			m_D3D->GetWorldMatrix(CircleworldMatrix);
-		}
-
-	}
 
 	//평면 알파맵
 	m_Model_Plane->Render(m_D3D->GetDeviceContext());
@@ -814,36 +860,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	if (!result) { return false; }
 
 
-
-	//큐브1 노말맵(범프맵)
-	m_Model_Cube->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderBumpMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
-		, m_Model_Cube->GetMultiTextureArray(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
-	if (!result) { return false; }
-	//result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
-	//	, m_Model_Cube->GetTexture());
-
-	//큐브2 안개 
-	m_Model_Cube2->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderFogShader(m_D3D->GetDeviceContext(), m_Model_Cube2->GetIndexCount(), Cube2worldMatrix, viewMatrix, projectionMatrix,
-		m_Model_Cube2->GetTexture(), fogStart, fogEnd);
-	if (!result) { return false; }
-
-
-
-	//평면2 투명안개
-	m_D3D->TurnOnAlphaBlending();
-
-	m_Model_Plane2->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), Plane2worldMatrix, viewMatrix, projectionMatrix
-		, m_Model_Plane2->GetTexture(), 0.7f);
-	if (!result) { return false; }
-
-	m_D3D->TurnOffAlphaBlending();
-
 	//거울
 	m_Model_Mirror->Render(m_D3D->GetDeviceContext());
 
@@ -852,18 +868,11 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	if (!result) { return false; }
 
 
-
 	*/
 	//-------------------------------------------------------------------------------------
 	//2D이미지, 2d셰이더 렌더링, Text, Z버퍼 ON/OFF, 알파블렌딩, RTT미니맵
 	//-------------------------------------------------------------------------------------
 	m_D3D->TurnZBufferOff();
-
-//result = m_RTTTexture->Render(m_D3D->GetDeviceContext(), 1200, 0);
-//if (!result) { return false; }
-//
-//result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_RTTTexture->GetIndexCount(), TextworldMatrix, baseViewMatrix, orthoMatrix, m_RTT->GetShaderResourceView());
-//if (!result) { return false; }
 
 	m_D3D->TurnOnAlphaBlending();
 
@@ -889,9 +898,131 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	return true;
 }
+
+//-------------------------------------------------------------------------------------
+//이름: RenderRefractionToTexture()
+//용도: 호수 내부의 모습을 RTT로 굴절(Refraction)한다.
+//-------------------------------------------------------------------------------------
+bool GraphicsClass::RenderRefractionToTexture()
+{
+	D3DXVECTOR4 clipPlane;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	bool result;
+
+	// Setup a clipping plane based on the height of the water to clip everything above it to create a refraction.
+	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_Water->GetWaterHeight() + 0.1f);
+
+	// Set the render target to be the refraction render to texture.
+	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+
+	// Clear the refraction render to texture.
+	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Generate the view matrix based on the camera's position.
+	m_Camera->Render();
+
+	// Get the matrices from the camera and d3d objects.
+	m_D3D->GetWorldMatrix(worldMatrix);
+	m_Camera->GetViewMatrix(viewMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	m_WaterTerrain->Renderforwater(m_D3D->GetDeviceContext());
+	result = m_Shader->RenderWaterReflectionShader(m_D3D->GetDeviceContext(), m_WaterTerrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
+		m_Light->GetDirection(), 2.0f, clipPlane);
+	if (!result) { return false; }
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	m_D3D->SetBackBufferRenderTarget();
+
+	// Reset the viewport back to the original.
+	m_D3D->ResetViewport();
+
+	return true;
+}
+//
+bool GraphicsClass::RenderReflectionToTexture()
+{
+	//D3DXVECTOR4 clipPlane;
+	//D3DXMATRIX reflectionViewMatrix, worldMatrix, projectionMatrix;
+	//D3DXVECTOR3 cameraPosition;
+	//bool result;
+	//
+	//// Setup a clipping plane based on the height of the water to clip everything below it.
+	//clipPlane = D3DXVECTOR4(0.0f, 1.0f, 0.0f, -m_Water->GetWaterHeight());
+	//
+	//// Set the render target to be the reflection render to texture.
+	//m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
+	//
+	//// Clear the reflection render to texture.
+	//m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+	//
+	//// Use the camera to render the reflection and create a reflection view matrix.
+	//m_Camera->RenderWaterReflection(m_Water->GetWaterHeight());
+	//
+	//// Get the camera reflection view matrix instead of the normal view matrix.
+	//m_Camera->GetWaterReflectionViewMatrix(reflectionViewMatrix);
+	//
+	//// Get the world and projection matrices from the d3d object.
+	//m_D3D->GetWorldMatrix(worldMatrix);
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
+	//
+	//// Get the position of the camera.
+	//cameraPosition = m_Camera->GetPosition();
+	//
+	//// Invert the Y coordinate of the camera around the water plane height for the reflected camera position.
+	//cameraPosition.y = -cameraPosition.y + (m_Water->GetWaterHeight() * 2.0f);
+	//
+	//// Translate the sky dome and sky plane to be centered around the reflected camera position.
+	//D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	//
+	//m_D3D->TurnOffCulling();
+	//m_D3D->TurnZBufferOff();
+	//
+	//m_Sky->RenderSky(m_D3D->GetDeviceContext());
+	//m_Shader->RenderSkydomeShader(m_D3D->GetDeviceContext(), m_Sky->GetIndexCount(), worldMatrix, reflectionViewMatrix, projectionMatrix,
+	//	m_Sky->GetApexColor(), m_Sky->GetCenterColor());
+	//
+	//// Turn back face culling back on.
+	//m_D3D->TurnOnCulling();
+	//
+	////구름
+	//m_D3D->EnableSecondBlendState();
+	//
+	//m_Sky->RenderCloud(m_D3D->GetDeviceContext());
+	//
+	//
+	//m_Shader->RenderCloudShader(m_D3D->GetDeviceContext(), m_Sky->GetCloudIndexCount(), worldMatrix, reflectionViewMatrix, projectionMatrix,
+	//	m_Sky->GetCloudTexture1(), m_Sky->GetCloudTexture2(), m_Sky->GetTranslation(0), m_Sky->GetTranslation(1),
+	//	m_Sky->GetTranslation(2), m_Sky->GetTranslation(3), m_Sky->GetBrightness());
+	//
+	//
+	//m_D3D->TurnOffAlphaBlending();
+	//
+	//// Turn the Z buffer back on.
+	//m_D3D->TurnZBufferOn();
+	//
+	//// Reset the world matrix.
+	//m_D3D->GetWorldMatrix(worldMatrix);
+	//
+	//m_WaterTerrain->Renderforwater(m_D3D->GetDeviceContext());
+	//result = m_Shader->RenderWaterReflectionShader(m_D3D->GetDeviceContext(), m_WaterTerrain->GetIndexCount(), worldMatrix, reflectionViewMatrix, projectionMatrix,
+	//	m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
+	//	m_Light->GetDirection(), 2.0f, clipPlane);
+	//if (!result) { return false; }
+	//
+	//// Reset the render target back to the original back buffer and not the render to texture anymore.
+	//m_D3D->SetBackBufferRenderTarget();
+	//
+	//// Reset the viewport back to the original.
+	////m_D3D->ResetViewport();
+	//
+	return true;
+}
+
 /*----------------------------------------------------------------------------------------
 이름 : RenderToTexture()
-용도 : 
+용도 :
 - RTT기능을 사용할 수 있게하는 함수
 - 평면 반사 기능을 사용하기 위해 반사 뷰 행렬을 생성해야 한다.
 ------------------------------------------------------------------------------------------*/
@@ -948,7 +1079,7 @@ bool GraphicsClass::RenderToTexture()
 
 /*----------------------------------------------------------------------------------------
 이름 : RenderScene()
-용도 : RTT를 사용하기 위해 RTT에 그려질 씬 
+용도 : RTT를 사용하기 위해 RTT에 그려질 씬
 ------------------------------------------------------------------------------------------*/
 bool GraphicsClass::RenderRTTScene()
 {
@@ -974,125 +1105,6 @@ bool GraphicsClass::RenderRTTScene()
 	//if (!result) { return false; }
 	//
 	//
-	return true;
-}
-
-
-bool GraphicsClass::RenderRefractionToTexture()
-{
-	D3DXVECTOR4 clipPlane;
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
-	bool result;
-
-	// Setup a clipping plane based on the height of the water to clip everything above it to create a refraction.
-	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_Water->GetWaterHeight() + 0.1f);
-
-	// Set the render target to be the refraction render to texture.
-	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-
-	// Clear the refraction render to texture.
-	m_RefractionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Generate the view matrix based on the camera's position.
-	m_Camera->Render();
-
-	// Get the matrices from the camera and d3d objects.
-	m_D3D->GetWorldMatrix(worldMatrix);
-	m_Camera->GetViewMatrix(viewMatrix);
-	m_D3D->GetProjectionMatrix(projectionMatrix);
-
-	m_WaterTerrain->Renderforwater(m_D3D->GetDeviceContext());
-	result = m_Shader->RenderWaterReflectionShader(m_D3D->GetDeviceContext(), m_WaterTerrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
-		m_Light->GetDirection(), 2.0f, clipPlane);
-	if (!result) { return false; }
-
-	// Reset the render target back to the original back buffer and not the render to texture anymore.
-	m_D3D->SetBackBufferRenderTarget();
-
-	// Reset the viewport back to the original.
-	m_D3D->ResetViewport();
-
-	return true;
-}
-//
-bool GraphicsClass::RenderReflectionToTexture()
-{
-	D3DXVECTOR4 clipPlane;
-	D3DXMATRIX reflectionViewMatrix, worldMatrix, projectionMatrix;
-	D3DXVECTOR3 cameraPosition;
-	bool result;
-
-	// Setup a clipping plane based on the height of the water to clip everything below it.
-	clipPlane = D3DXVECTOR4(0.0f, 1.0f, 0.0f, -m_Water->GetWaterHeight());
-
-	// Set the render target to be the reflection render to texture.
-	m_ReflectionTexture->SetRenderTarget(m_D3D->GetDeviceContext());
-
-	// Clear the reflection render to texture.
-	m_ReflectionTexture->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Use the camera to render the reflection and create a reflection view matrix.
-	m_Camera->RenderWaterReflection(m_Water->GetWaterHeight());
-
-	// Get the camera reflection view matrix instead of the normal view matrix.
-	m_Camera->GetWaterReflectionViewMatrix(reflectionViewMatrix);
-
-	// Get the world and projection matrices from the d3d object.
-	m_D3D->GetWorldMatrix(worldMatrix);
-	m_D3D->GetProjectionMatrix(projectionMatrix);
-
-	// Get the position of the camera.
-	cameraPosition = m_Camera->GetPosition();
-
-	// Invert the Y coordinate of the camera around the water plane height for the reflected camera position.
-	cameraPosition.y = -cameraPosition.y + (m_Water->GetWaterHeight() * 2.0f);
-
-	// Translate the sky dome and sky plane to be centered around the reflected camera position.
-	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-
-	// Turn off back face culling and the Z buffer.
-	m_D3D->TurnOffCulling();
-	m_D3D->TurnZBufferOff();
-
-	// Render the sky dome using the reflection view matrix.
-	m_Sky->RenderSky(m_D3D->GetDeviceContext());
-	m_Shader->RenderSkydomeShader(m_D3D->GetDeviceContext(), m_Sky->GetIndexCount(), worldMatrix, reflectionViewMatrix, projectionMatrix,
-		m_Sky->GetApexColor(), m_Sky->GetCenterColor());
-
-	// Enable back face culling.
-	m_D3D->TurnOnCulling();
-
-	// Enable additive blending so the clouds blend with the sky dome color.
-	m_D3D->EnableSecondBlendState();
-
-	// Render the sky plane using the sky plane shader.
-	m_Sky->RenderCloud(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderCloudShader(m_D3D->GetDeviceContext(), m_Sky->GetCloudIndexCount(), worldMatrix, reflectionViewMatrix, projectionMatrix,
-		m_Sky->GetCloudTexture1(), m_Sky->GetCloudTexture2(), m_Sky->GetTranslation(0), m_Sky->GetTranslation(1),
-		m_Sky->GetTranslation(2), m_Sky->GetTranslation(3), m_Sky->GetBrightness());
-	if (!result) { return false; }
-
-	// Turn off blending and enable the Z buffer again.
-	m_D3D->TurnOffAlphaBlending();
-	m_D3D->TurnZBufferOn();
-
-	// Reset the world matrix.
-	m_D3D->GetWorldMatrix(worldMatrix);
-
-	m_WaterTerrain->Renderforwater(m_D3D->GetDeviceContext());
-	result = m_Shader->RenderWaterReflectionShader(m_D3D->GetDeviceContext(), m_WaterTerrain->GetIndexCount(), worldMatrix, reflectionViewMatrix, projectionMatrix,
-		m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
-		m_Light->GetDirection(), 2.0f, clipPlane);
-	if (!result) { return false; }
-
-	// Reset the render target back to the original back buffer and not the render to texture anymore.
-	m_D3D->SetBackBufferRenderTarget();
-
-	// Reset the viewport back to the original.
-	m_D3D->ResetViewport();
-
 	return true;
 }
 

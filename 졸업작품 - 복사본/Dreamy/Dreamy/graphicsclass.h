@@ -123,7 +123,7 @@ private:
 	FBXModel* m_fbx;
 
 	//È£¼ö
-	RTTTextureClass* m_RefractionTexture, *m_ReflectionTexture;
+	RTTTextureClass* m_RefractionTexture; //*m_ReflectionTexture;
 	WaterClass* m_Water;
 	TerrainClass* m_WaterTerrain;
 	TerrainShaderClass* m_WaterTerrainShader;
