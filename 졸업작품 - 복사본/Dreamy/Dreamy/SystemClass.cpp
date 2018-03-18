@@ -21,6 +21,7 @@ SystemClass::SystemClass()
 
 	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR2 Mousepos = D3DXVECTOR2(0.0f, 0.0f);
 }
 
 //왜 객체들의 포인터를 null로 초기화하냐면 초기화에 실패하면 곧바로 셧다운 함수를 호출하게 되는데 이 함수에서는 객체가 null이 아니라면 이를 올바르게 생성된 객체로 취급하고
@@ -282,6 +283,15 @@ bool SystemClass::HandleInput(float frametime)
 	//매 프레임 마다 프레임 시간을 갱신한다.
 	m_Move->SetFrameTime(frametime);
 
+
+	result = m_Input->IsLeftMouseButtonDown();
+	if (result == true)
+	{	
+		m_Input->GetMouseLocation(mouseX, mouseY);
+		m_Graphics->TestIntersection(mouseX, mouseY, screenWidth, screenHeight);
+	}
+
+
 	//m_Move->TurnLeft(m_Input->IsLeftPressed());
 	//m_Move->TurnRight(m_Input->IsRightPressed());
 	m_Move->TurnLeft(m_Input->IsLeftTurned());
@@ -293,11 +303,10 @@ bool SystemClass::HandleInput(float frametime)
 	//m_Move->LookUpward(m_Input->IsLookUpPressed());
 	//m_Move->LookDownward(m_Input->IsLookDownPressed());
 
-
+	
 
 	m_Move->GetPosition(pos);
 	m_Move->GetRotation(rot);
-	
 
 	
 
@@ -323,10 +332,16 @@ bool SystemClass::Frame()
 
 	result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(),pos, rot);
 	if (!result){ return false; }
+	
 
+	
 	//result = m_Graphics->Render(F1pressed);
 	result = m_Graphics->Render(F1pressed);
 	if (!result) { return false; }
+
+
+
+
 
 	return true;
 }

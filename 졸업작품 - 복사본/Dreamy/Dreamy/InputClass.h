@@ -19,8 +19,8 @@
 
 
 //////////////
-// INCLUDES //
-//////////////
+#include <d3d11.h>
+#include <d3dx10math.h>
 #include <dinput.h>
 
 
@@ -63,6 +63,9 @@ public:
 	bool IsLookUpTurned();
 	bool IsLookDownTurned();
 
+	bool IsLeftMouseButtonDown();
+
+
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();
@@ -78,6 +81,7 @@ private:
 
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
+	D3DXVECTOR2 Mousepos;
 
 };
 

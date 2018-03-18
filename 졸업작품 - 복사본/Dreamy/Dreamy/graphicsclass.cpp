@@ -482,6 +482,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	//구름의 프레임 처리를 수행한다.
 	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f);
 
+	
 
 
 
@@ -807,19 +808,21 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixTranslation(&TranslationMatrix, 633.0f, 30.0f, 334.0f);
 	D3DXMatrixMultiply(&TranslationMatrix, &ScaleMatrix, &TranslationMatrix);
 	D3DXMatrixMultiply(&TranslationMatrix, &Plane2worldMatrix, &TranslationMatrix);
-
-
+	
+	
 	//평면2 투명안개
-	m_D3D->TurnOnAlphaBlending();
+	if (sibal == true)
+	{
+		m_D3D->TurnOnAlphaBlending();
 
-	m_Model_Plane2->Render(m_D3D->GetDeviceContext());
+		m_Model_Plane2->Render(m_D3D->GetDeviceContext());
 
-	result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), TranslationMatrix, viewMatrix, projectionMatrix
-		, m_Model_Plane2->GetTexture(), 0.7f);
-	if (!result) { return false; }
+		result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), TranslationMatrix, viewMatrix, projectionMatrix
+			, m_Model_Plane2->GetTexture(), 0.7f);
+		if (!result) { return false; }
 
-	m_D3D->TurnOffAlphaBlending();
-
+		m_D3D->TurnOffAlphaBlending();
+	}
 
 
 
@@ -1153,6 +1156,111 @@ bool GraphicsClass::RenderMainScene()
 	
 
 	m_D3D->EndScene();
+
+	return true;
+}
+
+/*-----------------------------------------------------------------------------------------------
+이름: TestInterSection()
+용도:
+- 교차점 검사를 위한 벡터를 형성하고 필요한 교차 검사(원, 큐브)유형을 호출하는 일반 교차로 검사를 수행하는 함수.
+- 2D마우스 좌표를 가져와서 3D상의 벡터로 변환한다.
+- 이 벡터를 Picking ray라고 부른다. 이 picking ray는 원점과 방향을 가지며, 이 벡터와 충돌하는 3d개체를 찾아야 한다.
+- 월드->뷰->프로젝션을 역순으로 하면 된다.
+- 2D지점을 가져와서 프로젝션->뷰로 3D지점으로 변환한다.
+
+- 역순으로 하는 방법
+1) 마우스 좌표를 가져와서 양쪽 축에서 [-1,+1]범위로 이동하여 시작한다.
+2) 프로젝션 행렬을 사용해 화면 측면으로 나눈다.
+3) 이 값을 이용해서 뷰 공간에서 방향 벡터를 얻기 위해 inverse view매트릭스에 곱한다(반대니까)
+4) 뷰 공간에서 벡터 원점을 카메라의 위치로 설정할 수 있다.
+
+5) 이 원점+방향 벡터로 최종 프로세스를 완료할 수 있다.
+6) 마지막으로 세계 행렬을 구해 구의 위치로 변환한다. 그것을 역전해서 곱해준다.
+7) 프로젝션->뷰(역순)->월드(역순)를 역순으로 해줬으면 방향을 정규화 한다.
+-------------------------------------------------------------------------------------------------*/
+void GraphicsClass::TestIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
+{
+	float pointX, pointY;
+	D3DXMATRIX projectionMatrix;
+	D3DXMATRIX viewMatrix, inverseViewMatrix;
+	D3DXMATRIX worldMatrix, inverseWorldMatrix;
+	D3DXMATRIX translateMatrix;
+
+	D3DXVECTOR3 direction, origin;
+	D3DXVECTOR3 rayOrigin, rayDirection;
+
+	bool intersect, result;
+
+	// 마우스 좌표를 [-1,+1]범위로 이동한다.
+	pointX = ((2.0f * (float)mouseX) / (float)m_screenWidth) - 1.0f;
+	pointY = (((2.0f * (float)mouseY) / (float)m_screenHeight) - 1.0f) * -1.0f;
+
+	// 투영 행렬을 사용해 좌표들을 뷰포트의 측면으로 나눈다???왜???
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+	pointX = pointX / projectionMatrix._11;
+	pointY = pointY / projectionMatrix._22;
+	
+	//뷰 매트릭스를 inverse시킨다.
+	m_Camera->GetViewMatrix(viewMatrix);
+	D3DXMatrixInverse(&inverseViewMatrix, NULL, &viewMatrix);
+
+	// inverseViewMatrix를 이용해서 Picking ray의 방향을 설정한다.
+	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
+	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
+	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
+
+	// 카메라 포지션으로 picking ray의 원점을 정한다.
+	origin = m_Camera->GetPosition();
+
+	//구의 위치로 옮긴다고? 이걸? 음..?????
+	m_D3D->GetWorldMatrix(worldMatrix);
+	//D3DXMatrixTranslation(&translateMatrix, 800.0f, 450.0f, 0.0f);
+	D3DXMatrixTranslation(&translateMatrix, 600.0f, 15.0f, 340.0f);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translateMatrix);
+
+	// world행렬을 역순해준다.
+	D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
+
+	// picking ray에 inverseWorld행렬을 곱해준다.
+	D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
+	D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
+
+	// Normalize the ray direction.
+	D3DXVec3Normalize(&rayDirection, &rayDirection);
+	
+
+	intersect = RaySphereIntersect(rayOrigin, rayDirection, 10.0f);
+
+	if (intersect == true)
+	{
+		sibal = true;
+	}
+	else
+		sibal = false;
+
+
+	return;
+}
+
+bool GraphicsClass::RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius)
+{
+	float a, b, c, discriminant;
+
+
+	// Calculate the a, b, and c coefficients.
+	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
+	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
+	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
+
+	// Find the discriminant.
+	discriminant = (b * b) - (4 * a * c);
+
+	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
+	if (discriminant < 0.0f)
+	{
+		return false;
+	}
 
 	return true;
 }

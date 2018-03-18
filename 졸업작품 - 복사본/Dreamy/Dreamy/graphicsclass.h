@@ -60,6 +60,9 @@ public:
 	bool RenderMainScene();
 	bool RenderLoadingScene();
 
+	//Picking 검사
+	void TestIntersection(int, int, int, int);
+	bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
 public:
 	bool F1pressed;
 	D3DXMATRIX baseViewMatrix; //글꼴이 항상 같은 위치에 출력되게
@@ -78,6 +81,7 @@ private:
 
 
 private:
+	bool sibal = true;
 
 	D3DClass* m_D3D; 
 	

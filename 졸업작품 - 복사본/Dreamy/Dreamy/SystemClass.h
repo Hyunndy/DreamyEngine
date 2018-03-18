@@ -98,7 +98,9 @@ private:
 	MoveClass* m_Move;
 
 	int screenWidth, screenHeight;
+	int mouseX, mouseY;
 	D3DXVECTOR3 pos, rot;
+
 
 };
 

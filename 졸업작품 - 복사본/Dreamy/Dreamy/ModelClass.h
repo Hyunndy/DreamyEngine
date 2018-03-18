@@ -29,6 +29,7 @@ using namespace std;
 	방향광을 다룰 수 있게 되었다.
 
 	18.01.28 범프 매핑(노말 매핑)을 추가하면서 vettextype에 tangent, binormal이 추가되었다.
+	18.03.18 Picking 추가
 */
 
 
@@ -148,6 +149,8 @@ public:
 	ID3D11ShaderResourceView** GetMultiTextureArray();
 	ID3D11ShaderResourceView** GetTripleTextureArray();
 
+
+	bool RaySphereIntersect(D3DXVECTOR3, D3DXVECTOR3, float);
 
 private:
 	bool InitializeBuffers(ID3D11Device*);

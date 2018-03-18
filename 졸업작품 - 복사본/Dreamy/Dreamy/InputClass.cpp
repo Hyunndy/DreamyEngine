@@ -358,3 +358,15 @@ bool InputClass::IsLookDownTurned()
 		return false;
 }
 
+
+
+bool InputClass::IsLeftMouseButtonDown()
+{
+	// Check if the left mouse button is currently pressed.
+	if (m_mouseState.rgbButtons[0] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
