@@ -25,6 +25,12 @@ private:
 	} D3DXVECTOR4;
 	*/
 
+	struct FogBufferType
+	{
+		float fogStart;
+		float fogEnd;
+		float padding1, padding2;
+	};
 
 	struct LightBufferType
 	{
@@ -34,6 +40,8 @@ private:
 		// D3D11_BIND_CONSTANT_BUFFER을 사용하면 BythWidth가 항상 16의 배수 여야 하며 그렇지 않으면 실패한다.
 	};
 
+
+
 public:
 	TerrainShaderClass();
 	TerrainShaderClass(const TerrainShaderClass&);
@@ -41,11 +49,12 @@ public:
 
 	virtual bool Initialize(ID3D11Device*, HWND);
 
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,  ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,D3DXVECTOR3, D3DXVECTOR4);
-
+	//bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,  ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,D3DXVECTOR3, D3DXVECTOR4);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, float, float);
 
 	void RenderShader(ID3D11DeviceContext*, int);
-	bool SetShaderParameters(ID3D11DeviceContext*,int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,  D3DXVECTOR3, D3DXVECTOR4);
+	//bool SetShaderParameters(ID3D11DeviceContext*,int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,  D3DXVECTOR3, D3DXVECTOR4);
+	bool SetShaderParameters(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, float, float);
 
 private:
 
@@ -55,6 +64,7 @@ private:
 
 private:
 
+	ID3D11Buffer* m_fogBuffer; // 안개 버퍼
 	ID3D11Buffer* m_lightBuffer;
 
 

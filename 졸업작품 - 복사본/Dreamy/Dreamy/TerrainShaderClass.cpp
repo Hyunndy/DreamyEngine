@@ -10,6 +10,7 @@ TerrainShaderClass::TerrainShaderClass()
 	m_sampleState = 0;
 	m_matrixBuffer = 0;
 	m_lightBuffer = 0;
+	m_fogBuffer = 0;
 	
 }
 
@@ -52,8 +53,10 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	ID3D10Blob* pixelShaderBuffer;
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[6];
 	unsigned int numElements;
+
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
+	D3D11_BUFFER_DESC fogBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
 
 
@@ -218,6 +221,17 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 		return false;
 	}
 
+	// 안개 버퍼의 desc를 작성하고 동적 안개 상수 버퍼를 생성한다.
+	fogBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	fogBufferDesc.ByteWidth = sizeof(FogBufferType);
+	fogBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	fogBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	fogBufferDesc.MiscFlags = 0;
+	fogBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&fogBufferDesc, NULL, &m_fogBuffer);
+	if (FAILED(result)) { return false; }
+
 	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
@@ -233,6 +247,8 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 		return false;
 	}
 
+
+
 	return true;
 }
 
@@ -244,7 +260,8 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 - 픽셀 셰이더에 텍스처를 설정한다.
 -----------------------------------------------------------------------------------------------*/
 bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix,ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+	D3DXMATRIX projectionMatrix,ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor,
+	float fogStart, float fogEnd)
 
 {
 	HRESULT result;
@@ -252,6 +269,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	MatrixBufferType* dataPtr;
 	unsigned int bufferNumber;
 	LightBufferType* dataPtr2;
+	FogBufferType* dataPtr3;
 
 
 	// Transpose the matrices to prepare them for the shader.
@@ -282,6 +300,22 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	// Finanly set the constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+
+	// 안개 버퍼는 정점셰이더상에서 2번째 버퍼이므로 bufferNumber을 2로 지정한다.
+
+	result = deviceContext->Map(m_fogBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) { return false; }
+
+	dataPtr3 = (FogBufferType*)mappedResource.pData;
+
+	dataPtr3->fogStart = fogStart;
+	dataPtr3->fogEnd = fogEnd;
+
+	deviceContext->Unmap(m_fogBuffer, 0);
+
+	bufferNumber = 1;
+
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_fogBuffer);
 
 	// Set shader texture resources in the pixel shader.
 	deviceContext->PSSetShaderResources(0, 1, &texture);
@@ -315,10 +349,11 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 }
 
 bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext,int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix,ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor )
+	D3DXMATRIX projectionMatrix,ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor,
+	float fogStart, float fogEnd)
 {
 	// 렌더링에 사용할 셰이더 매개 변수를 설정합니다.
-	if (!SetShaderParameters(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, lightDirection, diffuseColor ))
+	if (!SetShaderParameters(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, lightDirection, diffuseColor,fogStart, fogEnd ))
 	{
 		return false;
 	}
@@ -349,6 +384,12 @@ void TerrainShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int in
 
 void TerrainShaderClass::ShutdownShader()
 {
+	// Release the light constant buffer.
+	if (m_fogBuffer)
+	{
+		m_fogBuffer->Release();
+		m_fogBuffer = 0;
+	}
 	// Release the light constant buffer.
 	if (m_lightBuffer)
 	{

@@ -578,8 +578,8 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//fogEnd가 멀어질수록 밝아짐
 	//-------------------------------------------------------------------------------------
 	fogColor = 0.0f;
-	fogStart = 0.0f;
-	fogEnd = 270.0f;
+	fogStart = 150.0f;
+	fogEnd = 550.0f;
 	//-------------------------------------------------------------------------------------
 
 	//시작
@@ -683,10 +683,12 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (result)
 		{
 
-			result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetCellIndexCount(i), TerrainworldMatrix, viewMatrix,
-				projectionMatrix, m_Terrain->GetColorTexture(), m_Terrain->GetNormalMapTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
-			if (!result) { return false; }
+		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetCellIndexCount(i), TerrainworldMatrix, viewMatrix,
+			projectionMatrix, m_Terrain->GetColorTexture(), m_Terrain->GetNormalMapTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor(), fogStart, fogEnd);
+		if (!result) { return false; }
 
+			//result = m_Shader->RenderFogShader(m_D3D->GetDeviceContext(), m_Terrain->GetCellIndexCount(i), TerrainworldMatrix, viewMatrix,
+			//	projectionMatrix, m_Terrain->GetColorTexture(), fogStart, fogEnd);
 			//m_Terrain->RenderCellLines(m_D3D->GetDeviceContext(), i);
 			//m_Shader->RenderColorShader(m_D3D->GetDeviceContext(), m_Terrain->GetCellLinesIndexCount(i), TerrainworldMatrix, viewMatrix, projectionMatrix);
 			//if (!result) { return false; }

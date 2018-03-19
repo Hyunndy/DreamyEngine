@@ -38,6 +38,8 @@ struct PixelInputType
 	float3 tangent : TANGENT;
 	float3 binormal : BINORMAL;
 	float4 color : COLOR;
+    ///////////////////////////////////////////////////////////////
+    float fogFactor : FOG;
 };
 
 
@@ -52,10 +54,17 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 	float3 bumpNormal;
     float lightIntensity;
     float4 color;
+    ///////////////////////////////////////////////////////////////
+    float4 fogColor;
+    
 
 
     // Sample the pixel color from the texture using the sampler at this texture coordinate location.
     textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+    ///////////////////////////////////////////////////////////////
+     // 안개 색을 회색으로 맞춘다.
+    fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);   
 
     // Combine the color map value into the texture color.
     textureColor = saturate(textureColor * input.color * 2.0f);
@@ -75,6 +84,9 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 
     // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
     color = color * textureColor;
+    
+    ///////////////////////////////////////////////////////////////
+    color = input.fogFactor * color + (1.0 - input.fogFactor) * fogColor;
 
     return color;
 }
