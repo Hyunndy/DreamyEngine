@@ -50,6 +50,7 @@ public:
 	bool Render(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX);
 
 	//GraphicsClass에서 마우스,fps,cpu를 프레임 마다 얻어서 Text로 출력하려고 만든 함수들.
+	bool SetMousePosition(int, int, ID3D11DeviceContext*);
 	bool SetPosition(float, float, float, ID3D11DeviceContext*);
 	bool SetFps(int, ID3D11DeviceContext*); 
 	bool SetCpu(int, ID3D11DeviceContext*);
@@ -80,6 +81,9 @@ private:
 	SentenceType* m_sentence4; // PosX
 	SentenceType* m_sentence5; // PosY
 	SentenceType* m_sentence6; // PosZ
+
+	SentenceType* m_sentence7; // mouseposx
+	SentenceType* m_sentence8; // mouseposy
 
 	
 };

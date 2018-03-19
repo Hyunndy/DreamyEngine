@@ -32,7 +32,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
@@ -53,7 +53,7 @@ public:
 	bool Loading(int, int, HWND);
 
 	void Shutdown();
-	bool Frame(int, int, float, D3DXVECTOR3, D3DXVECTOR3);// + 카메라 회전
+	bool Frame(int, int, float, D3DXVECTOR3, D3DXVECTOR3, int, int);// + 카메라 회전
 	bool Render(bool);
 
 
@@ -76,7 +76,7 @@ private:
 	bool RenderToTexture();
 	bool RenderRTTScene();
 	bool RenderRunningScene(bool);
-	bool RenderRefractionToTexture(); // 호수 굴절 텍스처
+	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
 	bool RenderReflectionToTexture(); // 호수 반사 텍스처
 
 
@@ -95,7 +95,7 @@ private:
 	ModelClass* m_Model_Plane2;
 
 	ModelClass* m_Model_Cube;
-	ModelClass* m_Model_Cube2;
+
 	ModelClass* m_Model_Cube3;
 
 	ModelClass* m_Model_Mirror;
@@ -106,6 +106,7 @@ private:
 	ImageClass* m_2D_Love;
 	ImageClass* m_Loading;
 	ImageClass* m_CrossHair;
+	ImageClass* m_Cursor;
 
 	TextClass* m_Title;
 
@@ -123,6 +124,7 @@ private:
 
 	D3DXVECTOR3 CharacterPos;
 	D3DXVECTOR3 CharacterRot;
+	int MousePosX, MousePosY;
 
 	FBXModel* m_fbx;
 

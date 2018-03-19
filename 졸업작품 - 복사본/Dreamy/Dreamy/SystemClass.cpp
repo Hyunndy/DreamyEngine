@@ -21,7 +21,8 @@ SystemClass::SystemClass()
 
 	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR2 Mousepos = D3DXVECTOR2(0.0f, 0.0f);
+	mouseX = 0;
+	mouseY = 0;
 }
 
 //왜 객체들의 포인터를 null로 초기화하냐면 초기화에 실패하면 곧바로 셧다운 함수를 호출하게 되는데 이 함수에서는 객체가 null이 아니라면 이를 올바르게 생성된 객체로 취급하고
@@ -104,6 +105,7 @@ void SystemClass::Main()
 		{
 			Start = true;
 			m_state = STATE::LOADING;
+			m_Input->SetMousePosition();
 		}
 
 		if (m_Input->IsEscapePressed() == true)
@@ -276,9 +278,7 @@ bool SystemClass::HandleInput(float frametime)
 {
 	bool result;
 
-	// 키보드&마우스 상태를 갱신하도록 한다.
-	result = m_Input->Frame();
-	if (!result) { return false; }
+
 
 	//매 프레임 마다 프레임 시간을 갱신한다.
 	m_Move->SetFrameTime(frametime);
@@ -287,7 +287,6 @@ bool SystemClass::HandleInput(float frametime)
 	result = m_Input->IsLeftMouseButtonDown();
 	if (result == true)
 	{	
-		m_Input->GetMouseLocation(mouseX, mouseY);
 		m_Graphics->TestIntersection(mouseX, mouseY, screenWidth, screenHeight);
 	}
 
@@ -317,6 +316,11 @@ bool SystemClass::Frame()
 {
 	bool keyDown,result;
 
+	// 키보드&마우스 상태를 갱신하도록 한다.
+	result = m_Input->Frame();
+	if (!result) { return false; }
+
+	m_Input->GetMouseLocation(mouseX, mouseY);
 
 	//시스템 스탯을 업데이트 한다.
 	m_Timer->Frame();
@@ -326,14 +330,13 @@ bool SystemClass::Frame()
 	result = HandleInput(m_Timer->GetTime());
 	if (!result) { return false; }
 
-	
-
+	D3DXVECTOR2 W;
+	W.x = 
 	// m_Graphics객체를 통해 화면에 그리는 작업을 수행한다.
 
-	result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(),pos, rot);
+	result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(),pos, rot, mouseX, mouseY);
+	//result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(), pos, rot, W);
 	if (!result){ return false; }
-	
-
 	
 	//result = m_Graphics->Render(F1pressed);
 	result = m_Graphics->Render(F1pressed);
@@ -433,7 +436,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetFocus(m_hwnd);
 
 	// 마우스 커서를 표시 유/무
-	ShowCursor(true);
+	ShowCursor(false);
 
 	return;
 }

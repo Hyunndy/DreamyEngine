@@ -18,7 +18,7 @@ GraphicsClass::GraphicsClass()
 	m_Model_Plane2 = 0;
 
 	m_Model_Cube = 0;
-	m_Model_Cube2 = 0;
+
 	m_Model_Cube3 = 0;
 	m_Model_CircleList = 0;
 
@@ -27,6 +27,7 @@ GraphicsClass::GraphicsClass()
 	m_2D_Love = 0;
 	m_Loading = 0;
 	m_CrossHair = 0;
+	m_Cursor = 0;
 
 	m_Title = 0;
 
@@ -189,10 +190,6 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result) { MessageBox(hwnd, L"Could not m_Model_Cube1 object", L"Error", MB_OK); return false; }
 	
 	
-	m_Model_Cube2 = new ModelClass;
-	
-	result = m_Model_Cube2->Initialize(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/seafloor.dds");
-	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
 	
 	m_Model_Cube3 = new ModelClass;
 	
@@ -366,6 +363,12 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	result = m_CrossHair->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Dreamy/crosshair.png", 1600, 900);
 	if(!result) { MessageBox(hwnd, L"crosshair error", L"Error", MB_OK); return false; }
+
+	m_Cursor = new ImageClass;
+	if (!m_Cursor) { return false; }
+
+	result = m_Cursor->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Dreamy/Data/mouse.dds", 32, 32);
+	if (!result) { MessageBox(hwnd, L"m_Cursor error", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
 
 
@@ -378,6 +381,7 @@ void GraphicsClass::Shutdown()
 	if (m_Title)	{ m_Title->Shutdown();	delete m_Title;	m_Title = 0;}
 	if (m_2D_Love)	{ m_2D_Love->Shutdown(); delete m_2D_Love; m_2D_Love = 0;}
 	if (m_CrossHair) { m_CrossHair->Shutdown(); delete m_CrossHair; m_CrossHair = 0; }
+	if (m_Cursor) { m_Cursor->Shutdown(); delete m_Cursor; m_Cursor = 0; }
 	//if (m_QuadTree) { m_QuadTree->Shutdown(); delete m_QuadTree; m_QuadTree = 0; }
 	// Release the texture manager object.
 	if (m_Water) { m_Water->Shutdown(); delete m_Water; m_Water = 0; }
@@ -395,7 +399,7 @@ void GraphicsClass::Shutdown()
 	if (m_Sky) { m_Sky->Shutdown(); delete m_Sky; m_Sky = 0; }
 	if (m_Model_CircleList) { m_Model_CircleList->Shutdown(); delete m_Model_CircleList; m_Model_CircleList = 0; }
 	if (m_Model_Cube) { m_Model_Cube->Shutdown(); delete m_Model_Cube; m_Model_Cube = 0; }
-	if (m_Model_Cube2) { m_Model_Cube2->Shutdown(); delete m_Model_Cube2; m_Model_Cube2 = 0; }
+
 	if (m_Model_Cube3) { m_Model_Cube3->Shutdown(); delete m_Model_Cube3; m_Model_Cube3 = 0; }
 	if (m_Model_Mirror) { m_Model_Mirror->Shutdown(); delete m_Model_Mirror; m_Model_Mirror = 0; }
 	if (m_Light)	{ delete m_Light; m_Light = 0; }
@@ -421,14 +425,14 @@ void GraphicsClass::Shutdown()
 - 각 프레임 마다 호수의 변환과 호수 표면 텍스처의 3단계 RTT <- 이게 너무 비싼 기능임.
 ------------------------------------------------------------------------------------------*/
 // 매 호출마다 Render함수를 부른다.
-bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int mouseX, int mouseY)
 {
 	bool result, foundHeight;
 	D3DXVECTOR3 CameraPos;
 	float height, Characterheight;
 
-	// 마우스 포인터위치 잡을 수 있게
-	//result = m_Title->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+	MousePosX = mouseX;
+	MousePosY = mouseY;
 
 	// fps세팅
 	result = m_Title->SetFps(fps, m_D3D->GetDeviceContext());
@@ -457,6 +461,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	//캐릭터 위치 초기화
 	CharacterPos.x = pos.x;
 	CharacterPos.z = pos.z+5.5f;
+
 
 
 	//캐릭터 회전 초기화
@@ -505,7 +510,7 @@ bool GraphicsClass::Render( bool Pressed)
 	//if (!result) { return false; }
 	
 	//호수의 굴절 텍스처
-	result = RenderRefractionToTexture();
+	result = RenderRefractionToTexture(Pressed);
 	if (!result) { return false; }
 
 	//호수의 반사 텍스처
@@ -630,6 +635,8 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	// 스케일링->회전->이동 순으로 합쳐야 한다.
 	D3DXMatrixTranslation(&SkyworldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+
 
 
 	// FBX모델
@@ -774,17 +781,9 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
 	if (!result) { return false; }	
 
-	//큐브2 안개
-	D3DXMatrixTranslation(&Cube2worldMatrix, 613.0f, 15.0f, 350.0f);
-	D3DXMatrixMultiply(&Cube2worldMatrix, &Cube3RotationMatrix, &Cube2worldMatrix);
-	D3DXMatrixMultiply(&Cube2worldMatrix, &ScaleMatrix, &Cube2worldMatrix);
 
-	//큐브2 안개 
-	m_Model_Cube2->Render(m_D3D->GetDeviceContext());
 
-	result = m_Shader->RenderFogShader(m_D3D->GetDeviceContext(), m_Model_Cube2->GetIndexCount(), Cube2worldMatrix, viewMatrix, projectionMatrix,
-		m_Model_Cube2->GetTexture(), fogStart, fogEnd);
-	if (!result) { return false; }
+
 
 	//큐브1 노말맵(범프맵)
 	D3DXMatrixTranslation(&Cube1worldMatrix, 626.0f, 15.0f, 363.0f);
@@ -826,7 +825,37 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		m_D3D->TurnOffAlphaBlending();
 	}
 
+	//-------------------------------------------------------------------------------------
+	//2D이미지, 2d셰이더 렌더링, Text, Z버퍼 ON/OFF, 알파블렌딩, RTT미니맵
+	//-------------------------------------------------------------------------------------
+	m_D3D->TurnZBufferOff();
 
+	m_D3D->TurnOnAlphaBlending();
+
+	// Text출력
+	// 마우스 포인터위치 잡을 수 있게
+	result = m_Title->SetMousePosition(MousePosX, MousePosY, m_D3D->GetDeviceContext());
+	result = m_Title->SetPosition(cameraPosition.x, cameraPosition.y, cameraPosition.z, m_D3D->GetDeviceContext());
+
+	result = m_Title->Render(m_D3D->GetDeviceContext(), TextworldMatrix, orthoMatrix);
+	if (!result) { return false; }
+
+	// 마우스 커서
+	result = m_Cursor->Render(m_D3D->GetDeviceContext(), MousePosX, MousePosY);  if (!result) { return false; }
+	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Cursor->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_Cursor->GetTexture());
+
+	// 크로스헤어 이미지.
+	result = m_CrossHair->Render(m_D3D->GetDeviceContext(), 0, 0);
+	if (!result) { return false; }
+
+	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_CrossHair->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_CrossHair->GetTexture());
+	if (!result) { return false; }
+
+
+
+
+	m_D3D->TurnOffAlphaBlending();
+	m_D3D->TurnZBufferOn();
 
 	//fbx모델
 	//m_D3D->TurnOffCulling();
@@ -874,27 +903,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 
 	*/
-	//-------------------------------------------------------------------------------------
-	//2D이미지, 2d셰이더 렌더링, Text, Z버퍼 ON/OFF, 알파블렌딩, RTT미니맵
-	//-------------------------------------------------------------------------------------
-	m_D3D->TurnZBufferOff();
 
-	m_D3D->TurnOnAlphaBlending();
-
-	// 크로스헤어 이미지.
-	result = m_CrossHair->Render(m_D3D->GetDeviceContext(), 0, 0);
-	if (!result) { return false; }
-
-	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_CrossHair->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_CrossHair->GetTexture());
-	if (!result) { return false; }
-
-	// Text출력
-	result = m_Title->SetPosition(cameraPosition.x, cameraPosition.y, cameraPosition.z, m_D3D->GetDeviceContext());
-	result = m_Title->Render(m_D3D->GetDeviceContext(), TextworldMatrix, orthoMatrix);
-	if (!result) { return false; }
-
-	m_D3D->TurnOffAlphaBlending();
-	m_D3D->TurnZBufferOn();
 	//버퍼에 그려진 씬을 화면에 표시한다.
 	m_D3D->EndScene();
 	
@@ -908,7 +917,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 //이름: RenderRefractionToTexture()
 //용도: 호수 내부의 모습을 RTT로 굴절(Refraction)한다.
 //-------------------------------------------------------------------------------------
-bool GraphicsClass::RenderRefractionToTexture()
+bool GraphicsClass::RenderRefractionToTexture(bool Pressed)
 {
 	D3DXVECTOR4 clipPlane;
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;

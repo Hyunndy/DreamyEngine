@@ -19,8 +19,6 @@
 
 
 //////////////
-#include <d3d11.h>
-#include <d3dx10math.h>
 #include <dinput.h>
 
 
@@ -65,6 +63,8 @@ public:
 
 	bool IsLeftMouseButtonDown();
 
+	void SetMousePosition();
+
 
 private:
 	bool ReadKeyboard();
@@ -81,7 +81,7 @@ private:
 
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
-	D3DXVECTOR2 Mousepos;
+
 
 };
 

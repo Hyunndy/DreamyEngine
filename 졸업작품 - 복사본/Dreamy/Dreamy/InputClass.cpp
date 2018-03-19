@@ -44,8 +44,9 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
 
-	m_mouseX = 800;
-	m_mouseY = 450;
+	m_mouseX = 0;
+	m_mouseY = 0;
+
 
 	// DirectInput의 인터페이스를 초기화한다.
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);
@@ -186,7 +187,7 @@ bool InputClass::ReadMouse()
 	HRESULT result;
 
 	//마우스의 상태를 m_mouseState에 저장한다.
-	result = m_mouse->GetDeviceState(sizeof(m_mouseState), (LPVOID)&m_mouseState);
+	result = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
 
 	if (FAILED(result))
 	{
@@ -324,10 +325,16 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 	return;
 }
 
+void InputClass::SetMousePosition()
+{
+	m_mouseX = 0;
+	m_mouseY = 0;
+}
+
 bool InputClass::IsLeftTurned()
 {
 	//if (m_mouseX >= 0 && m_mouseX < (m_screenWidth/4))
-	if(m_mouseX <=0)
+	if (m_mouseX <= (((GetSystemMetrics(SM_CXSCREEN) - m_screenWidth) / 2) - 200.0f))
 		return true;
 	else
 		return false;
@@ -336,7 +343,7 @@ bool InputClass::IsLeftTurned()
 bool InputClass::IsRightTurned()
 {
 	//if (m_mouseX > (m_screenWidth/4)*3 && m_mouseX <= m_screenWidth)
-	if(m_mouseX>=m_screenWidth)
+	if(m_mouseX >= (((GetSystemMetrics(SM_CXSCREEN) - m_screenWidth) / 2) +200.0f))
 		return true;
 	else
 		return false;
@@ -344,7 +351,7 @@ bool InputClass::IsRightTurned()
 
 bool InputClass::IsLookUpTurned()
 {
-	if (m_mouseY == 0)
+	if (m_mouseY >= (((GetSystemMetrics(SM_CYSCREEN) - m_screenHeight) / 2)+200.0f))
 		return true;
 	else
 		return false;
@@ -352,7 +359,7 @@ bool InputClass::IsLookUpTurned()
 
 bool InputClass::IsLookDownTurned()
 {
-	if (m_mouseY == m_screenHeight)
+	if (m_mouseY <= (((GetSystemMetrics(SM_CYSCREEN) - m_screenHeight) / 2) - 200.0f))
 		return true;
 	else
 		return false;

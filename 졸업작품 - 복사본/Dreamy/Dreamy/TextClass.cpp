@@ -16,6 +16,9 @@ TextClass::TextClass()
 	m_sentence4 = 0;
 	m_sentence5 = 0;
 	m_sentence6 = 0;
+
+	m_sentence7 = 0;
+	m_sentence8 = 0;
 }
 
 
@@ -93,6 +96,12 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	if (!result) { return false; }
 
 	result = InitializeSentence(&m_sentence6, 16, device);
+	if (!result) { return false; }
+
+	result = InitializeSentence(&m_sentence7, 16, device);
+	if (!result) { return false; }
+
+	result = InitializeSentence(&m_sentence8, 16, device);
 	if (!result) { return false; }
 
 	// 사용할 문장을 업데이트 한다.
@@ -356,6 +365,8 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatri
 	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
 	result = RenderSentence(deviceContext, m_sentence5, worldMatrix, orthoMatrix);
 	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_sentence7, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_sentence8, worldMatrix, orthoMatrix);
 	if (!result) {	return false;	}
 
 	return true;
@@ -396,6 +407,8 @@ void TextClass::Shutdown()
 	ReleaseSentence(&m_sentence4);
 	ReleaseSentence(&m_sentence5);
 	ReleaseSentence(&m_sentence6);
+	ReleaseSentence(&m_sentence7);
+	ReleaseSentence(&m_sentence8);
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -415,6 +428,46 @@ void TextClass::Shutdown()
 
 	return;
 }
+
+bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char mouseString[16];
+	bool result;
+
+
+	// Convert the mouseX integer to string format.
+	_itoa_s(mouseX, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(mouseString, "Mouse X: ");
+	strcat_s(mouseString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence7, mouseString, 1525, 115, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseY integer to string format.
+	_itoa_s(mouseY, tempString, 10);
+
+	// Setup the mouseY string.
+	strcpy_s(mouseString, "Mouse Y: ");
+	strcat_s(mouseString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence8, mouseString, 1525, 135, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
 
 bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceContext* deviceContext)
 {
