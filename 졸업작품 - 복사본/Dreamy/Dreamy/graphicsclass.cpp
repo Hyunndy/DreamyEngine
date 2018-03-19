@@ -555,7 +555,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXVECTOR3 cameraPosition;
 
 
-	D3DXMATRIX TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix, Plane2worldMatrix, CircleworldMatrix, Cube1worldMatrix, Cube2worldMatrix, Cube3worldMatrix, MirrorworldMatrix;
+	D3DXMATRIX TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix, Plane2worldMatrix, CircleworldMatrix, Cube1worldMatrix, Cube2worldMatrix, MirrorworldMatrix;
 	D3DXMATRIX CrossHairworldMatrix;
 	D3DXMATRIX FBXworldMatrix, FBXRotationMatrix;
 	D3DXMATRIX TranslationMatrix, TranslationMatrix2, Cube3RotationMatrix;
@@ -606,8 +606,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//m_Camera->GetViewMatrix(RotationMatrix);
 	//m_Camera->GetBaseViewMatrix(baseViewMatrix);
 
-
-
 	m_D3D->GetWorldMatrix(TerrainworldMatrix);
 	m_D3D->GetWorldMatrix(WaterworldMatrix);
 	m_D3D->GetWorldMatrix(SkyworldMatrix);
@@ -616,7 +614,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_D3D->GetWorldMatrix(CircleworldMatrix);
 	m_D3D->GetWorldMatrix(Cube1worldMatrix);
 	m_D3D->GetWorldMatrix(Cube2worldMatrix);
-	m_D3D->GetWorldMatrix(Cube3worldMatrix);
+
 	m_D3D->GetWorldMatrix(FBXworldMatrix);
 	m_D3D->GetWorldMatrix(FBXRotationMatrix);
 	m_D3D->GetWorldMatrix(MirrorworldMatrix);
@@ -629,6 +627,8 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	m_D3D->GetOrthoMatrix(orthoMatrix);
+
+
 
 
 	//기본 행렬 변환
@@ -694,8 +694,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 			projectionMatrix, m_Terrain->GetColorTexture(), m_Terrain->GetNormalMapTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor(), fogStart, fogEnd);
 		if (!result) { return false; }
 
-			//result = m_Shader->RenderFogShader(m_D3D->GetDeviceContext(), m_Terrain->GetCellIndexCount(i), TerrainworldMatrix, viewMatrix,
-			//	projectionMatrix, m_Terrain->GetColorTexture(), fogStart, fogEnd);
 			//m_Terrain->RenderCellLines(m_D3D->GetDeviceContext(), i);
 			//m_Shader->RenderColorShader(m_D3D->GetDeviceContext(), m_Terrain->GetCellLinesIndexCount(i), TerrainworldMatrix, viewMatrix, projectionMatrix);
 			//if (!result) { return false; }
@@ -759,45 +757,50 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 			//구가 각자 다른 위치를 가져야 하니까 reset시킨다!
 			m_D3D->GetWorldMatrix(CircleworldMatrix);
 			
-			
 		}
-
 	}
+	/////////////////////////////////////////////////////////////////////////////////////////
+	D3DXMATRIX Cube3WorldMatrix;
+	m_D3D->GetWorldMatrix(Cube3WorldMatrix);
 
+	m_Model_Cube3->Translation(600.0f, 15.0f, 338.0f);
+	m_Model_Cube3->RotationY(-40.0f);
+	m_Model_Cube3->Scale(7.0f, 7.0f, 7.0f);
 
+	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->GetRotationYMatrix(), &m_Model_Cube3->GetTranslationMatrix());
+	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->ScaleMatrix, &Cube3WorldMatrix);
+	/////////////////////////////////////////////////////////////////////////////////////////
 	//큐브3 텍스처이동하는애
-	D3DXMatrixTranslation(&Cube3worldMatrix, 600.0f, 15.0f, 338.0f);
-	D3DXMatrixRotationY(&Cube3RotationMatrix, -40.0f);
+	//D3DXMatrixTranslation(&Cube3worldMatrix, 600.0f, 15.0f, 338.0f);
+	//D3DXMatrixRotationY(&Cube3RotationMatrix, -40.0f);
 	D3DXMatrixScaling(&ScaleMatrix, 7.0f, 7.0f, 7.0f);
-
-	D3DXMatrixMultiply(&Cube3worldMatrix, &Cube3RotationMatrix, &Cube3worldMatrix);
-	D3DXMatrixMultiply(&Cube3worldMatrix, &ScaleMatrix, &Cube3worldMatrix);
+	//
+	//D3DXMatrixMultiply(&Cube3worldMatrix, &Cube3RotationMatrix, &Cube3worldMatrix);
+	//D3DXMatrixMultiply(&Cube3worldMatrix, &ScaleMatrix, &Cube3worldMatrix);
 
 	//큐브3 텍스처 이동+spec맵	
 	m_Model_Cube3->Render(m_D3D->GetDeviceContext());
 	
-	result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3worldMatrix, viewMatrix, projectionMatrix
+	result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3WorldMatrix, viewMatrix, projectionMatrix
 		, m_Model_Cube3->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
 	if (!result) { return false; }	
 
 
 
-
-
-	//큐브1 노말맵(범프맵)
-	D3DXMatrixTranslation(&Cube1worldMatrix, 626.0f, 15.0f, 363.0f);
-	D3DXMatrixMultiply(&Cube1worldMatrix, &ScaleMatrix, &Cube1worldMatrix);
-	D3DXMatrixMultiply(&Cube1worldMatrix, &Cube3RotationMatrix, &Cube1worldMatrix);
-
-	//큐브1 노말맵(범프맵)
-	m_Model_Cube->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
-		, m_Model_Cube->GetTripleTextureArray());
-	if (!result) { return false; }
-	//result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
-	//	, m_Model_Cube->GetTexture());
+	////큐브1 노말맵(범프맵)
+	//D3DXMatrixTranslation(&Cube1worldMatrix, 626.0f, 15.0f, 363.0f);
+	//D3DXMatrixMultiply(&Cube1worldMatrix, &ScaleMatrix, &Cube1worldMatrix);
+	//D3DXMatrixMultiply(&Cube1worldMatrix, &Cube3RotationMatrix, &Cube1worldMatrix);
+	//
+	////큐브1 노말맵(범프맵)
+	//m_Model_Cube->Render(m_D3D->GetDeviceContext());
+	//
+	//result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
+	//	, m_Model_Cube->GetTripleTextureArray());
+	//if (!result) { return false; }
+	////result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
+	////	, m_Model_Cube->GetTexture());
 
 	//평면2 투명
 	m_D3D->GetWorldMatrix(TranslationMatrix);
@@ -811,7 +814,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixMultiply(&TranslationMatrix, &Plane2worldMatrix, &TranslationMatrix);
 	
 	
-	//평면2 투명안개
+	//평면2 투명
 	if (sibal == true)
 	{
 		m_D3D->TurnOnAlphaBlending();
@@ -850,8 +853,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_CrossHair->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_CrossHair->GetTexture());
 	if (!result) { return false; }
-
-
 
 
 	m_D3D->TurnOffAlphaBlending();
@@ -1190,88 +1191,101 @@ bool GraphicsClass::RenderMainScene()
 6) 마지막으로 세계 행렬을 구해 구의 위치로 변환한다. 그것을 역전해서 곱해준다.
 7) 프로젝션->뷰(역순)->월드(역순)를 역순으로 해줬으면 방향을 정규화 한다.
 -------------------------------------------------------------------------------------------------*/
-void GraphicsClass::TestIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
+//void GraphicsClass::TestIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
+//{
+//	float pointX, pointY;
+//	D3DXMATRIX projectionMatrix;
+//	D3DXMATRIX viewMatrix, inverseViewMatrix;
+//	D3DXMATRIX worldMatrix, inverseWorldMatrix;
+//	D3DXMATRIX translateMatrix;
+//
+//	D3DXVECTOR3 direction, origin;
+//	D3DXVECTOR3 rayOrigin, rayDirection;
+//
+//	bool intersect, result;
+//
+//	// 마우스 좌표를 [-1,+1]범위로 이동한다.
+//	pointX = ((2.0f * (float)mouseX) / (float)m_screenWidth) - 1.0f;
+//	pointY = (((2.0f * (float)mouseY) / (float)m_screenHeight) - 1.0f) * -1.0f;
+//
+//	// 투영 행렬을 사용해 좌표들을 뷰포트의 측면으로 나눈다???왜???
+//	m_D3D->GetProjectionMatrix(projectionMatrix);
+//	pointX = pointX / projectionMatrix._11;
+//	pointY = pointY / projectionMatrix._22;
+//	
+//	//뷰 매트릭스를 inverse시킨다.
+//	m_Camera->GetViewMatrix(viewMatrix);
+//	D3DXMatrixInverse(&inverseViewMatrix, NULL, &viewMatrix);
+//
+//	// inverseViewMatrix를 이용해서 Picking ray의 방향을 설정한다.
+//	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
+//	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
+//	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
+//
+//	// 카메라 포지션으로 picking ray의 원점을 정한다.
+//	origin = m_Camera->GetPosition();
+//
+//	//구의 위치로 옮긴다고? 이걸? 음..?????
+//	m_D3D->GetWorldMatrix(worldMatrix);
+//	//D3DXMatrixTranslation(&translateMatrix, 800.0f, 450.0f, 0.0f);
+//	//D3DXMatrixTranslation(&translateMatrix, 600.0f, 15.0f, 340.0f);
+//	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &m_Model_Cube3->GetTranslationMatrix());
+//	
+//	// world행렬을 역순해준다.
+//	D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
+//
+//	// picking ray에 inverseWorld행렬을 곱해준다.
+//	D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
+//	D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
+//
+//	// Normalize the ray direction.
+//	D3DXVec3Normalize(&rayDirection, &rayDirection);
+//	
+//
+//	intersect = RaySphereIntersect(rayOrigin, rayDirection, 10.0f);
+//
+//	if (intersect == true)
+//	{
+//		sibal = true;
+//	}
+//	else
+//		sibal = false;
+//
+//
+//	return;
+//}
+//
+//bool GraphicsClass::RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius)
+//{
+//	float a, b, c, discriminant;
+//
+//
+//	// Calculate the a, b, and c coefficients.
+//	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
+//	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
+//	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
+//
+//	// Find the discriminant.
+//	discriminant = (b * b) - (4 * a * c);
+//
+//	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
+//	if (discriminant < 0.0f)
+//	{
+//		return false;
+//	}
+//
+//	return true;
+//}
+
+void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
 {
-	float pointX, pointY;
-	D3DXMATRIX projectionMatrix;
-	D3DXMATRIX viewMatrix, inverseViewMatrix;
-	D3DXMATRIX worldMatrix, inverseWorldMatrix;
-	D3DXMATRIX translateMatrix;
+	D3DXMATRIX ProjectionMatrix, ViewMatrix, WorldMatrix;
+	m_D3D->GetWorldMatrix(WorldMatrix);
+	m_Camera->GetViewMatrix(ViewMatrix);
+	m_D3D->GetProjectionMatrix(ProjectionMatrix);
 
-	D3DXVECTOR3 direction, origin;
-	D3DXVECTOR3 rayOrigin, rayDirection;
-
-	bool intersect, result;
-
-	// 마우스 좌표를 [-1,+1]범위로 이동한다.
-	pointX = ((2.0f * (float)mouseX) / (float)m_screenWidth) - 1.0f;
-	pointY = (((2.0f * (float)mouseY) / (float)m_screenHeight) - 1.0f) * -1.0f;
-
-	// 투영 행렬을 사용해 좌표들을 뷰포트의 측면으로 나눈다???왜???
-	m_D3D->GetProjectionMatrix(projectionMatrix);
-	pointX = pointX / projectionMatrix._11;
-	pointY = pointY / projectionMatrix._22;
-	
-	//뷰 매트릭스를 inverse시킨다.
-	m_Camera->GetViewMatrix(viewMatrix);
-	D3DXMatrixInverse(&inverseViewMatrix, NULL, &viewMatrix);
-
-	// inverseViewMatrix를 이용해서 Picking ray의 방향을 설정한다.
-	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
-	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
-	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
-
-	// 카메라 포지션으로 picking ray의 원점을 정한다.
+	D3DXVECTOR3 origin;
 	origin = m_Camera->GetPosition();
 
-	//구의 위치로 옮긴다고? 이걸? 음..?????
-	m_D3D->GetWorldMatrix(worldMatrix);
-	//D3DXMatrixTranslation(&translateMatrix, 800.0f, 450.0f, 0.0f);
-	D3DXMatrixTranslation(&translateMatrix, 600.0f, 15.0f, 340.0f);
-	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translateMatrix);
-
-	// world행렬을 역순해준다.
-	D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
-
-	// picking ray에 inverseWorld행렬을 곱해준다.
-	D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
-	D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
-
-	// Normalize the ray direction.
-	D3DXVec3Normalize(&rayDirection, &rayDirection);
-	
-
-	intersect = RaySphereIntersect(rayOrigin, rayDirection, 10.0f);
-
-	if (intersect == true)
-	{
-		sibal = true;
-	}
-	else
-		sibal = false;
-
-
-	return;
-}
-
-bool GraphicsClass::RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius)
-{
-	float a, b, c, discriminant;
-
-
-	// Calculate the a, b, and c coefficients.
-	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
-	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
-	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
-
-	// Find the discriminant.
-	discriminant = (b * b) - (4 * a * c);
-
-	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
-	if (discriminant < 0.0f)
-	{
-		return false;
-	}
-
-	return true;
+	sibal = m_Model_Cube3->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, ProjectionMatrix, ViewMatrix, WorldMatrix, origin);
 }

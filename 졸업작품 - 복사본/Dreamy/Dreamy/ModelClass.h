@@ -13,7 +13,7 @@
 #include <fstream> // 텍스트 파일로 부터 3D 모델을 읽어 그려내기 때문에
 #include "TextureClass.h" // 모델에 텍스처 파일을 붙여야 하기 때문에!
 #include <iostream>
-
+#include "MatrixClass.h"
 
 using namespace std;
 /*
@@ -36,7 +36,7 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ModelClass
 ////////////////////////////////////////////////////////////////////////////////
-class ModelClass
+class ModelClass : public MatrixClass
 {
 private:
 
@@ -150,7 +150,10 @@ public:
 	ID3D11ShaderResourceView** GetTripleTextureArray();
 
 
-	bool RaySphereIntersect(D3DXVECTOR3, D3DXVECTOR3, float);
+	//Picking 검사
+	bool TestIntersection(int, int, int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR3);
+	bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
+
 
 private:
 	bool InitializeBuffers(ID3D11Device*);

@@ -673,6 +673,71 @@ void ModelClass::CalculateNormal(VectorType tangent, VectorType binormal, Vector
 	return;
 }
 
+bool ModelClass::TestIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight,D3DXMATRIX projectionMatrix,
+								D3DXMATRIX viewMatrix, D3DXMATRIX worldMatrix,D3DXVECTOR3 origin)
+{
+	float pointX, pointY;
+//	D3DXMATRIX projectionMatrix;
+	D3DXMATRIX inverseViewMatrix;
+	D3DXMATRIX inverseWorldMatrix;
+	//D3DXMATRIX translateMatrix;
+
+	D3DXVECTOR3 direction; //origin;
+	D3DXVECTOR3 rayOrigin, rayDirection;
+
+	bool intersect, result;
+
+	// 마우스 좌표를 [-1,+1]범위로 이동한다.
+	pointX = ((2.0f * (float)mouseX) / (float)m_screenWidth) - 1.0f;
+	pointY = (((2.0f * (float)mouseY) / (float)m_screenHeight) - 1.0f) * -1.0f;
+
+	// 투영 행렬을 사용해 좌표들을 뷰포트의 측면으로 나눈다???왜???
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
+	pointX = pointX / projectionMatrix._11;
+	pointY = pointY / projectionMatrix._22;
+	
+	//뷰 매트릭스를 inverse시킨다.
+	//m_Camera->GetViewMatrix(viewMatrix);
+	D3DXMatrixInverse(&inverseViewMatrix, NULL, &viewMatrix);
+
+	// inverseViewMatrix를 이용해서 Picking ray의 방향을 설정한다.
+	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
+	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
+	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
+
+	// 카메라 포지션으로 picking ray의 원점을 정한다.
+	//origin = m_Camera->GetPosition();
+
+	//구의 위치로 옮긴다고? 이걸? 음..?????
+	//m_D3D->GetWorldMatrix(worldMatrix);
+	//D3DXMatrixTranslation(&translateMatrix, 800.0f, 450.0f, 0.0f);
+	//D3DXMatrixTranslation(&translateMatrix, 600.0f, 15.0f, 340.0f);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &TranslationMatrix);
+	
+	// world행렬을 역순해준다.
+	D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
+
+	// picking ray에 inverseWorld행렬을 곱해준다.
+	D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
+	D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
+
+	// Normalize the ray direction.
+	D3DXVec3Normalize(&rayDirection, &rayDirection);
+	
+
+	intersect = RaySphereIntersect(rayOrigin, rayDirection, 10.0f);
+
+	if (intersect == true)
+	{
+		return true;
+	}
+	else
+		return false;
+	
+
+	
+}
+
 bool ModelClass::RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius)
 {
 	float a, b, c, discriminant;

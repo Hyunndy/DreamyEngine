@@ -105,7 +105,7 @@ void SystemClass::Main()
 		{
 			Start = true;
 			m_state = STATE::LOADING;
-			m_Input->SetMousePosition();
+
 		}
 
 		if (m_Input->IsEscapePressed() == true)
@@ -177,7 +177,7 @@ bool SystemClass::Loading()
 	//-------------------------------------------------------------------------------------
 
 
-
+	m_Input->SetMousePosition();
 	m_state = STATE::RUNNING;
 
 	return true;
@@ -284,11 +284,7 @@ bool SystemClass::HandleInput(float frametime)
 	m_Move->SetFrameTime(frametime);
 
 
-	result = m_Input->IsLeftMouseButtonDown();
-	if (result == true)
-	{	
-		m_Graphics->TestIntersection(mouseX, mouseY, screenWidth, screenHeight);
-	}
+
 
 
 	//m_Move->TurnLeft(m_Input->IsLeftPressed());
@@ -342,7 +338,12 @@ bool SystemClass::Frame()
 	result = m_Graphics->Render(F1pressed);
 	if (!result) { return false; }
 
-
+	result = m_Input->IsLeftMouseButtonDown();
+	if (result == true)
+	{	
+		m_Graphics->CheckIntersection(mouseX, mouseY, screenWidth, screenHeight);
+		//m_Graphics->TestIntersection(mouseX, mouseY, screenWidth, screenHeight);
+	}
 
 
 

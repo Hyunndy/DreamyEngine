@@ -172,6 +172,7 @@
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MatrixClass.cpp" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ModelManagerClass.cpp" />
     <ClCompile Include="MoveClass.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="InputClass.h" />
+    <ClInclude Include="MatrixClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ModelManagerClass.h" />
     <ClInclude Include="MoveClass.h" />

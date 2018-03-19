@@ -32,9 +32,9 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
-const bool VSYNC_ENABLED = true;
+const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
@@ -55,14 +55,14 @@ public:
 	void Shutdown();
 	bool Frame(int, int, float, D3DXVECTOR3, D3DXVECTOR3, int, int);// + 카메라 회전
 	bool Render(bool);
-
+	void CheckIntersection(int, int, int, int);
 
 	bool RenderMainScene();
 	bool RenderLoadingScene();
 
 	//Picking 검사
-	void TestIntersection(int, int, int, int);
-	bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
+	//void TestIntersection(int, int, int, int);
+	//bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
 public:
 	bool F1pressed;
 	D3DXMATRIX baseViewMatrix; //글꼴이 항상 같은 위치에 출력되게
