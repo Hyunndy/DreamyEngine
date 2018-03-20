@@ -477,10 +477,26 @@ ID3D11ShaderResourceView** ModelClass::GetMultiTextureArray()
 	return m_Texture->GetMultiTextureArray();
 }
 
+ID3D11ShaderResourceView* ModelClass::GetTripleTexture1()
+{
+	return m_Texture->GetTripleTexture1();
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTripleTexture2()
+{
+	return m_Texture->GetTripleTexture2();
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTripleTexture3()
+{
+	return m_Texture->GetTripleTexture3();
+}
+
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
 	return m_Texture->GetTexture();
 }
+
 ID3D11ShaderResourceView** ModelClass::GetTripleTextureArray()
 {
 	return m_Texture->GetTripleTextureArray();
@@ -673,6 +689,26 @@ void ModelClass::CalculateNormal(VectorType tangent, VectorType binormal, Vector
 	return;
 }
 
+
+/*-----------------------------------------------------------------------------------------------
+이름: TestInterSection()
+용도:
+- 교차점 검사를 위한 벡터를 형성하고 필요한 교차 검사(원, 큐브)유형을 호출하는 일반 교차로 검사를 수행하는 함수.
+- 2D마우스 좌표를 가져와서 3D상의 벡터로 변환한다.
+- 이 벡터를 Picking ray라고 부른다. 이 picking ray는 원점과 방향을 가지며, 이 벡터와 충돌하는 3d개체를 찾아야 한다.
+- 월드->뷰->프로젝션을 역순으로 하면 된다.
+- 2D지점을 가져와서 프로젝션->뷰로 3D지점으로 변환한다.
+
+- 역순으로 하는 방법
+1) 마우스 좌표를 가져와서 양쪽 축에서 [-1,+1]범위로 이동하여 시작한다.
+2) 프로젝션 행렬을 사용해 화면 측면으로 나눈다.
+3) 이 값을 이용해서 뷰 공간에서 방향 벡터를 얻기 위해 inverse view매트릭스에 곱한다(반대니까)
+4) 뷰 공간에서 벡터 원점을 카메라의 위치로 설정할 수 있다.
+
+5) 이 원점+방향 벡터로 최종 프로세스를 완료할 수 있다.
+6) 마지막으로 세계 행렬을 구해 구의 위치로 변환한다. 그것을 역전해서 곱해준다.
+7) 프로젝션->뷰(역순)->월드(역순)를 역순으로 해줬으면 방향을 정규화 한다.
+-------------------------------------------------------------------------------------------------*/
 bool ModelClass::TestIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight,D3DXMATRIX projectionMatrix,
 								D3DXMATRIX viewMatrix, D3DXMATRIX worldMatrix,D3DXVECTOR3 origin)
 {

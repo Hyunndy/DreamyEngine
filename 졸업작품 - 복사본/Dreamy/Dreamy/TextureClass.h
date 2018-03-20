@@ -49,11 +49,17 @@ public:
 
 	void Shutdown();
 
+
 	// 셰이더가 그리는 작업에 사용할 수 있도록 텍스처 자원의 포인터를 반환한다.
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView** GetMultiTextureArray();
 	ID3D11ShaderResourceView** GetTripleTextureArray();
 	ID3D11ShaderResourceView* GetTGATexture();
+	ID3D11ShaderResourceView* GetTripleTexture1();
+	ID3D11ShaderResourceView* GetTripleTexture2();
+	ID3D11ShaderResourceView* GetTripleTexture3();
+
+
 
 private:
 	bool LoadTarga(char* filename, int& height, int& width);

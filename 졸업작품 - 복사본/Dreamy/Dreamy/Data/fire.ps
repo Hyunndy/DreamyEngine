@@ -1,0 +1,110 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: fire.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+Texture2D fireTexture : register(t0);
+Texture2D noiseTexture : register(t1);
+Texture2D alphaTexture : register(t2);
+
+SamplerState SampleType; // Wrap을 사용하는 SampleState.
+SamplerState SampleType2; //Clamp를 사용하는 두번째 SampleState.
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+//불꽃 효과를 위한 DistortionBuffer
+cbuffer DistortionBuffer
+{   
+    // 각각 x,y값이 있고 세 개의 노이즈 텍스처를 각각 다르게 찌그러트리는 데 사용된다.
+    float2 distortion1; 
+    float2 distortion2;
+    float2 distortion3;
+
+    // 혼합된 최종 노이즈 텍스처를 흩뜨릴 때 사용하여 결과물이 불꽃 모양이 되도록 한다.
+    float distortionScale;
+    float distortionBias;
+
+}
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float2 texCoords1 : TEXCOORD1;
+    float2 texCoords2 : TEXCOORD2;
+    float2 texCoords3 : TEXCOORD3;        
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+
+
+float4 FirePixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 noise1;
+    float4 noise2;
+    float4 noise3;
+    float4 finalNoise;
+
+    float perturb;
+
+    float2 noiseCoords;
+
+    float4 fireColor;
+    float4 alphaColor;
+
+
+    //노이즈 텍스처를 세 가지 다른 방법으로 샘플링하여 세 개의 노이즈 값을 만든다.
+    noise1 = noiseTexture.Sample(SampleType, input.texCoords1);
+    noise2 = noiseTexture.Sample(SampleType, input.texCoords2);
+    noise3 = noiseTexture.Sample(SampleType, input.texCoords3);
+
+    //노이즈 값의 범위를 (0,1)에서 (-1, +1)이 되도록 한다.
+    noise1 = (noise1 - 0.5f) * 2.0f;
+    noise2 = (noise2 - 0.5f) * 2.0f;
+    noise3 = (noise3 - 0.5f) * 2.0f;    
+
+    //노이즈의 x,y값을 세 개의 다른 왜곡(distortion)의 x,y좌표로 흩뜨린다.
+    noise1.xy = noise1.xy * distortion1.xy;
+    noise2.xy = noise2.xy * distortion2.xy;
+    noise3.xy = noise3.xy * distortion3.xy;    
+
+    //왜곡된 세 노이즈 값들을 하나의 노이즈로 합성한다.
+    finalNoise = noise1 + noise2 + noise3;
+
+    // 최종 노이즈 값을 흩뜨려서 전체적인 노이즈 텍스쳐의 모양이 불꽃처럼 보이게 한다.
+    // 왜곡정도는 위쪽에서 더 크게하고 아래로 갈 수록 적게 흩뜨려지게 한다.
+    // 이렇게 하면 뒤쪽에서는 깜빡이는 불꽃이 생기고 아래로 내려갈수록 흔들리지 않는 불꽃심모양이 만들어진다.
+
+    // 입력으로 들어온 텍스처의 y좌표를 왜곡 크기와 바이어스 값으로 교란시킨다.
+    // 이 교란은 텍스처의 위쪽으로 갈수록 강해져서 맨 위쪽에는 깜빡이는 효과를 낸다.
+    perturb = ((1.0f - input.tex.y) * distortionScale) + distortionBias;
+
+    // 불꽃 색상 텍스처를 샘플링하는데 사용될 왜곡 및 교란된 텍스처 좌표를 만든다.
+    noiseCoords.xy = (finalNoise.xy * perturb) + input.tex.xy;
+
+    // 불꽃 색상 텍스처와 알파 텍스처를 흩뜨려진 노이즈 좌표에 따라 샘플링하여 불꽃 효과를 만들어 낸다.
+    
+    //왜곡되고 교란된 텍스처 좌표를 이용하여 불꽃 텍스처에서 색상을 샘플링한다.
+    //clamp를 사용하는 스테이트를 사용하여 불꽃 텍스처가 래핑되는것을 방지한다.
+    fireColor = fireTexture.Sample(SampleType2, noiseCoords.xy);
+
+    //왜곡되고 교란된 텍스처 좌표를 이용하여 알파 텍스처에서 알파값을 샘플링한다.
+    //불꽃의 투명도를 지정하는 데 사용된다.
+    //wrap대신 clamp를 사용하는 스테이트를 사용해 불꽃 텍스처가 래핑되는것을 방지한다.
+    alphaColor = alphaTexture.Sample(SampleType2, noiseCoords.xy);
+
+    //알파값과 불꽃 색상을 조합하여 투명도가 불렌딩된 불꽃 효과를 얻는다.
+    //왜곡 및 교란된 알파 텍스처 값을 알파블렌딩에 사용한다.
+    fireColor.a = alphaColor;
+
+    return fireColor;
+}

@@ -16,6 +16,7 @@ public:
 	~MatrixClass();
 
 	D3DXMATRIX GetTranslationMatrix();
+	D3DXMATRIX GetRotationMatrix();
 	D3DXMATRIX GetRotationXMatrix();
 	D3DXMATRIX GetRotationYMatrix();
 	D3DXMATRIX GetRotationZMatrix();
@@ -32,12 +33,17 @@ public:
 	void RotationX(float);
 	void RotationY(float);
 	void RotationZ(float);
+	void RotationMultiply(D3DXMATRIX&, D3DXMATRIX&);
 	void Scale(float, float, float);
 
 	void Multiply(D3DXMATRIX&, D3DXMATRIX&);
 
 	public :
 	D3DXMATRIX TranslationMatrix;
+
+	D3DXMATRIX RotationXMatrix;
+	D3DXMATRIX RotationYMatrix;
+	D3DXMATRIX RotationZMatrix;
 	D3DXMATRIX RotationMatrix;
 	D3DXMATRIX ScaleMatrix;
 	D3DXMATRIX FinalMatrix;

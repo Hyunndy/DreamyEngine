@@ -22,16 +22,16 @@ void MatrixClass::Translation(float x, float y, float z)
 
 void MatrixClass::RotationX(float xAngle)
 {
-	D3DXMatrixRotationX(&RotationMatrix, xAngle);
+	D3DXMatrixRotationX(&RotationXMatrix, xAngle);
 }
 
 void MatrixClass::RotationY(float yAngle)
 {
-	D3DXMatrixRotationY(&RotationMatrix, yAngle);
+	D3DXMatrixRotationY(&RotationYMatrix, yAngle);
 }
 void MatrixClass::RotationZ(float zAngle)
 {
-	D3DXMatrixRotationZ(&RotationMatrix, zAngle);
+	D3DXMatrixRotationZ(&RotationZMatrix, zAngle);
 }
 
 void MatrixClass::Scale(float x, float y, float z)
@@ -44,6 +44,11 @@ void MatrixClass::Multiply(D3DXMATRIX& firstMatrix, D3DXMATRIX& secondMatrix)
 	D3DXMatrixMultiply(&FinalMatrix, &firstMatrix, &secondMatrix);
 }
 
+void MatrixClass::RotationMultiply(D3DXMATRIX& firstMatrix, D3DXMATRIX& secondMatrix)
+{
+	D3DXMatrixMultiply(&RotationMatrix, &firstMatrix, &secondMatrix);
+}
+
 D3DXMATRIX MatrixClass::GetTranslationMatrix()
 {
 	return TranslationMatrix;
@@ -51,17 +56,17 @@ D3DXMATRIX MatrixClass::GetTranslationMatrix()
 
 D3DXMATRIX MatrixClass::GetRotationXMatrix()
 {
-	return RotationMatrix;
+	return RotationXMatrix;
 }
 
 D3DXMATRIX MatrixClass::GetRotationYMatrix()
 {
-	return RotationMatrix;
+	return RotationYMatrix;
 }
 
 D3DXMATRIX MatrixClass::GetRotationZMatrix()
 {
-	return RotationMatrix;
+	return RotationZMatrix;
 }
 
 D3DXMATRIX MatrixClass::GetScailingMatrix()
@@ -72,4 +77,9 @@ D3DXMATRIX MatrixClass::GetScailingMatrix()
 D3DXMATRIX MatrixClass::GetFinalMatrix()
 {
 	return FinalMatrix;
+}
+
+D3DXMATRIX MatrixClass::GetRotationMatrix()
+{
+	return RotationMatrix;
 }

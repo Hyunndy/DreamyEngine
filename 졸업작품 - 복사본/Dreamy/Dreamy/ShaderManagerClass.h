@@ -23,6 +23,7 @@ using namespace std;
 #include "ReflectionShaderClass.h"
 #include "WaterShaderClass.h"
 #include "WaterReflectionShaderClass.h"
+#include "FireShaderClass.h"
 
 class ShaderManagerClass
 {
@@ -70,6 +71,9 @@ public:
 	bool RenderCloudShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float, float,
 		float, float);
 
+	bool RenderFireShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
+		float, D3DXVECTOR3, D3DXVECTOR3, D3DXVECTOR2, D3DXVECTOR2, D3DXVECTOR2, float, float);
+
 private:
 	ColorShaderClass* m_ColorShader = nullptr;
 	TextureShaderClass* m_TextureShader = nullptr;
@@ -87,6 +91,7 @@ private:
 	RefractionShaderClass* m_RefractionShader = nullptr;
 	WaterShaderClass* m_WaterShader = nullptr;
 	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
+	FireShaderClass* m_FireShader = nullptr;
 
 
 };

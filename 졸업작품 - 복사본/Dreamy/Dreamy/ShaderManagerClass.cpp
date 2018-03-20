@@ -19,6 +19,7 @@ ShaderManagerClass::ShaderManagerClass()
 	m_ColorShader = 0;
 	m_SkydomeShader = 0;
 	m_CloudShader = 0;
+	m_FireShader = 0;
 
 }
 
@@ -146,6 +147,12 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 	m_CloudShader->Initialize(device, hwnd);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the Skydomeshader object.", L"Error", MB_OK); return false; }
 
+	m_FireShader = new FireShaderClass;
+	if (!m_FireShader) { return true; }
+
+	m_FireShader->Initialize(device, hwnd);
+	if(!result){ MessageBox(hwnd, L"Could not initialize the FireShader object.", L"Error", MB_OK); return false; }
+
 	return true;
 }
 
@@ -154,6 +161,7 @@ void ShaderManagerClass::Shutdown()
 {
 
 	if (m_ColorShader) { m_ColorShader->Shutdown(); delete m_ColorShader; m_ColorShader = 0; }
+	if (m_FireShader) { m_FireShader->Shutdown(); delete m_FireShader; m_FireShader = 0; }
 	// 라이트 쉐이더 객체를 해제합니다.
 	if (m_LightShader) {m_LightShader->Shutdown();delete m_LightShader;m_LightShader = 0;}
 	if (m_RefractionShader) { m_RefractionShader->Shutdown(); delete m_RefractionShader; m_RefractionShader = 0; }
@@ -286,4 +294,12 @@ bool ShaderManagerClass::RenderWaterReflectionShader(ID3D11DeviceContext* device
 	D3DXVECTOR4 lightDiffuseColor, D3DXVECTOR3 lightDirection, float colorTextureBrightness, D3DXVECTOR4 clipPlane)
 {
 	return m_WaterReflectionShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, colorTexture, normalTexture, lightDiffuseColor, lightDirection, colorTextureBrightness, clipPlane);
+}
+
+bool ShaderManagerClass::RenderFireShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* fireTexture, ID3D11ShaderResourceView* noiseTexture,
+	ID3D11ShaderResourceView* alphaTexture, float frameTime, D3DXVECTOR3 scrollSpeeds, D3DXVECTOR3 scales, D3DXVECTOR2 distortion1,
+	D3DXVECTOR2 distortion2, D3DXVECTOR2 distortion3, float distortionScale, float distortionBias)
+{
+	return m_FireShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 }

@@ -293,6 +293,21 @@ ID3D11ShaderResourceView* TextureClass::GetTexture()
 	return m_texture;
 }
 
+ID3D11ShaderResourceView* TextureClass::GetTripleTexture1()
+{
+	return m_tripletexture[0];
+}
+
+ID3D11ShaderResourceView* TextureClass::GetTripleTexture2()
+{
+	return m_tripletexture[1];
+}
+
+ID3D11ShaderResourceView* TextureClass::GetTripleTexture3()
+{
+	return m_tripletexture[2];
+}
+
 ID3D11ShaderResourceView** TextureClass::GetMultiTextureArray()
 {
 	return m_multitexture;

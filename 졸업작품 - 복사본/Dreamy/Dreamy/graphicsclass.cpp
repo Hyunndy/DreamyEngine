@@ -56,6 +56,11 @@ GraphicsClass::GraphicsClass()
 	m_WaterTerrain = 0;
 	m_WaterTerrainShader = 0;
 
+	//불
+	m_Fire_Effect = 0;
+	frameTime = 0.0f;
+
+
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -189,8 +194,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Model_Cube->InitializeTriple(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/dirt01.dds", L"../Dreamy/stone01.dds", L"../Dreamy/alpha01.dds");
 	if (!result) { MessageBox(hwnd, L"Could not m_Model_Cube1 object", L"Error", MB_OK); return false; }
 	
-	
-	
+
 	m_Model_Cube3 = new ModelClass;
 	
 	result = m_Model_Cube3->InitializeSpecMap(m_D3D->GetDevice(), "../Dreamy/cube.txt", L"../Dreamy/stone02.dds", L"../Dreamy/bump02.dds", L"../Dreamy/spec02.dds");
@@ -205,6 +209,12 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//
 	//result = m_Model_Mirror->Initialize(m_D3D->GetDevice(), "../Dreamy/floor.txt", L"../Dreamy/blue01.dds");
 	//if (!result) { MessageBox(hwnd, L"Could not initialize Mirror object", L"Error", MB_OK); return false; }
+
+	m_Fire_Effect = new ModelClass;
+
+	result = m_Fire_Effect->InitializeTriple(m_D3D->GetDevice(), "../Dreamy/Data/square.txt", L"../Dreamy/Data/fire01.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	if (!result) { MessageBox(hwnd, L"Could not initialize fire effect object", L"Error", MB_OK); return false; }
+
 
 	//-------------------------------------------------------------------------------------
 
@@ -230,12 +240,6 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_TerrainShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result) { MessageBox(hwnd, L"Could not initialize TerrainShader object", L"Error", MB_OK); return false; }
-	
-	//m_QuadTree = new QuadtreeClass;
-	//if (!m_QuadTree) { return false; }
-	//
-	//result = m_QuadTree->Initialize(m_Terrain, m_D3D->GetDevice());
-	//if (!result) { MessageBox(hwnd, L"Could not initialize QuadTree object", L"Error", MB_OK); return false; }
 
 	m_Sky = new SkyClass;
 	if (!m_Sky) { return false; }
@@ -252,47 +256,20 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//-------------------------------------------------------------------------------------
 	// Create the refraction render to texture object.
 	m_RefractionTexture = new RTTTextureClass;
-	if (!m_RefractionTexture)
-	{
-		return false;
-	}
+	if (!m_RefractionTexture) {return false;}
 
 	// Initialize the refraction render to texture object.
 	result = m_RefractionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK);
-		return false;
-	}
+	if (!result){ MessageBox(hwnd, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK); return false; }
 
-	//// Create the reflection render to texture object.
-	//m_ReflectionTexture = new RTTTextureClass;
-	//if (!m_ReflectionTexture)
-	//{
-	//	return false;
-	//}
-	//
-	//// Initialize the reflection render to texture object.
-	//result = m_ReflectionTexture->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize the reflection render to texture object.", L"Error", MB_OK);
-	//	return false;
-	//}
 	// Create the water object.
 	m_Water = new WaterClass;
-	if (!m_Water)
-	{
-		return false;
-	}
+	if (!m_Water) {return false;}
 
 	// Initialize the water object.
 	result = m_Water->Initialize(m_D3D->GetDevice(), L"../Dreamy/Data/waternormal.dds", 33.0f, 100.0f);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK);
-		return false;
-	}
+	if (!result) { MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK); return false;}
+
 	m_WaterTerrain = new TerrainClass;
 	if (!m_WaterTerrain) { return false; }
 
@@ -399,7 +376,7 @@ void GraphicsClass::Shutdown()
 	if (m_Sky) { m_Sky->Shutdown(); delete m_Sky; m_Sky = 0; }
 	if (m_Model_CircleList) { m_Model_CircleList->Shutdown(); delete m_Model_CircleList; m_Model_CircleList = 0; }
 	if (m_Model_Cube) { m_Model_Cube->Shutdown(); delete m_Model_Cube; m_Model_Cube = 0; }
-
+	if (m_Fire_Effect) { m_Fire_Effect->Shutdown(); delete m_Fire_Effect; m_Fire_Effect = 0; }
 	if (m_Model_Cube3) { m_Model_Cube3->Shutdown(); delete m_Model_Cube3; m_Model_Cube3 = 0; }
 	if (m_Model_Mirror) { m_Model_Mirror->Shutdown(); delete m_Model_Mirror; m_Model_Mirror = 0; }
 	if (m_Light)	{ delete m_Light; m_Light = 0; }
@@ -461,8 +438,6 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	//캐릭터 위치 초기화
 	CharacterPos.x = pos.x;
 	CharacterPos.z = pos.z+5.5f;
-
-
 
 	//캐릭터 회전 초기화
 	CharacterRot = D3DXVECTOR3(rot.x, rot.y, rot.z);
@@ -555,10 +530,10 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXVECTOR3 cameraPosition;
 
 
-	D3DXMATRIX TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix, Plane2worldMatrix, CircleworldMatrix, Cube1worldMatrix, Cube2worldMatrix, MirrorworldMatrix;
+	D3DXMATRIX TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix,  MirrorworldMatrix;
 	D3DXMATRIX CrossHairworldMatrix;
 	D3DXMATRIX FBXworldMatrix, FBXRotationMatrix;
-	D3DXMATRIX TranslationMatrix, TranslationMatrix2, Cube3RotationMatrix;
+	D3DXMATRIX  TranslationMatrix2, Cube3RotationMatrix;
 	D3DXMATRIX viewMatrix, projectionMatrix, orthoMatrix, reflectionMatrix,WaterreflectionViewMatrix;
 	D3DXMATRIX ScaleMatrix;
 
@@ -570,14 +545,16 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	bool Circlerender, result;
 
 	// 텍스처 이동
+	//-------------------------------------------------------------------------------------
 	static float textureTranslation = 0.0f;
 	textureTranslation += 0.003f;
 	if (textureTranslation > 1.0f) { textureTranslation -= 1.0f; }
-
-	//RTT시작
 	//-------------------------------------------------------------------------------------
-	//result = RenderToTexture(); //원하는 씬을 텍스처에 그린다.
-	//if (!result) { return false; }
+
+	// 이펙트 변수 설정
+	//-------------------------------------------------------------------------------------
+	SetEffectVariable();
+	//-------------------------------------------------------------------------------------
 
 	//안개 객체 초기화
 	//fogEnd가 멀어질수록 밝아짐
@@ -610,33 +587,19 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_D3D->GetWorldMatrix(WaterworldMatrix);
 	m_D3D->GetWorldMatrix(SkyworldMatrix);
 	m_D3D->GetWorldMatrix(PlaneworldMatrix);
-	m_D3D->GetWorldMatrix(Plane2worldMatrix);
-	m_D3D->GetWorldMatrix(CircleworldMatrix);
-	m_D3D->GetWorldMatrix(Cube1worldMatrix);
-	m_D3D->GetWorldMatrix(Cube2worldMatrix);
-
 	m_D3D->GetWorldMatrix(FBXworldMatrix);
 	m_D3D->GetWorldMatrix(FBXRotationMatrix);
 	m_D3D->GetWorldMatrix(MirrorworldMatrix);
 	m_D3D->GetWorldMatrix(CrossHairworldMatrix);
-
-	m_D3D->GetWorldMatrix(TranslationMatrix);
 	m_D3D->GetWorldMatrix(TranslationMatrix2);
-
 	m_D3D->GetWorldMatrix(TextworldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-
 	m_D3D->GetOrthoMatrix(orthoMatrix);
-
-
-
 
 	//기본 행렬 변환
 	//-------------------------------------------------------------------------------------
 	// 스케일링->회전->이동 순으로 합쳐야 한다.
 	D3DXMatrixTranslation(&SkyworldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-
-
 
 
 	// FBX모델
@@ -721,13 +684,16 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//구 리스트 변수들 초기화
 	//-------------------------------------------------------------------------------------
 	CircleCount = m_Model_CircleList->GetModelCount();
-	m_D3D->GetWorldMatrix(ScaleMatrix);
-	D3DXMatrixScaling(&ScaleMatrix, 1.5f, 1.5f, 1.5f);
 	//-------------------------------------------------------------------------------------
 
 	// Scene 출력 모델
 	//-------------------------------------------------------------------------------------
+
 	//프러스텀 컬링 들어간 구 모델 리스트
+	D3DXMATRIX CircleWorldMatrix;
+	m_D3D->GetWorldMatrix(CircleWorldMatrix);
+	m_Model_Circle->Scale(1.5f, 1.5f, 1.5f);
+
 	for (Circleindex = 0; Circleindex < CircleCount; Circleindex++)
 	{
 		//리스트에 있는것들 차례대로 데이터를 읽어온다.
@@ -742,43 +708,51 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (Circlerender)
 		{
 			//리스트에서 정의된대로 위치 변환
-			D3DXMatrixTranslation(&CircleworldMatrix, positionX + 580.0f, positionY + 20.0f, positionZ + 295.0f);
-			D3DXMatrixMultiply(&CircleworldMatrix, &ScaleMatrix, &CircleworldMatrix);
+			m_Model_Circle->Translation(positionX + 580.0f, positionY + 20.0f, positionZ + 295.0f);
+			m_Model_Circle->Multiply(m_Model_Circle->GetScailingMatrix(), m_Model_Circle->GetTranslationMatrix());
+			D3DXMatrixMultiply(&CircleWorldMatrix, &m_Model_Circle->GetFinalMatrix(), &CircleWorldMatrix);
 
 			//3D모델(구체) 렌더링
 			m_Model_Circle->Render(m_D3D->GetDeviceContext());
 
 			//셰이더 렌더링
-			result = m_Shader->RenderLightShader(m_D3D->GetDeviceContext(), m_Model_Circle->GetIndexCount(), CircleworldMatrix, viewMatrix, projectionMatrix
+			result = m_Shader->RenderLightShader(m_D3D->GetDeviceContext(), m_Model_Circle->GetIndexCount(), CircleWorldMatrix, viewMatrix, projectionMatrix
 				, m_Model_Circle->GetTexture(),m_Light->GetDirection(), m_Light->GetAmbientColor(), color
 				, m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 			if (!result) { return false; }
 
 			//구가 각자 다른 위치를 가져야 하니까 reset시킨다!
-			m_D3D->GetWorldMatrix(CircleworldMatrix);
+			m_D3D->GetWorldMatrix(CircleWorldMatrix);
 			
 		}
 	}
-	/////////////////////////////////////////////////////////////////////////////////////////
+
+	//큐브1 알파맵
+	D3DXMATRIX Cube1WorldMatrix;
+	m_D3D->GetWorldMatrix(Cube1WorldMatrix);
+
+	m_Model_Cube->Translation(626.0f, 15.0f, 363.0f);
+	m_Model_Cube->Multiply(m_Model_Cube3->GetRotationYMatrix(), m_Model_Cube->GetTranslationMatrix());
+	m_Model_Cube->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Cube->GetFinalMatrix());
+	D3DXMatrixMultiply(&Cube1WorldMatrix, &m_Model_Cube->GetFinalMatrix(), &Cube1WorldMatrix);
+
+	m_Model_Cube->Render(m_D3D->GetDeviceContext());
+
+	result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1WorldMatrix, viewMatrix, projectionMatrix
+		, m_Model_Cube->GetTripleTextureArray());
+	if (!result) { return false; }
+
+
+	//큐브3 범프맵+스페큘러맵+텍스처이동
 	D3DXMATRIX Cube3WorldMatrix;
 	m_D3D->GetWorldMatrix(Cube3WorldMatrix);
-
 	m_Model_Cube3->Translation(600.0f, 15.0f, 338.0f);
 	m_Model_Cube3->RotationY(-40.0f);
 	m_Model_Cube3->Scale(7.0f, 7.0f, 7.0f);
+	m_Model_Cube3->Multiply(m_Model_Cube3->GetRotationYMatrix(), m_Model_Cube3->GetTranslationMatrix());
+	m_Model_Cube3->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Cube3->GetFinalMatrix());
+	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->GetFinalMatrix(), &Cube3WorldMatrix);
 
-	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->GetRotationYMatrix(), &m_Model_Cube3->GetTranslationMatrix());
-	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->ScaleMatrix, &Cube3WorldMatrix);
-	/////////////////////////////////////////////////////////////////////////////////////////
-	//큐브3 텍스처이동하는애
-	//D3DXMatrixTranslation(&Cube3worldMatrix, 600.0f, 15.0f, 338.0f);
-	//D3DXMatrixRotationY(&Cube3RotationMatrix, -40.0f);
-	D3DXMatrixScaling(&ScaleMatrix, 7.0f, 7.0f, 7.0f);
-	//
-	//D3DXMatrixMultiply(&Cube3worldMatrix, &Cube3RotationMatrix, &Cube3worldMatrix);
-	//D3DXMatrixMultiply(&Cube3worldMatrix, &ScaleMatrix, &Cube3worldMatrix);
-
-	//큐브3 텍스처 이동+spec맵	
 	m_Model_Cube3->Render(m_D3D->GetDeviceContext());
 	
 	result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3WorldMatrix, viewMatrix, projectionMatrix
@@ -787,33 +761,20 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	if (!result) { return false; }	
 
 
-
-	////큐브1 노말맵(범프맵)
-	//D3DXMatrixTranslation(&Cube1worldMatrix, 626.0f, 15.0f, 363.0f);
-	//D3DXMatrixMultiply(&Cube1worldMatrix, &ScaleMatrix, &Cube1worldMatrix);
-	//D3DXMatrixMultiply(&Cube1worldMatrix, &Cube3RotationMatrix, &Cube1worldMatrix);
-	//
-	////큐브1 노말맵(범프맵)
-	//m_Model_Cube->Render(m_D3D->GetDeviceContext());
-	//
-	//result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
-	//	, m_Model_Cube->GetTripleTextureArray());
-	//if (!result) { return false; }
-	////result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1worldMatrix, viewMatrix, projectionMatrix
-	////	, m_Model_Cube->GetTexture());
-
 	//평면2 투명
-	m_D3D->GetWorldMatrix(TranslationMatrix);
-	D3DXMatrixRotationX(&Plane2worldMatrix, D3DXToRadian(90));
-	//D3DXMatrixMultiply(&Plane2worldMatrix, &Plane2worldMatrix, &Cube3RotationMatrix);
-	D3DXMATRIX Plane2RotationMatrix;
-	D3DXMatrixRotationY(&Plane2RotationMatrix, D3DXToRadian(-45));
-	D3DXMatrixMultiply(&Plane2worldMatrix, &Plane2worldMatrix, &Plane2RotationMatrix);
-	D3DXMatrixTranslation(&TranslationMatrix, 633.0f, 30.0f, 334.0f);
-	D3DXMatrixMultiply(&TranslationMatrix, &ScaleMatrix, &TranslationMatrix);
-	D3DXMatrixMultiply(&TranslationMatrix, &Plane2worldMatrix, &TranslationMatrix);
-	
-	
+	D3DXMATRIX Plane2worldMatrix;
+	m_D3D->GetWorldMatrix(Plane2worldMatrix);
+
+	m_Model_Plane2->RotationX(D3DXToRadian(90));
+	m_Model_Plane2->RotationY(D3DXToRadian(-45));
+	m_Model_Plane2->RotationMultiply(m_Model_Plane2->GetRotationXMatrix(), m_Model_Plane2->GetRotationYMatrix());
+	m_Model_Plane2->Translation(633.0f, 30.0f, 334.0f);
+
+	m_Model_Plane2->Multiply(m_Model_Plane2->GetRotationMatrix(), m_Model_Plane2->GetTranslationMatrix());
+	m_Model_Plane2->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Plane2->GetFinalMatrix());
+	D3DXMatrixMultiply(&Plane2worldMatrix, &m_Model_Plane2->GetFinalMatrix(), &Plane2worldMatrix);
+
+
 	//평면2 투명
 	if (sibal == true)
 	{
@@ -821,12 +782,45 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 		m_Model_Plane2->Render(m_D3D->GetDeviceContext());
 
-		result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), TranslationMatrix, viewMatrix, projectionMatrix
+		result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), Plane2worldMatrix, viewMatrix, projectionMatrix
 			, m_Model_Plane2->GetTexture(), 0.7f);
 		if (!result) { return false; }
 
 		m_D3D->TurnOffAlphaBlending();
 	}
+
+	//불꽃 이펙트
+	//-------------------------------------------------------------------------------------
+	D3DXVECTOR3 firePosition;
+	float fireangle;
+	float firerotation;
+
+	firePosition = { 591.0f, 50.0f, 372.0f };
+	fireangle = atan2(firePosition.x - cameraPosition.x, firePosition.z - cameraPosition.z) * (180.0 / D3DX_PI);
+	firerotation = (float)fireangle * 0.0174532925f;
+
+
+
+	m_D3D->TurnOnAlphaBlending();
+
+	D3DXMATRIX FireWorldMatrix;
+	m_D3D->GetWorldMatrix(FireWorldMatrix);
+	m_Fire_Effect->Translation(591.0f, 50.0f, 372.0f);
+	m_Fire_Effect->RotationY(firerotation);
+	m_Fire_Effect->Scale(5.0f, 5.0f, 5.0f);
+	m_Fire_Effect->Multiply(m_Fire_Effect->GetRotationYMatrix(), m_Fire_Effect->GetTranslationMatrix());
+	m_Fire_Effect->Multiply(m_Fire_Effect->GetScailingMatrix(), m_Fire_Effect->GetFinalMatrix());
+	D3DXMatrixMultiply(&FireWorldMatrix, &m_Fire_Effect->GetFinalMatrix(), &FireWorldMatrix);
+
+	m_Fire_Effect->Render(m_D3D->GetDeviceContext());
+
+	result = m_Shader->RenderFireShader(m_D3D->GetDeviceContext(), m_Fire_Effect->GetIndexCount(), FireWorldMatrix, viewMatrix,
+		projectionMatrix, m_Fire_Effect->GetTripleTexture1(), m_Fire_Effect->GetTripleTexture2(), m_Fire_Effect->GetTripleTexture3(),
+		frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+	if (!result) { return false; }
+
+	m_D3D->TurnOffAlphaBlending();
+
 
 	//-------------------------------------------------------------------------------------
 	//2D이미지, 2d셰이더 렌더링, Text, Z버퍼 ON/OFF, 알파블렌딩, RTT미니맵
@@ -839,20 +833,18 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	// 마우스 포인터위치 잡을 수 있게
 	result = m_Title->SetMousePosition(MousePosX, MousePosY, m_D3D->GetDeviceContext());
 	result = m_Title->SetPosition(cameraPosition.x, cameraPosition.y, cameraPosition.z, m_D3D->GetDeviceContext());
-
 	result = m_Title->Render(m_D3D->GetDeviceContext(), TextworldMatrix, orthoMatrix);
+	if (!result) { return false; }
+
+	// 크로스헤어 이미지.
+	result = m_CrossHair->Render(m_D3D->GetDeviceContext(), 0, 0);
+	if (!result) { return false; }
+	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_CrossHair->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_CrossHair->GetTexture());
 	if (!result) { return false; }
 
 	// 마우스 커서
 	result = m_Cursor->Render(m_D3D->GetDeviceContext(), MousePosX, MousePosY);  if (!result) { return false; }
 	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Cursor->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_Cursor->GetTexture());
-
-	// 크로스헤어 이미지.
-	result = m_CrossHair->Render(m_D3D->GetDeviceContext(), 0, 0);
-	if (!result) { return false; }
-
-	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_CrossHair->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_CrossHair->GetTexture());
-	if (!result) { return false; }
 
 
 	m_D3D->TurnOffAlphaBlending();
@@ -871,11 +863,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	// 스케일링->회전->이동 순으로 합쳐야 한다.
 
-	//큐브1
-	D3DXMatrixRotationY(&Cube1worldMatrix, 0.6f);
-	D3DXMatrixTranslation(&TranslationMatrix, -3, 4.5, -8);
-	D3DXMatrixMultiply(&Cube1worldMatrix, &Cube1worldMatrix, &TranslationMatrix);
-
 
 	//거울
 	D3DXMatrixTranslation(&MirrorworldMatrix, -2.7, 3.8, -8.9);
@@ -886,14 +873,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	//기본 행렬 변환, 3D모델, 셰이더 렌더링, 프러스텀 컬링
 	//-------------------------------------------------------------------------------------
-
-	//평면 알파맵
-	m_Model_Plane->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Plane->GetIndexCount(), PlaneworldMatrix, viewMatrix, projectionMatrix
-		, m_Model_Plane->GetTripleTextureArray());
-	if (!result) { return false; }
-
 
 	//거울
 	m_Model_Mirror->Render(m_D3D->GetDeviceContext());
@@ -1172,110 +1151,6 @@ bool GraphicsClass::RenderMainScene()
 	return true;
 }
 
-/*-----------------------------------------------------------------------------------------------
-이름: TestInterSection()
-용도:
-- 교차점 검사를 위한 벡터를 형성하고 필요한 교차 검사(원, 큐브)유형을 호출하는 일반 교차로 검사를 수행하는 함수.
-- 2D마우스 좌표를 가져와서 3D상의 벡터로 변환한다.
-- 이 벡터를 Picking ray라고 부른다. 이 picking ray는 원점과 방향을 가지며, 이 벡터와 충돌하는 3d개체를 찾아야 한다.
-- 월드->뷰->프로젝션을 역순으로 하면 된다.
-- 2D지점을 가져와서 프로젝션->뷰로 3D지점으로 변환한다.
-
-- 역순으로 하는 방법
-1) 마우스 좌표를 가져와서 양쪽 축에서 [-1,+1]범위로 이동하여 시작한다.
-2) 프로젝션 행렬을 사용해 화면 측면으로 나눈다.
-3) 이 값을 이용해서 뷰 공간에서 방향 벡터를 얻기 위해 inverse view매트릭스에 곱한다(반대니까)
-4) 뷰 공간에서 벡터 원점을 카메라의 위치로 설정할 수 있다.
-
-5) 이 원점+방향 벡터로 최종 프로세스를 완료할 수 있다.
-6) 마지막으로 세계 행렬을 구해 구의 위치로 변환한다. 그것을 역전해서 곱해준다.
-7) 프로젝션->뷰(역순)->월드(역순)를 역순으로 해줬으면 방향을 정규화 한다.
--------------------------------------------------------------------------------------------------*/
-//void GraphicsClass::TestIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
-//{
-//	float pointX, pointY;
-//	D3DXMATRIX projectionMatrix;
-//	D3DXMATRIX viewMatrix, inverseViewMatrix;
-//	D3DXMATRIX worldMatrix, inverseWorldMatrix;
-//	D3DXMATRIX translateMatrix;
-//
-//	D3DXVECTOR3 direction, origin;
-//	D3DXVECTOR3 rayOrigin, rayDirection;
-//
-//	bool intersect, result;
-//
-//	// 마우스 좌표를 [-1,+1]범위로 이동한다.
-//	pointX = ((2.0f * (float)mouseX) / (float)m_screenWidth) - 1.0f;
-//	pointY = (((2.0f * (float)mouseY) / (float)m_screenHeight) - 1.0f) * -1.0f;
-//
-//	// 투영 행렬을 사용해 좌표들을 뷰포트의 측면으로 나눈다???왜???
-//	m_D3D->GetProjectionMatrix(projectionMatrix);
-//	pointX = pointX / projectionMatrix._11;
-//	pointY = pointY / projectionMatrix._22;
-//	
-//	//뷰 매트릭스를 inverse시킨다.
-//	m_Camera->GetViewMatrix(viewMatrix);
-//	D3DXMatrixInverse(&inverseViewMatrix, NULL, &viewMatrix);
-//
-//	// inverseViewMatrix를 이용해서 Picking ray의 방향을 설정한다.
-//	direction.x = (pointX * inverseViewMatrix._11) + (pointY * inverseViewMatrix._21) + inverseViewMatrix._31;
-//	direction.y = (pointX * inverseViewMatrix._12) + (pointY * inverseViewMatrix._22) + inverseViewMatrix._32;
-//	direction.z = (pointX * inverseViewMatrix._13) + (pointY * inverseViewMatrix._23) + inverseViewMatrix._33;
-//
-//	// 카메라 포지션으로 picking ray의 원점을 정한다.
-//	origin = m_Camera->GetPosition();
-//
-//	//구의 위치로 옮긴다고? 이걸? 음..?????
-//	m_D3D->GetWorldMatrix(worldMatrix);
-//	//D3DXMatrixTranslation(&translateMatrix, 800.0f, 450.0f, 0.0f);
-//	//D3DXMatrixTranslation(&translateMatrix, 600.0f, 15.0f, 340.0f);
-//	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &m_Model_Cube3->GetTranslationMatrix());
-//	
-//	// world행렬을 역순해준다.
-//	D3DXMatrixInverse(&inverseWorldMatrix, NULL, &worldMatrix);
-//
-//	// picking ray에 inverseWorld행렬을 곱해준다.
-//	D3DXVec3TransformCoord(&rayOrigin, &origin, &inverseWorldMatrix);
-//	D3DXVec3TransformNormal(&rayDirection, &direction, &inverseWorldMatrix);
-//
-//	// Normalize the ray direction.
-//	D3DXVec3Normalize(&rayDirection, &rayDirection);
-//	
-//
-//	intersect = RaySphereIntersect(rayOrigin, rayDirection, 10.0f);
-//
-//	if (intersect == true)
-//	{
-//		sibal = true;
-//	}
-//	else
-//		sibal = false;
-//
-//
-//	return;
-//}
-//
-//bool GraphicsClass::RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius)
-//{
-//	float a, b, c, discriminant;
-//
-//
-//	// Calculate the a, b, and c coefficients.
-//	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
-//	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
-//	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
-//
-//	// Find the discriminant.
-//	discriminant = (b * b) - (4 * a * c);
-//
-//	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
-//	if (discriminant < 0.0f)
-//	{
-//		return false;
-//	}
-//
-//	return true;
-//}
 
 void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
 {
@@ -1288,4 +1163,28 @@ void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth,
 	origin = m_Camera->GetPosition();
 
 	sibal = m_Model_Cube3->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, ProjectionMatrix, ViewMatrix, WorldMatrix, origin);
+}
+
+void GraphicsClass::SetEffectVariable()
+{
+	// 불꽃 이펙트
+	//-------------------------------------------------------------------------------------
+	frameTime += 0.01f;
+	if (frameTime > 1000.0f) { frameTime = 0.0f; }
+
+	// 세 노이즈 텍스쳐의 스크롤 속도를 설정합니다.
+	scrollSpeeds = D3DXVECTOR3(1.3f, 2.1f, 2.3f);
+	
+	// 세 크기값을 사용하여 세 가지의 다른 노이즈 옥타브 텍스쳐를 만듭니다.
+	scales = D3DXVECTOR3(1.0f, 2.0f, 3.0f);
+	
+	// 세 노이즈 텍스쳐의 서로 다른 세 개의 x, y 왜곡 인자를 설정합니다.
+	distortion1 = D3DXVECTOR2(0.1f, 0.2f);
+	distortion2 = D3DXVECTOR2(0.1f, 0.3f);
+	distortion3 = D3DXVECTOR2(0.1f, 0.1f);
+
+	// 텍스쳐 샘플링 좌표의 교란을 위한 크기 및 바이어스 값입니다.
+	distortionScale = 0.8f; 
+	distortionBias = 0.5f;
+
 }

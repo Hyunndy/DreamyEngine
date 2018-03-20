@@ -146,6 +146,9 @@ public:
 	
 	//셰이더에게 자신의 텍스처 자원을 전달하고 그리기 위한 GetTexure함수
 	ID3D11ShaderResourceView* GetTexture();
+	ID3D11ShaderResourceView* GetTripleTexture1();
+	ID3D11ShaderResourceView* GetTripleTexture2();
+	ID3D11ShaderResourceView* GetTripleTexture3();
 	ID3D11ShaderResourceView** GetMultiTextureArray();
 	ID3D11ShaderResourceView** GetTripleTextureArray();
 

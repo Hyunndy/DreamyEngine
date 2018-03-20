@@ -3,13 +3,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-// graphicsclass는 이 어플리키에션의 모든 그래픽 기능이 이 객체안에 캡슐화되어 있다.
-// 나중에 모든 그래픽 객체들을 담을것이다. -> 여기서 그래픽 객체들을 또 클래스로 묶으면..?
+
+/*
+이름: GraphicsClass
+용도: 
+- 이 App의 모든 그래픽 요소들이 캡슐화 되어 있다.
+- 빌보드(Billboarding)
+ *먼 거리에 있는 3D지형을 표시하기 위해 텍스처를 입힌 사각형을 사용하는것. 
+ *실시간 렌더링을 하기엔 그래픽 카드의 가용성이 딸리기 때문에, 가장 가까운 애들은 디테일한 폴리곤-멀리 있는 애들은 적은 폴리곤을 사용하는 빌보드가 될 수 있다.
+ *빌보드를 구현하는 방법들간의 차이점은 사각형이 어떻게 회전하는지에 따라 달려있다.
+ *이 App에선 유저의 위치에 따라 유저를 항상 마주보게 하는 방법을 사용한다.
+
+
+*/
+
 
 //////////////
 // INCLUDES //
 //////////////
 #pragma once
+
+#include <math.h>
 #include "D3DClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
@@ -25,6 +39,7 @@
 #include "SkyClass.h"
 #include "FBXModel.h"
 #include "WaterClass.h"
+
 
 
 
@@ -78,7 +93,8 @@ private:
 	bool RenderRunningScene(bool);
 	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
 	bool RenderReflectionToTexture(); // 호수 반사 텍스처
-
+	
+	void SetEffectVariable(); //이펙트 관련 변수 세팅
 
 private:
 	bool sibal = true;
@@ -95,7 +111,6 @@ private:
 	ModelClass* m_Model_Plane2;
 
 	ModelClass* m_Model_Cube;
-
 	ModelClass* m_Model_Cube3;
 
 	ModelClass* m_Model_Mirror;
@@ -111,7 +126,6 @@ private:
 	TextClass* m_Title;
 
 	FrustumClass* m_Frustum;
-
 
 	RTTTextureClass* m_RTTTexture;
 	
@@ -134,6 +148,14 @@ private:
 	TerrainClass* m_WaterTerrain;
 	TerrainShaderClass* m_WaterTerrainShader;
 
+	//이펙트
+	ModelClass* m_Fire_Effect;
+
+	//이펙트 관련 변수
+	D3DXVECTOR3 scrollSpeeds, scales;
+	D3DXVECTOR2 distortion1, distortion2, distortion3;
+	float distortionScale, distortionBias; 
+	float frameTime;
 
 
 };
