@@ -267,7 +267,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	if (!m_Water) {return false;}
 
 	// Initialize the water object.
-	result = m_Water->Initialize(m_D3D->GetDevice(), L"../Dreamy/Data/waternormal.dds", 33.0f, 100.0f);
+	result = m_Water->Initialize(m_D3D->GetDevice(), L"../Dreamy/Data/waternormal.dds", 28.0f, 70.0f);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK); return false;}
 
 	m_WaterTerrain = new TerrainClass;
@@ -484,7 +484,7 @@ bool GraphicsClass::Render( bool Pressed)
 	//result = RenderToTexture(); // 거울
 	//if (!result) { return false; }
 	
-	//호수의 굴절 텍스처
+	////호수의 굴절 텍스처
 	result = RenderRefractionToTexture(Pressed);
 	if (!result) { return false; }
 
@@ -669,7 +669,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_Camera->RenderWaterReflection(m_Water->GetWaterHeight());
 	m_Camera->GetWaterReflectionViewMatrix(WaterreflectionViewMatrix);
 	D3DXMATRIX WaterRotationMatrix;
-	D3DXMatrixTranslation(&WaterworldMatrix, 440.0f, m_Water->GetWaterHeight(), 750.0f);
+	D3DXMatrixTranslation(&WaterworldMatrix, 504.0f, m_Water->GetWaterHeight(), 562.0f);
 	D3DXMatrixRotationY(&WaterRotationMatrix, 70.0f);
 	D3DXMatrixMultiply(&WaterworldMatrix, &WaterRotationMatrix, &WaterworldMatrix);
 	m_Water->Render(m_D3D->GetDeviceContext());
