@@ -20,6 +20,7 @@ ShaderManagerClass::ShaderManagerClass()
 	m_SkydomeShader = 0;
 	m_CloudShader = 0;
 	m_FireShader = 0;
+	m_InstancingShader = 0;
 
 }
 
@@ -153,13 +154,19 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 	m_FireShader->Initialize(device, hwnd);
 	if(!result){ MessageBox(hwnd, L"Could not initialize the FireShader object.", L"Error", MB_OK); return false; }
 
+	m_InstancingShader = new InstancingShaderClass;
+	if (!m_InstancingShader) { return true;}
+
+	m_InstancingShader->Initialize(device, hwnd);
+	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
+
 	return true;
 }
 
 
 void ShaderManagerClass::Shutdown()
 {
-
+	if (m_InstancingShader) { m_InstancingShader->Shutdown(); delete m_InstancingShader; m_InstancingShader = 0; }
 	if (m_ColorShader) { m_ColorShader->Shutdown(); delete m_ColorShader; m_ColorShader = 0; }
 	if (m_FireShader) { m_FireShader->Shutdown(); delete m_FireShader; m_FireShader = 0; }
 	// 라이트 쉐이더 객체를 해제합니다.
@@ -280,11 +287,11 @@ bool ShaderManagerClass::RenderRefractionShader(ID3D11DeviceContext* deviceConte
 
 bool ShaderManagerClass::RenderWaterShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX reflectionMatrix, ID3D11ShaderResourceView* refractionTexture,
-	ID3D11ShaderResourceView* reflectionTexture, ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
+	/*ID3D11ShaderResourceView* reflectionTexture,*/ ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
 	D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale, D3DXVECTOR4 refractionTint,
 	D3DXVECTOR3 lightDirection, float specularShininess)
 {
-	return m_WaterShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture, reflectionTexture,
+	return m_WaterShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture,/* reflectionTexture,*/
 		normalTexture, cameraPosition, normalMapTiling, waterTranslation, reflectRefractScale, refractionTint, lightDirection,
 		specularShininess);
 }
@@ -302,4 +309,10 @@ bool ShaderManagerClass::RenderFireShader(ID3D11DeviceContext* deviceContext, in
 	D3DXVECTOR2 distortion2, D3DXVECTOR2 distortion3, float distortionScale, float distortionBias)
 {
 	return m_FireShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+}
+
+bool ShaderManagerClass::RenderInstancingShader(ID3D11DeviceContext* deviceContext, int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+{
+	return m_InstancingShader->Render(deviceContext, vertexCount, instanceCount, worldMatrix, viewMatrix, projectionMatrix, texture);
 }

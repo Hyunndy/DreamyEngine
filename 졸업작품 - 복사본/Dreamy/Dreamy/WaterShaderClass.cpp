@@ -40,13 +40,13 @@ void WaterShaderClass::Shutdown()
 
 bool WaterShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX reflectionMatrix, ID3D11ShaderResourceView* refractionTexture,
-	ID3D11ShaderResourceView* reflectionTexture, ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
+	/*ID3D11ShaderResourceView* reflectionTexture,*/ ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
 	D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale, D3DXVECTOR4 refractionTint,
 	D3DXVECTOR3 lightDirection, float specularShininess)
 {
 	bool result; 
 	
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture, reflectionTexture,
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture,/* reflectionTexture,*/
 		normalTexture, cameraPosition, normalMapTiling, waterTranslation, reflectRefractScale, refractionTint, lightDirection,
 		specularShininess);
 	if(!result) { return false; }
@@ -61,7 +61,7 @@ bool WaterShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 
 bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
 	D3DXMATRIX reflectionMatrix, ID3D11ShaderResourceView* refractionTexture,
-	ID3D11ShaderResourceView* reflectionTexture, ID3D11ShaderResourceView* normalTexture,
+	/*ID3D11ShaderResourceView* reflectionTexture,*/ID3D11ShaderResourceView* normalTexture,
 	D3DXVECTOR3 cameraPosition, D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale,
 	D3DXVECTOR4 refractionTint, D3DXVECTOR3 lightDirection, float specularShininess)
 {
@@ -127,8 +127,8 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 
 	// water.ps의 맨 위에 써있는 Texture들에 실제 텍스처들을 넣어준다.
 	deviceContext->PSSetShaderResources(0, 1, &refractionTexture);
-	deviceContext->PSSetShaderResources(1, 1, &reflectionTexture);
-	deviceContext->PSSetShaderResources(2, 1, &normalTexture);
+	//deviceContext->PSSetShaderResources(1, 1, &reflectionTexture);
+	deviceContext->PSSetShaderResources(1, 1, &normalTexture);
 
 	result = deviceContext->Map(m_waterBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }

@@ -180,8 +180,17 @@
     <ClCompile Include="WaterShaderClass.cpp">
       <Filter>Shader\Source</Filter>
     </ClCompile>
-    <ClCompile Include="FireShaderClass.cpp">
+    <ClCompile Include="MinimapClass.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FireShaderClass.cpp">
+      <Filter>Shader\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -329,8 +338,17 @@
     <ClInclude Include="WaterShaderClass.h">
       <Filter>Shader\Header</Filter>
     </ClInclude>
-    <ClInclude Include="FireShaderClass.h">
+    <ClInclude Include="MinimapClass.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="FireShaderClass.h">
+      <Filter>Shader\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

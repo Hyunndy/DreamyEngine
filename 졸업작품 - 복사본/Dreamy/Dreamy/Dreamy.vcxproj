@@ -167,6 +167,8 @@
     <ClCompile Include="FpsClass.cpp" />
     <ClCompile Include="FrustumClass.cpp" />
     <ClCompile Include="ImageClass.cpp" />
+    <ClCompile Include="InstancingClass.cpp" />
+    <ClCompile Include="InstancingShaderClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="LightShaderClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
@@ -174,6 +176,7 @@
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MatrixClass.cpp" />
+    <ClCompile Include="MinimapClass.cpp" />
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="ModelManagerClass.cpp" />
     <ClCompile Include="MoveClass.cpp" />
@@ -218,12 +221,15 @@
     <ClInclude Include="FpsClass.h" />
     <ClInclude Include="FrustumClass.h" />
     <ClInclude Include="ImageClass.h" />
+    <ClInclude Include="InstancingClass.h" />
+    <ClInclude Include="InstancingShaderClass.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="LightShaderClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="MatrixClass.h" />
+    <ClInclude Include="MinimapClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="ModelManagerClass.h" />
     <ClInclude Include="MoveClass.h" />

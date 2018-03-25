@@ -24,6 +24,7 @@ using namespace std;
 #include "WaterShaderClass.h"
 #include "WaterReflectionShaderClass.h"
 #include "FireShaderClass.h"
+#include "InstancingShaderClass.h"
 
 class ShaderManagerClass
 {
@@ -61,7 +62,7 @@ public:
 	bool RenderRefractionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR4);
 
 	bool RenderWaterShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
-		ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR2, float, float, D3DXVECTOR4, D3DXVECTOR3, float);
+		/*ID3D11ShaderResourceView*,*/ D3DXVECTOR3, D3DXVECTOR2, float, float, D3DXVECTOR4, D3DXVECTOR3, float);
 
 	bool RenderWaterReflectionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR4,
 		D3DXVECTOR3, float, D3DXVECTOR4);
@@ -74,9 +75,13 @@ public:
 	bool RenderFireShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
 		float, D3DXVECTOR3, D3DXVECTOR3, D3DXVECTOR2, D3DXVECTOR2, D3DXVECTOR2, float, float);
 
+	bool RenderInstancingShader(ID3D11DeviceContext*, int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
+
+
+	TextureShaderClass* m_TextureShader = nullptr;
+
 private:
 	ColorShaderClass* m_ColorShader = nullptr;
-	TextureShaderClass* m_TextureShader = nullptr;
 	LightShaderClass* m_LightShader = nullptr;
 	MultiTextureShaderClass* m_MultiTextureShader = nullptr;
 	AlphaMapShaderClass* m_AlphaMapShader = nullptr;
@@ -92,6 +97,7 @@ private:
 	WaterShaderClass* m_WaterShader = nullptr;
 	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
 	FireShaderClass* m_FireShader = nullptr;
+	InstancingShaderClass* m_InstancingShader = nullptr;
 
 
 };

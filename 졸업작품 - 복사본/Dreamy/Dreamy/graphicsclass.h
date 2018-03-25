@@ -39,8 +39,8 @@
 #include "SkyClass.h"
 #include "FBXModel.h"
 #include "WaterClass.h"
-
-
+#include "MinimapClass.h"
+#include "InstancingClass.h"
 
 
 
@@ -49,7 +49,7 @@
 /////////////
 const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
-const bool VSYNC_ENABLED = false;
+const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
@@ -69,7 +69,7 @@ public:
 
 	void Shutdown();
 	bool Frame(int, int, float, D3DXVECTOR3, D3DXVECTOR3, int, int);// + 카메라 회전
-	bool Render(bool);
+	bool Render(bool, int);
 	void CheckIntersection(int, int, int, int);
 
 	bool RenderMainScene();
@@ -95,6 +95,7 @@ private:
 	bool RenderReflectionToTexture(); // 호수 반사 텍스처
 	
 	void SetEffectVariable(); //이펙트 관련 변수 세팅
+	float CalculateBillboarding(D3DXVECTOR3,D3DXVECTOR3);
 
 private:
 	bool sibal = true;
@@ -156,7 +157,16 @@ private:
 	D3DXVECTOR2 distortion1, distortion2, distortion3;
 	float distortionScale, distortionBias; 
 	float frameTime;
+	float frameTime2;
 
+	//빌보드
+	ModelClass* m_Billboard_Tree;
+
+	//미니맵
+	MinimapClass* m_Minimap;
+
+	//인스턴싱
+	InstancingClass* m_Instancing;
 
 };
 

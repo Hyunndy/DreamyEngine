@@ -105,7 +105,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	if (!result) { return false; }
 
 	// 사용할 문장을 업데이트 한다.
-	result = UpdateSentence(m_sentence1, "Dreamy", 1535, 15, 0.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentence1, "Dreamy", 30, 30, 1.0f, 0.0f, 0.0f, deviceContext);
 	if (!result) { return false;}
 
 	return true;
@@ -440,11 +440,11 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 	_itoa_s(mouseX, tempString, 10);
 
 	// Setup the mouseX string.
-	strcpy_s(mouseString, "Mouse X: ");
+	strcpy_s(mouseString, "MouseX: ");
 	strcat_s(mouseString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence7, mouseString, 1525, 115, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentence7, mouseString, 30, 130, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -454,11 +454,11 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 	_itoa_s(mouseY, tempString, 10);
 
 	// Setup the mouseY string.
-	strcpy_s(mouseString, "Mouse Y: ");
+	strcpy_s(mouseString, "MouseY: ");
 	strcat_s(mouseString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence8, mouseString, 1525, 135, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentence8, mouseString, 110, 130, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -498,7 +498,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 
 	// 1535, 35
 	// 1535, 55, 0.0f, 1.0f, 0.0f
-	result = UpdateSentence(m_sentence4, dataString, 1535, 75, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence4, dataString, 30, 105, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -509,7 +509,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 	strcpy_s(dataString, "Y: ");
 	strcat_s(dataString, tempString);
 
-	result = UpdateSentence(m_sentence5, dataString, 1535, 95, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence5, dataString, 78, 105, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -520,7 +520,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 	strcpy_s(dataString, "Z: ");
 	strcat_s(dataString, tempString);
 
-	result = UpdateSentence(m_sentence6, dataString, 1535, 115, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence6, dataString, 120, 105, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -565,9 +565,9 @@ bool TextClass::SetFps(int fps, ID3D11DeviceContext* deviceContext)
 	// If fps is 60 or above set the fps color to green.
 	if (fps >= 60)
 	{
-		red = 0.0f;
-		green = 1.0f;
-		blue = 0.0f;
+		red = 1.0f;
+		green = 0.58039215686;
+		blue = 0.21176470588;
 	}
 
 	// If fps is below 60 set the fps color to yellow.
@@ -587,7 +587,7 @@ bool TextClass::SetFps(int fps, ID3D11DeviceContext* deviceContext)
 	}
 
 	//
-	result = UpdateSentence(m_sentence2, fpsString, 1535, 35, red, green, blue, deviceContext);
+	result = UpdateSentence(m_sentence2, fpsString, 30, 55, red, green, blue, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -613,7 +613,7 @@ bool TextClass::SetCpu(int cpu, ID3D11DeviceContext* deviceContext)
 	strcat_s(cpuString, "%");
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence3, cpuString, 1535, 55, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence3, cpuString, 30, 80, 1.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;

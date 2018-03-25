@@ -36,7 +36,7 @@ struct VertexInputType
 struct PixelInputType
 {
     float4 position : SV_POSITION;
-    float4 reflectionPosition : TEXCOORD0;
+   // float4 reflectionPosition : TEXCOORD0;
     float4 refractionPosition : TEXCOORD1;
     float3 viewDirection : TEXCOORD2;
     float2 tex1 : TEXCOORD3;
@@ -70,7 +70,7 @@ PixelInputType WaterVertexShader(VertexInputType input)
 
     //이게 텍스처 좌표라는걸 기억하자.
     //반사 텍스처 좌표.
-    output.reflectionPosition = mul(input.position, reflectProjectWorld);
+    //output.reflectionPosition = mul(input.position, reflectProjectWorld);
 
     // 굴절용 변환 행렬. 반사 행렬과의 차이점은 이건 cbuffer에 넣어준 반사행렬이 아니라 view행렬 이라는 것이다.
     viewProjectWorld = mul(viewMatrix, projectionMatrix);

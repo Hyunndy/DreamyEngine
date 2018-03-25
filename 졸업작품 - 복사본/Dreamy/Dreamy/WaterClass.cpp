@@ -53,10 +53,10 @@ bool WaterClass::Initialize(ID3D11Device* device, WCHAR* textureFilename, float 
 	m_reflectRefractScale = 0.03f;
 
 	//굴절의 청명함(tint)정도를 세팅한다.
-	m_refractionTint = D3DXVECTOR4(0.0f, 0.8f, 1.0f, 1.0f);
+	m_refractionTint = D3DXVECTOR4(0.0f, 0.8f, 1.0f, 0.0f);
 
 	// specular(정반사광) 세기를 세팅한다.
-	m_specularShininess = 200.0f;
+	m_specularShininess = 100.0f;
 
 	return true;
 
@@ -207,10 +207,10 @@ bool WaterClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 용도: 잔물결 효과를 내게한다.
 - 이걸 좀..어떻게 바꿔야겠다.
 ---------------------------------------------------------------------------------------*/
-void WaterClass::Frame()
+void WaterClass::Frame(int frametime)
 {
 	// Update the position of the water to simulate motion.
-	m_waterTranslation += 0.003f;
+	m_waterTranslation += frametime*0.003f;
 	if (m_waterTranslation > 1.0f)
 	{
 		m_waterTranslation -= 1.0f;

@@ -8,8 +8,6 @@
 //////////////
 // INCLUDES //
 //////////////
-#include <d3d11.h>
-#include <d3dx10math.h>
 #include <fstream> // 텍스트 파일로 부터 3D 모델을 읽어 그려내기 때문에
 #include "TextureClass.h" // 모델에 텍스처 파일을 붙여야 하기 때문에!
 #include <iostream>
@@ -30,6 +28,7 @@ using namespace std;
 
 	18.01.28 범프 매핑(노말 매핑)을 추가하면서 vettextype에 tangent, binormal이 추가되었다.
 	18.03.18 Picking 추가
+	18.03.25 Instancing을 위해 InstancingClass에 상속시킴.
 */
 
 
@@ -38,39 +37,8 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 class ModelClass : public MatrixClass
 {
-private:
-
-	/*
-	/////초록색 삼각형을 그릴 때 쓴 vertextype.//////
-	// 정점 버퍼에 사용할 정점의 구조체를 선언한다.
-	// 이는 셰이더 클래스에서 사용할 정점의 구조체와 구조가 같아야 한다.
-	struct VertexType
-	{
-		D3DXVECTOR3 position;
-		D3DXVECTOR4 color;
-	};
-	*/
-
-	/*
-	/////텍스처만 입힌 삼각형을 그릴 때 쓴 vertextype//////
-	struct VertexType
-	{
-		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
-	};
-	*/
-
-	/*
-	조명이 비추는 텍스처 입힌 삼각형을 그릴 때 쓴 Vertextype.
-	좌표 + 텍스쳐 좌표 + 법선벡터
 	
-	struct VertexType
-	{
-		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
-		D3DXVECTOR3 normal;
-
-	}; */
+protected:
 	struct VertexType
 	{
 		D3DXVECTOR3 position;
@@ -79,19 +47,8 @@ private:
 		D3DXVECTOR3 tangent;
 		D3DXVECTOR3 binormal;
 	};
-	
-/*
-3D모델의 기하 정보가 써져있는 파일에 있는
-3D모델의 포맷대로 MODELType을 지정해야한다.
 
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-	};
-*/
-
+private:
 	struct ModelType
 	{
 		float x, y, z;
@@ -101,9 +58,8 @@ private:
 		float bx, by, bz;
 	};
 
-	/*
-	다음 두 구조체들은 tangent와 binormal을 계산하는데 도움이 된다.
-	*/
+	
+	//tangent와 binormal을 계산하는데 사용될 구조체들.
 	struct TempVertexType
 	{
 		float x, y, z;
@@ -122,7 +78,7 @@ public:
 	~ModelClass();
 
 	// 3D모델의 정점 버퍼와 인덱스 버퍼들의 초기화와 종료 과정을 제어한다.
-	bool Initialize(ID3D11Device*,  char*, WCHAR*);
+	virtual bool Initialize(ID3D11Device*,  char*, WCHAR*);
 
 	//모델의 멀티텍스쳐도 지원한다.
 	bool InitializeMulti(ID3D11Device*, char*, WCHAR*, WCHAR*);
@@ -136,13 +92,10 @@ public:
 	//반사맵이 지원되는 텍스처를 초기화한다. (tangent, binormal사용)
 	bool InitializeSpecMap(ID3D11Device*, char*, WCHAR*, WCHAR*, WCHAR*);
 
-
 	void Shutdown();
 
 	// 그래픽 카드에 모델들의 기하정보를 넣고 셰이더로 그릴 준비를 한다.
 	void Render(ID3D11DeviceContext*);
-
-	int GetIndexCount();
 	
 	//셰이더에게 자신의 텍스처 자원을 전달하고 그리기 위한 GetTexure함수
 	ID3D11ShaderResourceView* GetTexture();
@@ -152,13 +105,16 @@ public:
 	ID3D11ShaderResourceView** GetMultiTextureArray();
 	ID3D11ShaderResourceView** GetTripleTextureArray();
 
+	int GetIndexCount();
 
 	//Picking 검사
 	bool TestIntersection(int, int, int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR3);
 	bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
 
 
-private:
+
+
+protected:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
@@ -179,22 +135,68 @@ private:
 	void CalculateNormal(VectorType, VectorType, VectorType&);
 
 	
-private:
+protected:
 	// 정점 버퍼와 인덱스 버퍼
-	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
+	ID3D11Buffer *m_vertexBuffer;
 
 	// 각 버퍼의 크기 정보를 갖고 있는 변수들(이걸 이용해서 나중에 합칠 수 있다.)
-	int m_vertexCount, m_indexCount;
+	int m_vertexCount;
+
 
 	// 이 모델의 텍스처 자원을 불러오고, 반환하고, 접근하는데 사용된다.
 	TextureClass* m_Texture;
 
 	// ModelType형의 멤버 변수
 	// 모델 데이터를 읽은 뒤 정점 버퍼에 놓여지기 전 까지 이 데이터를 저장해두는데 사용된다.
-	ModelType* m_model; 
+	ModelType* m_model;
 
 
-	
+private:
+	ID3D11Buffer *m_indexBuffer;
+	int m_indexCount;
 };
 
 #endif
+/*
+3D모델의 기하 정보가 써져있는 파일에 있는
+3D모델의 포맷대로 MODELType을 지정해야한다.
+
+struct ModelType
+{
+float x, y, z;
+float tu, tv;
+float nx, ny, nz;
+};
+*/
+
+/*
+/////초록색 삼각형을 그릴 때 쓴 vertextype.//////
+// 정점 버퍼에 사용할 정점의 구조체를 선언한다.
+// 이는 셰이더 클래스에서 사용할 정점의 구조체와 구조가 같아야 한다.
+struct VertexType
+{
+D3DXVECTOR3 position;
+D3DXVECTOR4 color;
+};
+*/
+
+/*
+/////텍스처만 입힌 삼각형을 그릴 때 쓴 vertextype//////
+struct VertexType
+{
+D3DXVECTOR3 position;
+D3DXVECTOR2 texture;
+};
+*/
+
+/*
+조명이 비추는 텍스처 입힌 삼각형을 그릴 때 쓴 Vertextype.
+좌표 + 텍스쳐 좌표 + 법선벡터
+
+struct VertexType
+{
+D3DXVECTOR3 position;
+D3DXVECTOR2 texture;
+D3DXVECTOR3 normal;
+
+}; */

@@ -172,8 +172,8 @@ bool SystemClass::Loading()
 	m_Move = new MoveClass;
 	if (!m_Move) { return false; }
 
-	m_Move->SetPosition(449, 75.0f, 624.0f);
-	m_Move->SetRotation(22.0f, 0.0f, 0.0f);
+	m_Move->SetPosition(946.0f, 56.0f, 464.0f);
+	m_Move->SetRotation(0.0f, -50.0f, 0.0f);
 	//-------------------------------------------------------------------------------------
 
 
@@ -326,8 +326,6 @@ bool SystemClass::Frame()
 	result = HandleInput(m_Timer->GetTime());
 	if (!result) { return false; }
 
-	D3DXVECTOR2 W;
-	W.x = 
 	// m_Graphics객체를 통해 화면에 그리는 작업을 수행한다.
 
 	result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(),pos, rot, mouseX, mouseY);
@@ -335,7 +333,7 @@ bool SystemClass::Frame()
 	if (!result){ return false; }
 	
 	//result = m_Graphics->Render(F1pressed);
-	result = m_Graphics->Render(F1pressed);
+	result = m_Graphics->Render(F1pressed, m_FPS->GetFps());
 	if (!result) { return false; }
 
 	result = m_Input->IsLeftMouseButtonDown();
@@ -418,8 +416,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	else
 	{
 		// 윈도우 모드라면 800x600으로 맞춘다.
-		screenWidth = 1600;
-		screenHeight = 900;
+		screenWidth = 1280;
+		screenHeight = 800;
 
 		// 창을 화면의 중간에 오게한다.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;

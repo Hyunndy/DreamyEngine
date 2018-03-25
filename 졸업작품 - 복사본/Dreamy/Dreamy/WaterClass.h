@@ -28,7 +28,7 @@ public:
 	bool Initialize(ID3D11Device*, WCHAR*, float, float);
 	//bool Initialize(ID3D11Device*, WCHAR*, float);
 	void Shutdown();
-	void Frame();
+	void Frame(int);
 	void Render(ID3D11DeviceContext*);
 
 	int GetIndexCount();

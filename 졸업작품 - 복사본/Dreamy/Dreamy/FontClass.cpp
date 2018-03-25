@@ -83,6 +83,9 @@ bool FontClass::LoadFontPositionTextFile(char* filename)
 		fin >> m_Font[i].left;
 		fin >> m_Font[i].right;
 		fin >> m_Font[i].size;
+
+
+
 	} 
 
 	// Close the file. 

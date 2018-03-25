@@ -11,7 +11,7 @@
 //물 내부를 위한 굴절 텍스처
 //물결을 표현하기 위한 노말 맵 텍스처
 Texture2D refractionTexture;
-Texture2D reflectionTexture;
+//Texture2D reflectionTexture;
 Texture2D normalTexture;
 
 SamplerState SampleType;
@@ -38,7 +38,7 @@ cbuffer WaterBuffer
 struct PixelInputType
 {
     float4 position : SV_POSITION;
-    float4 reflectionPosition : TEXCOORD0;
+   // float4 reflectionPosition : TEXCOORD0;
     float4 refractionPosition : TEXCOORD1;
     float3 viewDirection : TEXCOORD2;
     float2 tex1 : TEXCOORD3;
@@ -60,9 +60,9 @@ float4 WaterPixelShader(PixelInputType input) : SV_TARGET
     float3 normal;
 
     float2 refractTexCoord;
-    float2 reflectTexCoord;
+   // float2 reflectTexCoord;
 
-    float4 reflectionColor;
+    //float4 reflectionColor;
     float4 refractionColor;
 
     float3 heightView;
@@ -94,15 +94,15 @@ float4 WaterPixelShader(PixelInputType input) : SV_TARGET
     refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / 2.0f + 0.5f;
     refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / 2.0f + 0.5f;
 
-    reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / 2.0f + 0.5f;
-    reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / 2.0f + 0.5f;
+    //reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / 2.0f + 0.5f;
+    //reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / 2.0f + 0.5f;
 
     // 굴절과 반사에 사용하는 텍스처 좌표를 다시계산한다. 잔물결효과를 위해 노말맵 scale값이 들어갔으니까!
-	reflectTexCoord = reflectTexCoord + (normal.xy * reflectRefractScale);
+	//reflectTexCoord = reflectTexCoord + (normal.xy * reflectRefractScale);
 	refractTexCoord = refractTexCoord + (normal.xy * reflectRefractScale);
 
     // 텍스처좌표에서 색깔을 뽑아낸다.
-    reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord);
+   // reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord);
     refractionColor = refractionTexture.Sample(SampleType, refractTexCoord);
 
 
@@ -119,8 +119,8 @@ float4 WaterPixelShader(PixelInputType input) : SV_TARGET
 	fresnelFactor = max(0.0f, min(1.0f, r + (1.0f - r) * pow(1.0f - dot(normal, heightView), 2)));
 
     // 반사, 굴절색과 프리즌컬러를 선형보간 해준다. 광나게 하기위해!
-	color = lerp(reflectionColor, refractionColor, fresnelFactor);
-
+	//color = lerp(reflectionColor, refractionColor, fresnelFactor);
+    color = saturate(refractionColor*fresnelFactor);
     // 빛의 방향과 법선벡터를 사용하기 위해 반사 벡터를 계산한다.
 	reflection = -reflect(normalize(lightDirection), normal);
 	
