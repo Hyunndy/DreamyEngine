@@ -1,13 +1,23 @@
 #pragma once
-#include <fbxsdk.h>
+
 #include <D3D11.h>
 #include <D3DX10math.h>
-using namespace std;
-#include <vector>
-#include <string>
 #include <iostream>
+#include <string>
+#include <vector>
 #include <unordered_map>
 
+#include <fbxsdk.h>
+
+//#include <unordered_map>
+
+//#include "FBXMath.h"
+#include "TextureClass.h"
+//#include "FBXUtil.h"
+
+using namespace std;
+//using namespace sunny;
+//using namespace maths;
 /*
 .FBX로드를 위한 클래스
 
@@ -56,7 +66,6 @@ using namespace std;
 
 		   
 */	
-
 struct vec4
 {
 	float x, y, z, w;
@@ -160,14 +169,14 @@ struct VertexType
 
 };
 
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-		float tx, ty, tz;
-		float bx, by, bz;
-	};
+struct ModelType
+{
+	float x, y, z;
+	float tu, tv;
+	float nx, ny, nz;
+	float tx, ty, tz;
+	float bx, by, bz;
+};
 
 
 template<>
@@ -184,6 +193,23 @@ static vector<VertexType> vertices;
 static vector<unsigned int> indices;
 // 정점,인덱스를 맵핑할 맵
 static unordered_map<VertexType, unsigned int> indexMapping;
+//static vector<sun::VertexWithBlending>                  s_vertices;;     // 정점
+//static vector<uint>                                     s_indices;      // 인덱스
+//static unordered_map<sun::VertexWithBlending, uint>    s_indexMapping;  // 정점+인덱스 맵핑
+//
+//static sun::Position* s_rawPositions;                    // 정점 위치, 애니메이션
+//static uint s_rawPositionCount;
+//
+//static FbxAMatrix s_rootMatrix;                            // STR
+//
+//static sun::Skeleton s_skeleton;                         // 뼈(std::vector<Joint> joints;)
+//
+//static bool s_hasAnimation;
+//
+//static FbxTime s_AnimationStart, s_AnimationEnd;           // 애니메이션 시작과 종료 시간
+//static size_t s_AnimationLength = 1;                  // 애니메이션 길이(종료 - 시작)
+//static FbxAnimStack* s_animStack;
+//
 
 
 class FBXModel
@@ -194,27 +220,39 @@ public:
 	FBXModel();
 	~FBXModel();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device, char*, WCHAR*);
 	void Render(ID3D11DeviceContext*);
 
-	bool FBXLoad();
+	bool FBXLoad(char*);
+
+	void LoadJoint(FbxNode* node, int depth, int index, int parentIndex);
 	void LoadNode(FbxNode* node);
-	void ParseControlPoints(FbxMesh* mesh);
+
 	void ShutDown();
 
-
 	bool InitializeBuffers(ID3D11Device* device);
+
 	//읽고 파싱한다.
 	vec3 ParseNormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
 	vec3 ParseBinormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
 	vec3 ParseTangent(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
 	vec2 ParseUV(const FbxMesh* mesh, int ControlPointIndex, int Textureindex);
-	void InsertVertex(const unsigned int rawPositionIndex, const vec2& uv, const vec3& normal,  const vec3& tangent,const vec3& binormal);
-	//bool InsertVertex(ID3D11Device*);
 	bool ParseMesh(FbxMesh* mesh);
+	void ParseControlPoints(FbxMesh* mesh);
+	void ParseAnimation(FbxNode* node);
+
+	void InsertVertex(const unsigned int rawPositionIndex, const vec2& uv, const vec3& normal,  const vec3& tangent,const vec3& binormal);
+	
+	
+	//bool InsertVertex(ID3D11Device*);
+
 	void RenderBuffers(ID3D11DeviceContext* deviceContext);
 	void ShutdownBuffers();
 	int GetIndexCount();
+
+	bool LoadTexture(ID3D11Device* device, WCHAR* filename);
+	ID3D11ShaderResourceView* GetTexture();
+
 
 private:
 	FbxManager* m_SdkManager = nullptr;
@@ -235,9 +273,15 @@ private:
 
 	// 각 버퍼의 크기 정보를 갖고 있는 변수들(이걸 이용해서 나중에 합칠 수 있다.)
 	int m_vertexCount, m_indexCount;
-	VertexType* m_vertices;
+	//sun::VertexWithBlending* m_vertices;
 
+	TextureClass* m_Texture;
 
 
 };
+
+
+
+
+
 

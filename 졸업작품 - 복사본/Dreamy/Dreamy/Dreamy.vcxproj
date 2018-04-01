@@ -159,7 +159,11 @@
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ColorShaderClass.cpp" />
     <ClCompile Include="CpuClass.cpp" />
+    <ClCompile Include="FBXMatrix.cpp" />
     <ClCompile Include="FBXModel.cpp" />
+    <ClCompile Include="FBXVec2.cpp" />
+    <ClCompile Include="FBXVec3.cpp" />
+    <ClCompile Include="FBXVec4.cpp" />
     <ClCompile Include="FireShaderClass.cpp" />
     <ClCompile Include="FogShaderClass.cpp" />
     <ClCompile Include="FontClass.cpp" />
@@ -213,7 +217,15 @@
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ColorShaderClass.h" />
     <ClInclude Include="CpuClass.h" />
+    <ClInclude Include="FBXHeader.h" />
+    <ClInclude Include="FBXMath.h" />
+    <ClInclude Include="FBXMath_func.h" />
+    <ClInclude Include="FBXMatrix.h" />
     <ClInclude Include="FBXModel.h" />
+    <ClInclude Include="FBXUtil.h" />
+    <ClInclude Include="FBXVec2.h" />
+    <ClInclude Include="FBXVec3.h" />
+    <ClInclude Include="FBXVec4.h" />
     <ClInclude Include="FireShaderClass.h" />
     <ClInclude Include="FogShaderClass.h" />
     <ClInclude Include="FontClass.h" />

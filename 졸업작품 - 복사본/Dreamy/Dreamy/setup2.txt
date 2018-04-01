@@ -1,5 +1,0 @@
-Terrain Filename:../Dreamy/terrain.raw
-Terrain Height:600
-Terrain Width:512
-Terrain Scaling:300.0
-Color Map Filename:../Dreamy/colormap2.png

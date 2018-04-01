@@ -34,6 +34,9 @@
     <Filter Include="Shader\Source">
       <UniqueIdentifier>{fa405aaf-2ac4-4a2f-a060-9c910f91f1b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FBX">
+      <UniqueIdentifier>{0f5653a6-ae01-4f51-b1ba-372ad46ac4e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -76,9 +79,6 @@
       <Filter>Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="D3DClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="FBXModel.cpp">
       <Filter>Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="FontClass.cpp">
@@ -180,17 +180,32 @@
     <ClCompile Include="WaterShaderClass.cpp">
       <Filter>Shader\Source</Filter>
     </ClCompile>
-    <ClCompile Include="MinimapClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="InstancingClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="InstancingShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="FireShaderClass.cpp">
       <Filter>Shader\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingClass.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="MinimapClass.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXModel.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXVec2.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXVec3.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXMatrix.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXVec4.cpp">
+      <Filter>FBX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -231,9 +246,6 @@
       <Filter>Graphics\Header</Filter>
     </ClInclude>
     <ClInclude Include="D3DClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="FBXModel.h">
       <Filter>Graphics\Header</Filter>
     </ClInclude>
     <ClInclude Include="FontClass.h">
@@ -338,17 +350,44 @@
     <ClInclude Include="WaterShaderClass.h">
       <Filter>Shader\Header</Filter>
     </ClInclude>
-    <ClInclude Include="MinimapClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="InstancingClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="InstancingShaderClass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="FireShaderClass.h">
       <Filter>Shader\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingClass.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="MinimapClass.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXModel.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXHeader.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXMath.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXMath_func.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXVec2.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXVec3.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXMatrix.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXVec4.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXUtil.h">
+      <Filter>FBX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

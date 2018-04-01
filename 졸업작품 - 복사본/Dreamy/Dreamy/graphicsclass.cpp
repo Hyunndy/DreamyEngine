@@ -244,7 +244,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Terrain = new TerrainClass;
 	if (!m_Terrain) { return false; }
 
-	result = m_Terrain->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), "../Dreamy/setup.txt", "../Dreamy/dirt01d.tga", "../Dreamy/dirt01n.tga" );
+	result = m_Terrain->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), "../Dreamy/setup.txt", "../Dreamy/dirt01d.tga", "../Dreamy/dirt01n.tga");
 	if (!result) { MessageBox(hwnd, L"Could not initialize Terrain object", L"Error", MB_OK); return false; }
 
 
@@ -352,7 +352,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_fbx = new FBXModel;
 	if (!m_fbx) { return false; }
 	
-	result = m_fbx->Initialize(m_D3D->GetDevice());
+	result = m_fbx->Initialize(m_D3D->GetDevice(), "../Dreamy/Data/Horse.fbx", L"../Dreamy/Data/Horse_D.png");
 	if(!result) { MessageBox(hwnd, L"fbx", L"Error", MB_OK); return false; }
 
 	//-------------------------------------------------------------------------------------
@@ -530,12 +530,12 @@ bool GraphicsClass::Render( bool Pressed, int frametime)
 	//-------------------------------------------------------------------------------------
 	//result = RenderToTexture(); // 거울
 	//if (!result) { return false; }
-	if (frametime%15==0)
-	{
-		////호수의 굴절 텍스처
-		result = RenderRefractionToTexture(Pressed);
-		if (!result) { return false; }
-	}
+	//if (frametime%15==0)
+	//{
+	//	////호수의 굴절 텍스처
+	//	result = RenderRefractionToTexture(Pressed);
+	//	if (!result) { return false; }
+	//}
 	//호수의 반사 텍스처
 	//result = RenderReflectionToTexture();
 	//if (!result) { return false; }
@@ -650,10 +650,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixTranslation(&SkyworldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
 
-	// FBX모델
-	D3DXMatrixTranslation(&FBXworldMatrix, CharacterPos.x+2.0f, CharacterPos.y+1.0f, CharacterPos.z);
-	D3DXMatrixRotationX(&FBXRotationMatrix, 180.0f);
-	D3DXMatrixMultiply(&FBXworldMatrix, &FBXRotationMatrix, &FBXworldMatrix);
+
 	//-------------------------------------------------------------------------------------
 
 	//시야 절두체 생성
@@ -713,189 +710,189 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 
 	// 호수  512.5f, 30.0f, 310.0f
-	//-------------------------------------------------------------------------------------
-	m_Camera->RenderWaterReflection(m_Water->GetWaterHeight());
-	m_Camera->GetWaterReflectionViewMatrix(WaterreflectionViewMatrix);
-	D3DXMATRIX WaterRotationMatrix;
-	D3DXMatrixTranslation(&WaterworldMatrix, 722.0f, m_Water->GetWaterHeight(), 688.0f);
-	//D3DXMatrixRotationY(&WaterRotationMatrix, 70.0f);
-	//3DXMatrixMultiply(&WaterworldMatrix, &WaterRotationMatrix, &WaterworldMatrix);
-	m_Water->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderWaterShader(m_D3D->GetDeviceContext(), m_Water->GetIndexCount(), WaterworldMatrix, viewMatrix, projectionMatrix, WaterreflectionViewMatrix,
-		m_RefractionTexture->GetShaderResourceView(),/* m_Sky->GetCloudTexture2(),*/ m_Water->GetTexture(),
-		m_Camera->GetPosition(), m_Water->GetNormalMapTiling(), m_Water->GetWaterTranslation(), m_Water->GetReflectRefractScale(),
-		m_Water->GetRefractionTint(), m_Light->GetDirection(), m_Water->GetSpecularShininess());
-	if (!result) { return false; }
-	//-------------------------------------------------------------------------------------
-
-	//구 리스트 변수들 초기화
-	//-------------------------------------------------------------------------------------
-	CircleCount = m_Model_CircleList->GetModelCount();
-	//-------------------------------------------------------------------------------------
-
-	// Scene 출력 모델
-	//-------------------------------------------------------------------------------------
-
-	//프러스텀 컬링 들어간 구 모델 리스트
-	D3DXMATRIX CircleWorldMatrix;
-	m_D3D->GetWorldMatrix(CircleWorldMatrix);
-	m_Model_Circle->Scale(1.5f, 1.5f, 1.5f);
-
-	for (Circleindex = 0; Circleindex < CircleCount; Circleindex++)
-	{
-		//리스트에 있는것들 차례대로 데이터를 읽어온다.
-		m_Model_CircleList->GetData(Circleindex, positionX, positionY, positionZ, color);
-
-		radius = 1.0f;
-		//755.0f, 26.0f, 389.0f
-		//Frustum Culling(프러스텀 컬링)
-		//3D모델에 경계볼륨을 씌워서 절두체에 보이는지 체크한다.
-		Circlerender = m_Frustum->CheckSphere(positionX + 730.0f, positionY + 26.0f, positionZ + 375.0f, radius);
-
-		if (Circlerender)
-		{
-			//리스트에서 정의된대로 위치 변환
-			m_Model_Circle->Translation(positionX + 730.0f, positionY + 26.0f, positionZ + 375.0f);
-			m_Model_Circle->Multiply(m_Model_Circle->GetScailingMatrix(), m_Model_Circle->GetTranslationMatrix());
-			D3DXMatrixMultiply(&CircleWorldMatrix, &m_Model_Circle->GetFinalMatrix(), &CircleWorldMatrix);
-
-			//3D모델(구체) 렌더링
-			m_Model_Circle->Render(m_D3D->GetDeviceContext());
-
-			//셰이더 렌더링
-			result = m_Shader->RenderLightShader(m_D3D->GetDeviceContext(), m_Model_Circle->GetIndexCount(), CircleWorldMatrix, viewMatrix, projectionMatrix
-				, m_Model_Circle->GetTexture(),m_Light->GetDirection(), m_Light->GetAmbientColor(), color
-				, m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-			if (!result) { return false; }
-
-			//구가 각자 다른 위치를 가져야 하니까 reset시킨다!
-			m_D3D->GetWorldMatrix(CircleWorldMatrix);
-			
-		}
-	}
-
-	//큐브1 알파맵
-	D3DXMATRIX Cube1WorldMatrix;
-	m_D3D->GetWorldMatrix(Cube1WorldMatrix);
-
-	m_Model_Cube->Translation(750.0f, 26.0f, 380.0f);
-	m_Model_Cube->Multiply(m_Model_Cube3->GetRotationYMatrix(), m_Model_Cube->GetTranslationMatrix());
-	m_Model_Cube->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Cube->GetFinalMatrix());
-	D3DXMatrixMultiply(&Cube1WorldMatrix, &m_Model_Cube->GetFinalMatrix(), &Cube1WorldMatrix);
-
-	m_Model_Cube->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1WorldMatrix, viewMatrix, projectionMatrix
-		, m_Model_Cube->GetTripleTextureArray());
-	if (!result) { return false; }
-
-
-	//큐브3 범프맵+스페큘러맵+텍스처이동
-	D3DXMATRIX Cube3WorldMatrix;
-	m_D3D->GetWorldMatrix(Cube3WorldMatrix);
-	m_Model_Cube3->Translation(767.0f, 26.0f, 389.0f);
-	m_Model_Cube3->RotationY(-40.0f);
-	m_Model_Cube3->Scale(7.0f, 7.0f, 7.0f);
-	m_Model_Cube3->Multiply(m_Model_Cube3->GetRotationYMatrix(), m_Model_Cube3->GetTranslationMatrix());
-	m_Model_Cube3->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Cube3->GetFinalMatrix());
-	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->GetFinalMatrix(), &Cube3WorldMatrix);
-
-	m_Model_Cube3->Render(m_D3D->GetDeviceContext());
-	
-	result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3WorldMatrix, viewMatrix, projectionMatrix
-		, m_Model_Cube3->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
-	if (!result) { return false; }	
-
-
-	//평면2 투명
-	D3DXMATRIX Plane2worldMatrix;
-	m_D3D->GetWorldMatrix(Plane2worldMatrix);
-
-	m_Model_Plane2->RotationX(D3DXToRadian(90));
-	m_Model_Plane2->RotationY(D3DXToRadian(-45));
-	m_Model_Plane2->RotationMultiply(m_Model_Plane2->GetRotationXMatrix(), m_Model_Plane2->GetRotationYMatrix());
-	m_Model_Plane2->Translation(784.0f, 40.0f, 371.0f);
-
-	m_Model_Plane2->Multiply(m_Model_Plane2->GetRotationMatrix(), m_Model_Plane2->GetTranslationMatrix());
-	m_Model_Plane2->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Plane2->GetFinalMatrix());
-	D3DXMatrixMultiply(&Plane2worldMatrix, &m_Model_Plane2->GetFinalMatrix(), &Plane2worldMatrix);
-
-
-	//평면2 투명
-	if (sibal == true)
-	{
-		m_D3D->TurnOnAlphaBlending();
-
-		m_Model_Plane2->Render(m_D3D->GetDeviceContext());
-
-		result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), Plane2worldMatrix, viewMatrix, projectionMatrix
-			, m_Model_Plane2->GetTexture(), 0.7f);
-		if (!result) { return false; }
-
-		m_D3D->TurnOffAlphaBlending();
-	}
-
-	//빌보드, 이펙트
-	//-------------------------------------------------------------------------------------
-	D3DXVECTOR3 firePosition;
-
-	firePosition = { 760.0f, 46.0f, 380.0f };
-
-	m_D3D->TurnOnAlphaBlending();
-
-	D3DXMATRIX FireWorldMatrix;
-	m_D3D->GetWorldMatrix(FireWorldMatrix);
-	m_Fire_Effect->Translation(760.0f, 46.0f, 380.0f);
-	m_Fire_Effect->RotationY(CalculateBillboarding(cameraPosition,firePosition));
-	m_Fire_Effect->Scale(5.0f, 5.0f, 5.0f);
-	m_Fire_Effect->Multiply(m_Fire_Effect->GetRotationYMatrix(), m_Fire_Effect->GetTranslationMatrix());
-	m_Fire_Effect->Multiply(m_Fire_Effect->GetScailingMatrix(), m_Fire_Effect->GetFinalMatrix());
-	D3DXMatrixMultiply(&FireWorldMatrix, &m_Fire_Effect->GetFinalMatrix(), &FireWorldMatrix);
-
-	m_Fire_Effect->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderFireShader(m_D3D->GetDeviceContext(), m_Fire_Effect->GetIndexCount(), FireWorldMatrix, viewMatrix,
-		projectionMatrix, m_Fire_Effect->GetTripleTexture1(), m_Fire_Effect->GetTripleTexture2(), m_Fire_Effect->GetTripleTexture3(),
-		frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
-	if (!result) { return false; }
-
-	D3DXMATRIX InstancingWorldMatrix;
-	m_D3D->GetWorldMatrix(InstancingWorldMatrix);
-
-
-	m_Instancing->Render(m_D3D->GetDeviceContext());
-
-	result = m_Shader->RenderInstancingShader(m_D3D->GetDeviceContext(), m_Instancing->GetVertexCount(), m_Instancing->GetInstanceCount(), InstancingWorldMatrix, viewMatrix, projectionMatrix, m_Instancing->GetTexture());
-	if (!result) { return false; }
-
-
-	D3DXVECTOR3 TreePosition;
-	TreePosition = { 740.0f, 35.0f, 612.0f };
-
-	D3DXMATRIX TreeWorldMatrix;
-	m_D3D->GetWorldMatrix(TreeWorldMatrix);
-
-
-	m_Billboard_Tree->Translation(740.0f, 35.0f, 612.0f);
-	m_Billboard_Tree->RotationY(CalculateBillboarding(cameraPosition, TreePosition));
-	//m_Billboard_Tree->Scale(20.0f, 20.0f, 20.0f);
-	m_Billboard_Tree->Multiply(m_Billboard_Tree->GetRotationYMatrix(), m_Billboard_Tree->GetTranslationMatrix());
-	//m_Billboard_Tree->Multiply(m_Billboard_Tree->GetScailingMatrix(), m_Billboard_Tree->GetFinalMatrix());
-	D3DXMatrixMultiply(&TreeWorldMatrix, &m_Billboard_Tree->GetFinalMatrix(), &TreeWorldMatrix);
-
-	m_Billboard_Tree->Render(m_D3D->GetDeviceContext());
-	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Billboard_Tree->GetIndexCount(), TreeWorldMatrix, viewMatrix, projectionMatrix, m_Billboard_Tree->GetTexture());
-	if (!result) { return false; }
-
-
-
-
-	m_D3D->TurnOffAlphaBlending();
-
-
-
+	////-------------------------------------------------------------------------------------
+	//m_Camera->RenderWaterReflection(m_Water->GetWaterHeight());
+	//m_Camera->GetWaterReflectionViewMatrix(WaterreflectionViewMatrix);
+	//D3DXMATRIX WaterRotationMatrix;
+	//D3DXMatrixTranslation(&WaterworldMatrix, 722.0f, m_Water->GetWaterHeight(), 688.0f);
+	////D3DXMatrixRotationY(&WaterRotationMatrix, 70.0f);
+	////3DXMatrixMultiply(&WaterworldMatrix, &WaterRotationMatrix, &WaterworldMatrix);
+	//m_Water->Render(m_D3D->GetDeviceContext());
+	//
+	//result = m_Shader->RenderWaterShader(m_D3D->GetDeviceContext(), m_Water->GetIndexCount(), WaterworldMatrix, viewMatrix, projectionMatrix, WaterreflectionViewMatrix,
+	//	m_RefractionTexture->GetShaderResourceView(),/* m_Sky->GetCloudTexture2(),*/ m_Water->GetTexture(),
+	//	m_Camera->GetPosition(), m_Water->GetNormalMapTiling(), m_Water->GetWaterTranslation(), m_Water->GetReflectRefractScale(),
+	//	m_Water->GetRefractionTint(), m_Light->GetDirection(), m_Water->GetSpecularShininess());
+	//if (!result) { return false; }
+	////-------------------------------------------------------------------------------------
+	//
+	////구 리스트 변수들 초기화
+	////-------------------------------------------------------------------------------------
+	//CircleCount = m_Model_CircleList->GetModelCount();
+	////-------------------------------------------------------------------------------------
+	//
+	//// Scene 출력 모델
+	////-------------------------------------------------------------------------------------
+	//
+	////프러스텀 컬링 들어간 구 모델 리스트
+	//D3DXMATRIX CircleWorldMatrix;
+	//m_D3D->GetWorldMatrix(CircleWorldMatrix);
+	//m_Model_Circle->Scale(1.5f, 1.5f, 1.5f);
+	//
+	//for (Circleindex = 0; Circleindex < CircleCount; Circleindex++)
+	//{
+	//	//리스트에 있는것들 차례대로 데이터를 읽어온다.
+	//	m_Model_CircleList->GetData(Circleindex, positionX, positionY, positionZ, color);
+	//
+	//	radius = 1.0f;
+	//	//755.0f, 26.0f, 389.0f
+	//	//Frustum Culling(프러스텀 컬링)
+	//	//3D모델에 경계볼륨을 씌워서 절두체에 보이는지 체크한다.
+	//	Circlerender = m_Frustum->CheckSphere(positionX + 730.0f, positionY + 26.0f, positionZ + 375.0f, radius);
+	//
+	//	if (Circlerender)
+	//	{
+	//		//리스트에서 정의된대로 위치 변환
+	//		m_Model_Circle->Translation(positionX + 730.0f, positionY + 26.0f, positionZ + 375.0f);
+	//		m_Model_Circle->Multiply(m_Model_Circle->GetScailingMatrix(), m_Model_Circle->GetTranslationMatrix());
+	//		D3DXMatrixMultiply(&CircleWorldMatrix, &m_Model_Circle->GetFinalMatrix(), &CircleWorldMatrix);
+	//
+	//		//3D모델(구체) 렌더링
+	//		m_Model_Circle->Render(m_D3D->GetDeviceContext());
+	//
+	//		//셰이더 렌더링
+	//		result = m_Shader->RenderLightShader(m_D3D->GetDeviceContext(), m_Model_Circle->GetIndexCount(), CircleWorldMatrix, viewMatrix, projectionMatrix
+	//			, m_Model_Circle->GetTexture(),m_Light->GetDirection(), m_Light->GetAmbientColor(), color
+	//			, m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+	//		if (!result) { return false; }
+	//
+	//		//구가 각자 다른 위치를 가져야 하니까 reset시킨다!
+	//		m_D3D->GetWorldMatrix(CircleWorldMatrix);
+	//		
+	//	}
+	//}
+	//
+	////큐브1 알파맵
+	//D3DXMATRIX Cube1WorldMatrix;
+	//m_D3D->GetWorldMatrix(Cube1WorldMatrix);
+	//
+	//m_Model_Cube->Translation(750.0f, 26.0f, 380.0f);
+	//m_Model_Cube->Multiply(m_Model_Cube3->GetRotationYMatrix(), m_Model_Cube->GetTranslationMatrix());
+	//m_Model_Cube->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Cube->GetFinalMatrix());
+	//D3DXMatrixMultiply(&Cube1WorldMatrix, &m_Model_Cube->GetFinalMatrix(), &Cube1WorldMatrix);
+	//
+	//m_Model_Cube->Render(m_D3D->GetDeviceContext());
+	//
+	//result = m_Shader->RenderAlphaMapShader(m_D3D->GetDeviceContext(), m_Model_Cube->GetIndexCount(), Cube1WorldMatrix, viewMatrix, projectionMatrix
+	//	, m_Model_Cube->GetTripleTextureArray());
+	//if (!result) { return false; }
+	//
+	//
+	////큐브3 범프맵+스페큘러맵+텍스처이동
+	//D3DXMATRIX Cube3WorldMatrix;
+	//m_D3D->GetWorldMatrix(Cube3WorldMatrix);
+	//m_Model_Cube3->Translation(767.0f, 26.0f, 389.0f);
+	//m_Model_Cube3->RotationY(-40.0f);
+	//m_Model_Cube3->Scale(7.0f, 7.0f, 7.0f);
+	//m_Model_Cube3->Multiply(m_Model_Cube3->GetRotationYMatrix(), m_Model_Cube3->GetTranslationMatrix());
+	//m_Model_Cube3->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Cube3->GetFinalMatrix());
+	//D3DXMatrixMultiply(&Cube3WorldMatrix, &m_Model_Cube3->GetFinalMatrix(), &Cube3WorldMatrix);
+	//
+	//m_Model_Cube3->Render(m_D3D->GetDeviceContext());
+	//
+	//result = m_Shader->RenderTranslateShader(m_D3D->GetDeviceContext(), m_Model_Cube3->GetIndexCount(), Cube3WorldMatrix, viewMatrix, projectionMatrix
+	//	, m_Model_Cube3->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+	//	m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
+	//if (!result) { return false; }	
+	//
+	//
+	////평면2 투명
+	//D3DXMATRIX Plane2worldMatrix;
+	//m_D3D->GetWorldMatrix(Plane2worldMatrix);
+	//
+	//m_Model_Plane2->RotationX(D3DXToRadian(90));
+	//m_Model_Plane2->RotationY(D3DXToRadian(-45));
+	//m_Model_Plane2->RotationMultiply(m_Model_Plane2->GetRotationXMatrix(), m_Model_Plane2->GetRotationYMatrix());
+	//m_Model_Plane2->Translation(784.0f, 40.0f, 371.0f);
+	//
+	//m_Model_Plane2->Multiply(m_Model_Plane2->GetRotationMatrix(), m_Model_Plane2->GetTranslationMatrix());
+	//m_Model_Plane2->Multiply(m_Model_Cube3->GetScailingMatrix(), m_Model_Plane2->GetFinalMatrix());
+	//D3DXMatrixMultiply(&Plane2worldMatrix, &m_Model_Plane2->GetFinalMatrix(), &Plane2worldMatrix);
+	//
+	//
+	////평면2 투명
+	//if (sibal == true)
+	//{
+	//	m_D3D->TurnOnAlphaBlending();
+	//
+	//	m_Model_Plane2->Render(m_D3D->GetDeviceContext());
+	//
+	//	result = m_Shader->RenderTransparentShader(m_D3D->GetDeviceContext(), m_Model_Plane2->GetIndexCount(), Plane2worldMatrix, viewMatrix, projectionMatrix
+	//		, m_Model_Plane2->GetTexture(), 0.7f);
+	//	if (!result) { return false; }
+	//
+	//	m_D3D->TurnOffAlphaBlending();
+	//}
+	//
+	////빌보드, 이펙트
+	////-------------------------------------------------------------------------------------
+	//D3DXVECTOR3 firePosition;
+	//
+	//firePosition = { 760.0f, 46.0f, 380.0f };
+	//
+	//m_D3D->TurnOnAlphaBlending();
+	//
+	//D3DXMATRIX FireWorldMatrix;
+	//m_D3D->GetWorldMatrix(FireWorldMatrix);
+	//m_Fire_Effect->Translation(760.0f, 46.0f, 380.0f);
+	//m_Fire_Effect->RotationY(CalculateBillboarding(cameraPosition,firePosition));
+	//m_Fire_Effect->Scale(5.0f, 5.0f, 5.0f);
+	//m_Fire_Effect->Multiply(m_Fire_Effect->GetRotationYMatrix(), m_Fire_Effect->GetTranslationMatrix());
+	//m_Fire_Effect->Multiply(m_Fire_Effect->GetScailingMatrix(), m_Fire_Effect->GetFinalMatrix());
+	//D3DXMatrixMultiply(&FireWorldMatrix, &m_Fire_Effect->GetFinalMatrix(), &FireWorldMatrix);
+	//
+	//m_Fire_Effect->Render(m_D3D->GetDeviceContext());
+	//
+	//result = m_Shader->RenderFireShader(m_D3D->GetDeviceContext(), m_Fire_Effect->GetIndexCount(), FireWorldMatrix, viewMatrix,
+	//	projectionMatrix, m_Fire_Effect->GetTripleTexture1(), m_Fire_Effect->GetTripleTexture2(), m_Fire_Effect->GetTripleTexture3(),
+	//	frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+	//if (!result) { return false; }
+	//
+	//D3DXMATRIX InstancingWorldMatrix;
+	//m_D3D->GetWorldMatrix(InstancingWorldMatrix);
+	//
+	//
+	//m_Instancing->Render(m_D3D->GetDeviceContext());
+	//
+	//result = m_Shader->RenderInstancingShader(m_D3D->GetDeviceContext(), m_Instancing->GetVertexCount(), m_Instancing->GetInstanceCount(), InstancingWorldMatrix, viewMatrix, projectionMatrix, m_Instancing->GetTexture());
+	//if (!result) { return false; }
+	//
+	//
+	//D3DXVECTOR3 TreePosition;
+	//TreePosition = { 740.0f, 35.0f, 612.0f };
+	//
+	//D3DXMATRIX TreeWorldMatrix;
+	//m_D3D->GetWorldMatrix(TreeWorldMatrix);
+	//
+	//
+	//m_Billboard_Tree->Translation(740.0f, 35.0f, 612.0f);
+	//m_Billboard_Tree->RotationY(CalculateBillboarding(cameraPosition, TreePosition));
+	////m_Billboard_Tree->Scale(20.0f, 20.0f, 20.0f);
+	//m_Billboard_Tree->Multiply(m_Billboard_Tree->GetRotationYMatrix(), m_Billboard_Tree->GetTranslationMatrix());
+	////m_Billboard_Tree->Multiply(m_Billboard_Tree->GetScailingMatrix(), m_Billboard_Tree->GetFinalMatrix());
+	//D3DXMatrixMultiply(&TreeWorldMatrix, &m_Billboard_Tree->GetFinalMatrix(), &TreeWorldMatrix);
+	//
+	//m_Billboard_Tree->Render(m_D3D->GetDeviceContext());
+	//result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Billboard_Tree->GetIndexCount(), TreeWorldMatrix, viewMatrix, projectionMatrix, m_Billboard_Tree->GetTexture());
+	//if (!result) { return false; }
+	//
+	//
+	//
+	//
+	//m_D3D->TurnOffAlphaBlending();
+	//
+	//
+	//
 	//-------------------------------------------------------------------------------------
 	//2D이미지, 2d셰이더 렌더링, Text, Z버퍼 ON/OFF, 알파블렌딩, RTT미니맵
 	//-------------------------------------------------------------------------------------
@@ -931,11 +928,17 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_D3D->TurnOffAlphaBlending();
 	m_D3D->TurnZBufferOn();
 
+	// FBX모델
+	D3DXMatrixTranslation(&FBXworldMatrix, CharacterPos.x + 2.0f, CharacterPos.y + 1.0f, CharacterPos.z);
+	D3DXMatrixScaling(&FBXRotationMatrix, 0.1f, 0.1f, 0.1f);
+
+	D3DXMatrixMultiply(&FBXworldMatrix, &FBXRotationMatrix, &FBXworldMatrix);
+
 	//fbx모델
-	//m_D3D->TurnOffCulling();
-	//m_fbx->Render(m_D3D->GetDeviceContext());
-	//result = m_Shader->RenderColorShader(m_D3D->GetDeviceContext(), m_fbx->GetIndexCount(), FBXworldMatrix, viewMatrix, projectionMatrix);
-	//m_D3D->TurnOnCulling();
+	m_D3D->TurnOffCulling();
+	m_fbx->Render(m_D3D->GetDeviceContext());
+	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_fbx->GetIndexCount(), FBXworldMatrix, viewMatrix, projectionMatrix, m_fbx->GetTexture());
+	m_D3D->TurnOnCulling();
 
 	//-------------------------------------------------------------------------------------
 
