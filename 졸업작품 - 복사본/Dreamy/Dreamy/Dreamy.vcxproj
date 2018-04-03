@@ -159,6 +159,7 @@
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ColorShaderClass.cpp" />
     <ClCompile Include="CpuClass.cpp" />
+    <ClCompile Include="FBXAnimation.cpp" />
     <ClCompile Include="FBXMatrix.cpp" />
     <ClCompile Include="FBXModel.cpp" />
     <ClCompile Include="FBXVec2.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ColorShaderClass.h" />
     <ClInclude Include="CpuClass.h" />
+    <ClInclude Include="FBXAnimation.h" />
     <ClInclude Include="FBXHeader.h" />
     <ClInclude Include="FBXMath.h" />
     <ClInclude Include="FBXMath_func.h" />

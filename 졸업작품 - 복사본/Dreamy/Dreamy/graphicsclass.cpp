@@ -929,7 +929,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_D3D->TurnZBufferOn();
 
 	// FBX¸ðµ¨
-	D3DXMatrixTranslation(&FBXworldMatrix, CharacterPos.x + 2.0f, CharacterPos.y + 1.0f, CharacterPos.z);
+	D3DXMatrixTranslation(&FBXworldMatrix, 946.0f, 40.0f, 464.0f);
 	D3DXMatrixScaling(&FBXRotationMatrix, 0.1f, 0.1f, 0.1f);
 
 	D3DXMatrixMultiply(&FBXworldMatrix, &FBXRotationMatrix, &FBXworldMatrix);

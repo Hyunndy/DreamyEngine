@@ -70,22 +70,7 @@ bool FBXModel::FBXLoad(char* modelFilename)
 		FbxGeometryConverter geometryConverter(m_SdkManager);
 		geometryConverter.Triangulate(scene, true);
 
-		//s_animStack = scene->GetSrcObject<FbxAnimStack>();
-		//
-		//if (s_animStack)
-		//{
-		//	FbxString animStackName = s_animStack->GetName();
-		//	FbxTakeInfo* takeInfo = scene->GetTakeInfo(animStackName);
-		//
-		//	s_AnimationStart = takeInfo->mLocalTimeSpan.GetStart();
-		//	s_AnimationEnd = takeInfo->mLocalTimeSpan.GetStop();
-		//
-		//	s_AnimationLength = s_AnimationEnd.GetFrameCount(FbxTime::eFrames24) - s_AnimationStart.GetFrameCount(FbxTime::eFrames24) + 1;
-		//}
-		//
-		//LoadJoint(scene->GetRootNode(), -1, -1, -1);
-		//
-		//s_hasAnimation = s_skeleton.size() > 0 ? true : false;
+
 
 		//씬의 루트 노드를 가져온다.
 		//rootNode->RotationPivot;
@@ -97,26 +82,7 @@ bool FBXModel::FBXLoad(char* modelFilename)
 		//FbxMesh* mesh = FbxMesh::Create(scene, "mesh");
 	}
 }
-//void FBXModel::LoadJoint(FbxNode* node, int depth, int index, int parentIndex)
-//{
-//
-//	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
-//
-//	if (nodeAttribute && nodeAttribute->GetAttributeType() == FbxNodeAttribute::eSkeleton)
-//	{
-//		sun::Joint joint;
-//		joint.parentIndex = parentIndex;
-//		joint.name = node->GetName();
-//
-//		s_skeleton.push_back(joint);
-//	}
-//
-//	const uint childCount = node->GetChildCount();
-//
-//	// 재귀
-//	for (uint i = 0; i < childCount; ++i)
-//		LoadJoint(node->GetChild(i), depth + 1, s_skeleton.size(), index);
-//}
+
 
 bool FBXModel::LoadTexture(ID3D11Device* device, WCHAR* filename)
 {
@@ -191,7 +157,7 @@ bool FBXModel::ParseMesh(FbxMesh* mesh)
 			//m_indexCount = controlPointIndex;
 
 			//vec3& position = s_rawPositions[controlPointIndex].pos; //현재 정점에 대한 위치
-			vec3& position = positions[controlPointIndex].position; //현재 정점에 대한 위치
+			vec3& position = positions[controlPointIndex].pos; //현재 정점에 대한 위치
 			vec3 normal = ParseNormal(mesh, controlPointIndex, vertexCount);
 			vec3 tangent = ParseTangent(mesh, controlPointIndex, vertexCount);
 			vec3 binormal= ParseBinormal(mesh, controlPointIndex, vertexCount);
@@ -486,7 +452,7 @@ void FBXModel::InsertVertex(const unsigned int rawPositionIndex, const vec2& uv,
 {
 
 	//sun::VertexWithBlending vertex = { s_rawPositions[rawPositionIndex], uv, normal, tangent, binormal };
-	VertexType vertex = { positions[rawPositionIndex], uv, normal, tangent, binormal };
+	sun::VertexWithBlending vertex = { positions[rawPositionIndex], uv, normal, tangent, binormal };
 	auto lookup = indexMapping.find(vertex);
 	//auto lookup = s_indexMapping.find(vertex);
 
@@ -518,115 +484,12 @@ void FBXModel::InsertVertex(const unsigned int rawPositionIndex, const vec2& uv,
  
 }
 
-//void FBXModel::ParseAnimation(FbxNode* node)
-//{
-//	FbxGeometry* geo = node->GetGeometry();
-//
-//	s_rootMatrix.SetIdentity();
-//
-//	const FbxVector4 T = node->GetGeometricTranslation(FbxNode::eSourcePivot);
-//	const FbxVector4 R = node->GetGeometricRotation(FbxNode::eSourcePivot);
-//	const FbxVector4 S = node->GetGeometricScaling(FbxNode::eSourcePivot);
-//
-//	s_rootMatrix = FbxAMatrix(T, R, S);
-//
-//	uint deformerCount = geo->GetDeformerCount();
-//
-//	// 보통 1개
-//	for (int deformerIndex = 0; deformerIndex < deformerCount; ++deformerIndex)
-//	{
-//		FbxSkin* skin = reinterpret_cast<FbxSkin*>(geo->GetDeformer(deformerIndex, FbxDeformer::eSkin));
-//
-//		if (!skin) continue;
-//
-//		uint clusterCount = skin->GetClusterCount();
-//
-//		// 클러스터 안의 link가 joint 역할
-//
-//		for (uint clusterIndex = 0; clusterIndex < clusterCount; ++clusterIndex)
-//		{
-//			FbxCluster* cluster = skin->GetCluster(clusterIndex);
-//
-//			FbxAMatrix transformMatrix;
-//			FbxAMatrix transformLinkMatrix;
-//			FbxAMatrix globalBindposeInverseMatrix;
-//
-//			cluster->GetTransformMatrix(transformMatrix);
-//			cluster->GetTransformLinkMatrix(transformLinkMatrix);
-//
-//
-//			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * s_rootMatrix;
-//			unsigned int jointIndex;
-//
-//			String jointName = cluster->GetLink()->GetName();
-//
-//			for (uint i = 0; i < s_skeleton.size(); ++i)
-//				if (s_skeleton[i].name == jointName)
-//					jointIndex = i;
-//
-//			s_skeleton[jointIndex].globalBindPositionInverse = globalBindposeInverseMatrix;
-//			s_skeleton[jointIndex].node = cluster->GetLink();
-//
-//			uint IndicesCount = cluster->GetControlPointIndicesCount();
-//
-//			for (uint i = 0; i < IndicesCount; ++i)
-//			{
-//				sun::BlendingIndexWeightPair blendingIndexWeightPair;
-//
-//				blendingIndexWeightPair.blendingIndex = jointIndex;
-//				blendingIndexWeightPair.blendingWeight = (float)(cluster->GetControlPointWeights()[i]);
-//				s_rawPositions[cluster->GetControlPointIndices()[i]].blendingInfo.push_back(blendingIndexWeightPair);
-//			}
-//
-//			// ㄴ조인트 설정 및 각 포지션별 조인트 인덱스 설정 완료
-//
-//			// 애니메이션 시작
-//			sun::KeyFrame** anim = &s_skeleton[jointIndex].animation;
-//
-//			for (FbxLongLong i = s_AnimationStart.GetFrameCount(FbxTime::eFrames24); i <= s_AnimationEnd.GetFrameCount(FbxTime::eFrames24); ++i)
-//			{
-//				FbxTime time;
-//				time.SetFrame(i, FbxTime::eFrames24);
-//				*anim = new sun::KeyFrame();
-//				(*anim)->frameNum = i;
-//
-//				const FbxVector4 Tr = cluster->GetLink()->GetGeometricTranslation(FbxNode::eSourcePivot);
-//				const FbxVector4 Rr = cluster->GetLink()->GetGeometricRotation(FbxNode::eSourcePivot);
-//				const FbxVector4 Sr = cluster->GetLink()->GetGeometricScaling(FbxNode::eSourcePivot);
-//
-//				//s_rootMatrix = ;
-//
-//				FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(time) *FbxAMatrix(Tr, Rr, Sr);
-//				FbxAMatrix globalTransform = currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(time);
-//
-//				(*anim)->globalTransform = globalTransform;
-//
-//				anim = &((*anim)->next);
-//			}
-//		}
-//	}
-//
-//	// 4개이하 가중치 0처리
-//	sun::BlendingIndexWeightPair blendingIndexWeightPair;
-//
-//	blendingIndexWeightPair.blendingIndex = 0;
-//	blendingIndexWeightPair.blendingWeight = 0;
-//
-//	for (uint rawPositionIndex = 0; rawPositionIndex < s_rawPositionCount; ++rawPositionIndex)
-//	{
-//		for (uint i = s_rawPositions[rawPositionIndex].blendingInfo.size(); i <= 4; ++i)
-//		{
-//			s_rawPositions[rawPositionIndex].blendingInfo.push_back(blendingIndexWeightPair);
-//		}
-//	}
-//
-//}
 
 
 bool FBXModel::InitializeBuffers(ID3D11Device* device)
 {
 	//sun::VertexWithBlending* m_vertices;
-	VertexType* m_vertices;
+	sun::VertexWithBlending* m_vertices;
 	unsigned int* m_indices;
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
@@ -635,7 +498,7 @@ bool FBXModel::InitializeBuffers(ID3D11Device* device)
 	int m_BufferCount = vertices.size();
 	m_indexCount2 = indices.size();
 
-	m_vertices = new VertexType[m_BufferCount];
+	m_vertices = new sun::VertexWithBlending[m_BufferCount];
 	if (!m_vertices) { return false; }
 
 	m_indices = new unsigned int[m_indexCount2];
@@ -654,7 +517,7 @@ bool FBXModel::InitializeBuffers(ID3D11Device* device)
 		m_indices[i] = indices[i];
 	}
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT; // 버퍼가 쓰이는 방식
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_BufferCount; //생성할 버퍼의 크기
+	vertexBufferDesc.ByteWidth = sizeof(sun::VertexWithBlending) * m_BufferCount; //생성할 버퍼의 크기
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // 무슨 버퍼인지
 	vertexBufferDesc.CPUAccessFlags = 0; // cpu가 버퍼에 접근하는 방식
 	vertexBufferDesc.MiscFlags = 0;
@@ -710,7 +573,7 @@ void FBXModel::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 
 	// 정점 버퍼의 단위와 오프셋을 설정한다.
-	stride = sizeof(VertexType);
+	stride = sizeof(sun::VertexWithBlending);
 	offset = 0;
 
 	// input assmbler(렌더링 파이프라인의 첫번째 단계)에 정점 버퍼를 활성화 하여 그려질 수 있게 한다.
@@ -729,7 +592,7 @@ void FBXModel::ParseControlPoints(FbxMesh* mesh)
 {
 	//메쉬의 정점 갯수를 가져온다.
 	m_count = mesh->GetControlPointsCount();
-	positions = new Position[m_count];
+	positions = new sun::Position[m_count];
 
 	for (unsigned int i = 0; i < m_count; ++i)
 	{
@@ -742,10 +605,12 @@ void FBXModel::ParseControlPoints(FbxMesh* mesh)
 		position.y = static_cast<float>(mesh->GetControlPointAt(i).mData[1]);
 		position.z = static_cast<float>(mesh->GetControlPointAt(i).mData[2]);
 
-		positions[i].position = position;
+		positions[i].pos = position;
 
 	}
 }
+
+
 
 void FBXModel::ShutDown()
 {

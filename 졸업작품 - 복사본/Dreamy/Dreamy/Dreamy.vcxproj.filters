@@ -207,6 +207,9 @@
     <ClCompile Include="FBXVec4.cpp">
       <Filter>FBX</Filter>
     </ClCompile>
+    <ClCompile Include="FBXAnimation.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -388,6 +391,9 @@
     </ClInclude>
     <ClInclude Include="FBXUtil.h">
       <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXAnimation.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

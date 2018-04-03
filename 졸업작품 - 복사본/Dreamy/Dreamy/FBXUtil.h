@@ -14,7 +14,9 @@ typedef std::string String;
 #define BIT(x) (1 << x)
 
 using namespace sunny;
-using namespace maths;
+
+namespace math = sunny::maths;
+using namespace math;
 
 namespace sun
 {
@@ -72,12 +74,13 @@ namespace sun
 	struct Position
 	{
 		vec3 pos;
-		std::vector<BlendingIndexWeightPair> blendingInfo;
 
-		Position()
-		{
-			blendingInfo.reserve(8);
-		}
+	//	std::vector<BlendingIndexWeightPair> blendingInfo;
+	//	
+	//	Position()
+	//	{
+	//		blendingInfo.reserve(8);
+	//	}
 	};
 
 	struct VertexWithBlending

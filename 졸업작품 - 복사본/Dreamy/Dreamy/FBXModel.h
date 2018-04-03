@@ -9,15 +9,18 @@
 
 #include <fbxsdk.h>
 
-//#include <unordered_map>
-
-//#include "FBXMath.h"
+#include "FBXMath.h"
 #include "TextureClass.h"
-//#include "FBXUtil.h"
+#include "FBXUtil.h"
 
 using namespace std;
-//using namespace sunny;
-//using namespace maths;
+using namespace sunny;
+
+namespace math = sunny::maths;
+using namespace math;
+
+
+
 /*
 .FBX로드를 위한 클래스
 
@@ -64,152 +67,17 @@ using namespace std;
 
 		   Normal, Binormal, Tangents는 읽는 방법이 똑같다.
 
-		   
-*/	
-struct vec4
-{
-	float x, y, z, w;
-
-	vec4()
-		: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
-	{}
-	vec4(float x, float y, float z, float w)
-		: x(x), y(y), z(z), w(w)
-	{}
-
-	bool operator==(const vec4& other) const
-	{
-		return x == other.x && y == other.y && z == other.z && w == other.w;
-	}
-
-	bool operator!=(const vec4& other) const
-	{
-		return !(*this == other);
-	}
-
-	unsigned int GetHash() const
-	{
-		return (*(unsigned int*)&x) ^ ((*(unsigned int*)&y) << 14) ^ ((*(unsigned int*)&z) << 23) ^ ((*(unsigned int*)&w) << 31);
-	}
-};
-
-struct vec3
-{
-	float x, y, z;
-
-	vec3()
-		: x(0.0f), y(0.0f), z(0.0f)
-	{}
-	vec3(float x, float y, float z)
-		: x(x), y(y), z(z)
-	{}
-
-	bool operator==(const vec3& other) const
-	{
-		return x == other.x && y == other.y && z == other.z;
-	}
-
-	bool operator!=(const vec3& other) const
-	{
-		return !(*this == other);
-	}
-
-	unsigned int GetHash() const
-	{
-		return (*(unsigned int*)&x) ^ ((*(unsigned int*)&y) << 14) ^ ((*(unsigned int*)&z) << 23);
-	}
-
-};
-
-struct vec2
-{
-	float x, y;
-
-	vec2()
-		: x(0.0f), y(0.0f)
-	{}
-	vec2(float x, float y)
-		: x(x), y(y)
-	{}
-
-	bool operator==(const vec2& other) const
-	{
-		return x == other.x && y == other.y;
-	}
-
-	bool operator!=(const vec2& other) const
-	{
-		return !(*this == other);
-	}
-
-	unsigned int GetHash() const
-	{
-		return (*(unsigned int*)&x) ^ ((*(unsigned int*)&y) << 14);
-	}
-
-};
-
-struct Position
-{
-	vec3 position;
-};
-struct VertexType
-{
-	Position position;
-	vec2 texture;
-	vec3 normal;
-	vec3 tangent;
-	vec3 binormal;
+*/	   
 
 
-	bool operator==(const VertexType& other)const
-	{
-		return position.position == other.position.position && texture == other.texture && normal == other.normal && tangent == other.tangent && binormal == other.binormal;
-	}
-
-};
-
-struct ModelType
-{
-	float x, y, z;
-	float tu, tv;
-	float nx, ny, nz;
-	float tx, ty, tz;
-	float bx, by, bz;
-};
 
 
-template<>
-struct std::hash<VertexType>
-{
-	const size_t operator()(const VertexType& key)const
-	{
-		return key.position.position.GetHash() ^ key.texture.GetHash() ^ key.normal.GetHash() ^ key.tangent.GetHash() ^ key.binormal.GetHash();
-	}
-};
+static vector<sun::VertexWithBlending>                  vertices;;     // 정점
+static vector<uint>                                     indices;      // 인덱스
+static unordered_map<sun::VertexWithBlending, uint>    indexMapping;  // 정점+인덱스 맵핑
 
-//정점, 인덱스 배열
-static vector<VertexType> vertices;
-static vector<unsigned int> indices;
-// 정점,인덱스를 맵핑할 맵
-static unordered_map<VertexType, unsigned int> indexMapping;
-//static vector<sun::VertexWithBlending>                  s_vertices;;     // 정점
-//static vector<uint>                                     s_indices;      // 인덱스
-//static unordered_map<sun::VertexWithBlending, uint>    s_indexMapping;  // 정점+인덱스 맵핑
-//
-//static sun::Position* s_rawPositions;                    // 정점 위치, 애니메이션
-//static uint s_rawPositionCount;
-//
-//static FbxAMatrix s_rootMatrix;                            // STR
-//
-//static sun::Skeleton s_skeleton;                         // 뼈(std::vector<Joint> joints;)
-//
-//static bool s_hasAnimation;
-//
-//static FbxTime s_AnimationStart, s_AnimationEnd;           // 애니메이션 시작과 종료 시간
-//static size_t s_AnimationLength = 1;                  // 애니메이션 길이(종료 - 시작)
-//static FbxAnimStack* s_animStack;
-//
+
+
 
 
 class FBXModel
@@ -243,7 +111,11 @@ public:
 
 	void InsertVertex(const unsigned int rawPositionIndex, const vec2& uv, const vec3& normal,  const vec3& tangent,const vec3& binormal);
 	
-	
+	//애니메이션 재생
+	void PlayAnimation();
+	uint m_frame;
+	void SetFrame(uint frame);
+
 	//bool InsertVertex(ID3D11Device*);
 
 	void RenderBuffers(ID3D11DeviceContext* deviceContext);
@@ -259,8 +131,8 @@ private:
 	FbxImporter* m_Importer = nullptr;
 	FbxScene* m_Scene = nullptr;
 
-	Position* positions;
-	VertexType* m_Model;
+	sun::Position* positions;
+	sun::VertexWithBlending* m_Model;
 
 	
 	int m_count;
@@ -281,6 +153,134 @@ private:
 };
 
 
+
+//struct vec4
+//{
+//	float x, y, z, w;
+//
+//	vec4()
+//		: x(0.0f), y(0.0f), z(0.0f), w(0.0f)
+//	{}
+//	vec4(float x, float y, float z, float w)
+//		: x(x), y(y), z(z), w(w)
+//	{}
+//
+//	bool operator==(const vec4& other) const
+//	{
+//		return x == other.x && y == other.y && z == other.z && w == other.w;
+//	}
+//
+//	bool operator!=(const vec4& other) const
+//	{
+//		return !(*this == other);
+//	}
+//
+//	unsigned int GetHash() const
+//	{
+//		return (*(unsigned int*)&x) ^ ((*(unsigned int*)&y) << 14) ^ ((*(unsigned int*)&z) << 23) ^ ((*(unsigned int*)&w) << 31);
+//	}
+//};
+//
+//struct vec3
+//{
+//	float x, y, z;
+//
+//	vec3()
+//		: x(0.0f), y(0.0f), z(0.0f)
+//	{}
+//	vec3(float x, float y, float z)
+//		: x(x), y(y), z(z)
+//	{}
+//
+//	bool operator==(const vec3& other) const
+//	{
+//		return x == other.x && y == other.y && z == other.z;
+//	}
+//
+//	bool operator!=(const vec3& other) const
+//	{
+//		return !(*this == other);
+//	}
+//
+//	unsigned int GetHash() const
+//	{
+//		return (*(unsigned int*)&x) ^ ((*(unsigned int*)&y) << 14) ^ ((*(unsigned int*)&z) << 23);
+//	}
+//
+//};
+//
+//struct vec2
+//{
+//	float x, y;
+//
+//	vec2()
+//		: x(0.0f), y(0.0f)
+//	{}
+//	vec2(float x, float y)
+//		: x(x), y(y)
+//	{}
+//
+//	bool operator==(const vec2& other) const
+//	{
+//		return x == other.x && y == other.y;
+//	}
+//
+//	bool operator!=(const vec2& other) const
+//	{
+//		return !(*this == other);
+//	}
+//
+//	unsigned int GetHash() const
+//	{
+//		return (*(unsigned int*)&x) ^ ((*(unsigned int*)&y) << 14);
+//	}
+//
+//};
+//
+//struct Position
+//{
+//	vec3 position;
+//};
+//struct VertexType
+//{
+//	Position position;
+//	vec2 texture;
+//	vec3 normal;
+//	vec3 tangent;
+//	vec3 binormal;
+//
+//
+//	bool operator==(const VertexType& other)const
+//	{
+//		return position.position == other.position.position && texture == other.texture && normal == other.normal && tangent == other.tangent && binormal == other.binormal;
+//	}
+//
+//};
+//
+//struct ModelType
+//{
+//	float x, y, z;
+//	float tu, tv;
+//	float nx, ny, nz;
+//	float tx, ty, tz;
+//	float bx, by, bz;
+//};
+//
+//
+//template<>
+//struct std::hash<VertexType>
+//{
+//	const size_t operator()(const VertexType& key)const
+//	{
+//		return key.position.position.GetHash() ^ key.texture.GetHash() ^ key.normal.GetHash() ^ key.tangent.GetHash() ^ key.binormal.GetHash();
+//	}
+//};
+//
+////정점, 인덱스 배열
+//static vector<VertexType> vertices;
+//static vector<unsigned int> indices;
+//// 정점,인덱스를 맵핑할 맵
+//static unordered_map<VertexType, unsigned int> indexMapping;
 
 
 
