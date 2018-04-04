@@ -113,6 +113,7 @@ private:
 	ID3D11BlendState* m_alphaEnableBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
 
+
 	//additive blending for cloud
 	ID3D11BlendState * m_alphaBlendState2;
 

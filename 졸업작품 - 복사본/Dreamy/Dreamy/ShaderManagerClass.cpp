@@ -21,6 +21,7 @@ ShaderManagerClass::ShaderManagerClass()
 	m_CloudShader = 0;
 	m_FireShader = 0;
 	m_InstancingShader = 0;
+	m_particleShader = 0;
 
 }
 
@@ -137,27 +138,33 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 	if (!result) { MessageBox(hwnd, L"Could not initialize the m_WaterReflectionShader object.", L"Error", MB_OK); return false; }
 
 	m_SkydomeShader = new SkyDomeShaderClass;
-	if (!m_SkydomeShader) { return true; }
+	if (!m_SkydomeShader) { return false; }
 
 	m_SkydomeShader->Initialize(device, hwnd);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the Skydomeshader object.", L"Error", MB_OK); return false; }
 
 	m_CloudShader = new SkyPlaneShaderClass;
-	if (!m_CloudShader) { return true; }
+	if (!m_CloudShader) { return false; }
 
 	m_CloudShader->Initialize(device, hwnd);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the Skydomeshader object.", L"Error", MB_OK); return false; }
 
 	m_FireShader = new FireShaderClass;
-	if (!m_FireShader) { return true; }
+	if (!m_FireShader) { return false; }
 
 	m_FireShader->Initialize(device, hwnd);
 	if(!result){ MessageBox(hwnd, L"Could not initialize the FireShader object.", L"Error", MB_OK); return false; }
 
 	m_InstancingShader = new InstancingShaderClass;
-	if (!m_InstancingShader) { return true;}
+	if (!m_InstancingShader) { return false; }
 
 	m_InstancingShader->Initialize(device, hwnd);
+	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
+	
+	m_particleShader = new ParticleShaderClass;
+	if (!m_particleShader) { return false; }
+
+	m_particleShader->Initialize(device, hwnd);
 	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
 
 	return true;
@@ -184,9 +191,9 @@ void ShaderManagerClass::Shutdown()
 	if (m_BumpMapShader) { m_BumpMapShader->Shutdown(); delete m_BumpMapShader; m_BumpMapShader = 0; }
 	if (m_SpecMapShader) { m_SpecMapShader->Shutdown(); delete m_SpecMapShader; m_SpecMapShader = 0; }
 	if (m_FogShader) { m_FogShader->Shutdown(); delete m_FogShader; m_FogShader = 0; }
-	if (!m_TranslateShader) { m_TranslateShader->Shutdown(); delete m_TranslateShader; m_TranslateShader = 0; }
+	if (m_TranslateShader) { m_TranslateShader->Shutdown(); delete m_TranslateShader; m_TranslateShader = 0; }
 	if (m_TransparentShader) { m_TransparentShader->Shutdown(); delete m_TransparentShader; m_TransparentShader = 0; }
-
+	if (m_particleShader) { m_particleShader->Shutdown(); delete m_particleShader; m_particleShader = 0; }
 }
 
 bool ShaderManagerClass::RenderColorShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
@@ -315,4 +322,10 @@ bool ShaderManagerClass::RenderInstancingShader(ID3D11DeviceContext* deviceConte
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	return m_InstancingShader->Render(deviceContext, vertexCount, instanceCount, worldMatrix, viewMatrix, projectionMatrix, texture);
+}
+
+bool ShaderManagerClass::RenderParticleShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+{
+	return m_particleShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
 }

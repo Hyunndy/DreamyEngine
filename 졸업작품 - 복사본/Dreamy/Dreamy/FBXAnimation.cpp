@@ -1,5 +1,22 @@
 //#include "FBXAnimation.h"
 //
+//static vector<sun::Ani_VertexWithBlending>                  s_vertices;;     // 정점
+//static vector<uint>                                     s_indices;      // 인덱스
+//static unordered_map<sun::Ani_VertexWithBlending, uint>    s_indexMapping;  // 정점+인덱스 맵핑
+//
+//static sun::Ani_Position* s_rawPositions;                    // 정점 위치, 애니메이션
+//static uint s_rawPositionCount;
+//
+//static FbxAMatrix s_rootMatrix;                            // STR
+//
+//static sun::Skeleton s_skeleton;                         // 뼈(std::vector<Joint> joints;)
+//
+//static bool s_hasAnimation;
+//
+//static FbxTime s_AnimationStart, s_AnimationEnd;           // 애니메이션 시작과 종료 시간
+//static size_t s_AnimationLength = 1;                  // 애니메이션 길이(종료 - 시작)
+//static FbxAnimStack* s_animStack;
+//
 //
 //FBXAnimation::FBXAnimation()
 //{
@@ -155,8 +172,8 @@
 //			// 제어점으로 부터 위치 리스트를 채운다.
 //			ParseControlPoints(mesh);
 //
-//			//	if (s_hasAnimation)
-//			//		ParseAnimation(node);
+//				if (s_hasAnimation)
+//					ParseAnimation(node);
 //
 //			ParseMesh(mesh);
 //		}
@@ -189,9 +206,8 @@
 //		{
 //			int controlPointIndex = mesh->GetPolygonVertex(i, j);; // 제어점 인덱스를 가져온다.
 //																   //m_indexCount = controlPointIndex;
-//
-//																   //vec3& position = s_rawPositions[controlPointIndex].pos; //현재 정점에 대한 위치
-//			vec3& position = positions[controlPointIndex].pos; //현재 정점에 대한 위치
+//		    //현재 정점에 대한 위치
+//			vec3& position = s_rawPositions[controlPointIndex].pos; //현재 정점에 대한 위치
 //			vec3 normal = ParseNormal(mesh, controlPointIndex, vertexCount);
 //			vec3 tangent = ParseTangent(mesh, controlPointIndex, vertexCount);
 //			vec3 binormal = ParseBinormal(mesh, controlPointIndex, vertexCount);
@@ -485,22 +501,21 @@
 //void FBXAnimation::InsertVertex(const unsigned int rawPositionIndex, const vec2& uv, const vec3& normal, const vec3& tangent, const vec3& binormal)
 //{
 //
-//	//sun::VertexWithBlending vertex = { s_rawPositions[rawPositionIndex], uv, normal, tangent, binormal };
-//	sun::VertexWithBlending vertex = { positions[rawPositionIndex], uv, normal, tangent, binormal };
-//	auto lookup = indexMapping.find(vertex);
+//	sun::Ani_VertexWithBlending vertex = { s_rawPositions[rawPositionIndex], uv, normal, tangent, binormal };
+//	auto lookup = s_indexMapping.find(vertex);
 //	//auto lookup = s_indexMapping.find(vertex);
 //
-//	if (lookup != indexMapping.end())
+//	if (lookup != s_indexMapping.end())
 //	{
-//		indices.push_back(lookup->second);
+//		s_indices.push_back(lookup->second);
 //
 //	}
 //	else
 //	{
-//		unsigned int index = vertices.size();
-//		indexMapping[vertex] = index;
-//		indices.push_back(index);
-//		vertices.push_back(vertex);
+//		unsigned int index = s_vertices.size();
+//		s_indexMapping[vertex] = index;
+//		s_indices.push_back(index);
+//		s_vertices.push_back(vertex);
 //
 //
 //	}
@@ -575,6 +590,7 @@
 //
 //				blendingIndexWeightPair.blendingIndex = jointIndex;
 //				blendingIndexWeightPair.blendingWeight = (float)(cluster->GetControlPointWeights()[i]);
+//				//if(s_rawPositions)
 //				s_rawPositions[cluster->GetControlPointIndices()[i]].blendingInfo.push_back(blendingIndexWeightPair);
 //			}
 //
@@ -608,57 +624,183 @@
 //
 //	// 4개이하 가중치 0처리
 //	sun::BlendingIndexWeightPair blendingIndexWeightPair;
-//
+//	
 //	blendingIndexWeightPair.blendingIndex = 0;
 //	blendingIndexWeightPair.blendingWeight = 0;
 //
-//	for (uint rawPositionIndex = 0; rawPositionIndex < s_rawPositionCount; ++rawPositionIndex)
-//	{
-//		for (uint i = s_rawPositions[rawPositionIndex].blendingInfo.size(); i <= 4; ++i)
+//		for (uint rawPositionIndex = 0; rawPositionIndex < s_rawPositionCount; ++rawPositionIndex)
 //		{
-//			s_rawPositions[rawPositionIndex].blendingInfo.push_back(blendingIndexWeightPair);
+//			for (uint i = s_rawPositions[rawPositionIndex].blendingInfo.size(); i <= 4; ++i)
+//			{
+//				s_rawPositions[rawPositionIndex].blendingInfo.push_back(blendingIndexWeightPair);
+//			}
+//		}
+//
+//}
+////bool FBXAnimation::UpdateBuffers(ID3D11DeviceContext* deviceContext)
+//{
+//	HRESULT result;
+//	D3D11_MAPPED_SUBRESOURCE mappedResource;
+//	sun::Ani_VertexWithBlending* verticesPtr;
+//	
+//	// Initialize vertex array to zeros at first.
+//	memset(m_vertices, 0, (sizeof(sun::Ani_VertexWithBlending) * m_BufferCount));
+//	
+//	for (int i = 0; i < m_BufferCount; ++i)	   
+//	{										   
+//		m_vertices[i] = s_vertices[i];		   
+//	}
+//	
+//	// Lock the vertex buffer.
+//	result = deviceContext->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+//	if (FAILED(result))
+//	{
+//		return false;
+//	}
+//	
+//	// Get a pointer to the data in the vertex buffer.
+//	verticesPtr = (sun::Ani_VertexWithBlending*)mappedResource.pData;
+//	
+//	// Copy the data into the vertex buffer.
+//	memcpy(verticesPtr, (void*)m_vertices, (sizeof(sun::Ani_VertexWithBlending) * m_BufferCount));
+//	
+//	// Unlock the vertex buffer.
+//	deviceContext->Unmap(m_vertexBuffer, 0);
+//	
+//	return true;
+//}
+//void FBXAnimation::WriteBuffers()
+//{
+//	w_vertexBuffer.resize(s_AnimationLength);
+//
+//	for (uint i = 0; i < s_AnimationLength; ++i)
+//	{
+//		for (uint j = 0; j < s_vertices.size(); ++j)
+//		{
+//			vec3 position = s_vertices[j].position.pos;
+//
+//			float weight1 = s_vertices[j].position.blendingInfo[0].blendingWeight;
+//			float weight2 = s_vertices[j].position.blendingInfo[1].blendingWeight;
+//			float weight3 = s_vertices[j].position.blendingInfo[2].blendingWeight;
+//			float weight4 = s_vertices[j].position.blendingInfo[3].blendingWeight;
+//
+//			uint index1 = s_vertices[j].position.blendingInfo[0].blendingIndex;
+//			uint index2 = s_vertices[j].position.blendingInfo[1].blendingIndex;
+//			uint index3 = s_vertices[j].position.blendingInfo[2].blendingIndex;
+//			uint index4 = s_vertices[j].position.blendingInfo[3].blendingIndex;
+//
+//			sun::KeyFrame* anim1 = s_skeleton[index1].animation;
+//			sun::KeyFrame* anim2 = s_skeleton[index2].animation;
+//			sun::KeyFrame* anim3 = s_skeleton[index3].animation;
+//			sun::KeyFrame* anim4 = s_skeleton[index4].animation;
+//
+//
+//			for (int time = 0; time < i; ++time)
+//			{
+//				anim1 = anim1->next;
+//				anim2 = anim2->next;
+//				anim3 = anim3->next;
+//				anim4 = anim4->next;
+//			}
+//
+//
+//
+//			FbxAMatrix a1 = anim1->globalTransform *  s_skeleton[index1].globalBindPositionInverse;
+//			FbxAMatrix a2 = anim2->globalTransform *  s_skeleton[index2].globalBindPositionInverse;
+//			FbxAMatrix a3 = anim3->globalTransform *  s_skeleton[index3].globalBindPositionInverse;
+//			FbxAMatrix a4 = anim4->globalTransform *  s_skeleton[index4].globalBindPositionInverse;
+//
+//			FbxVector4 pos = { position.x, position.y, position.z, 1 };
+//			FbxVector4 tmp = { position.x, position.y, position.z, 1 };
+//
+//
+//			//transform.rows[0].x * x + transform.rows[0].y * y + transform.rows[0].z * z + transform.rows[0].w,
+//			//transform.rows[1].x * x + transform.rows[1].y * y + transform.rows[1].z * z + transform.rows[1].w,
+//			//transform.rows[2].x * x + transform.rows[2].y * y + transform.rows[2].z * z + transform.rows[2].w
+//			a1 = a1.Transpose();
+//			a2 = a2.Transpose();
+//			a3 = a3.Transpose();
+//			a4 = a4.Transpose();
+//
+//			float a11 = a1.Get(0, 0) * tmp[0] + a1.Get(0, 1) * tmp[1] + a1.Get(0, 2) * tmp[2] + a1.Get(0, 3);// *tmp[3];
+//			float b11 = a1.Get(1, 0) * tmp[0] + a1.Get(1, 1) * tmp[1] + a1.Get(1, 2) * tmp[2] + a1.Get(1, 3);// * tmp[3];
+//			float c11 = a1.Get(2, 0) * tmp[0] + a1.Get(2, 1) * tmp[1] + a1.Get(2, 2) * tmp[2] + a1.Get(2, 3);// * tmp[3];
+//
+//
+//			float a22 = a2.Get(0, 0) * tmp[0] + a2.Get(0, 1) * tmp[1] + a2.Get(0, 2) * tmp[2] + a2.Get(0, 3);// * tmp[3];
+//			float b22 = a2.Get(1, 0) * tmp[0] + a2.Get(1, 1) * tmp[1] + a2.Get(1, 2) * tmp[2] + a2.Get(1, 3);// * tmp[3];
+//			float c22 = a2.Get(2, 0) * tmp[0] + a2.Get(2, 1) * tmp[1] + a2.Get(2, 2) * tmp[2] + a2.Get(2, 3);// * tmp[3];
+//
+//			float a33 = a3.Get(0, 0) * tmp[0] + a3.Get(0, 1) * tmp[1] + a3.Get(0, 2) * tmp[2] + a3.Get(0, 3);// * tmp[3];
+//			float b33 = a3.Get(1, 0) * tmp[0] + a3.Get(1, 1) * tmp[1] + a3.Get(1, 2) * tmp[2] + a3.Get(1, 3);// * tmp[3];
+//			float c33 = a3.Get(2, 0) * tmp[0] + a3.Get(2, 1) * tmp[1] + a3.Get(2, 2) * tmp[2] + a3.Get(2, 3);// * tmp[3];
+//
+//			float a44 = a4.Get(0, 0) * tmp[0] + a4.Get(0, 1) * tmp[1] + a4.Get(0, 2) * tmp[2] + a4.Get(0, 3);// * tmp[3];
+//			float b44 = a4.Get(1, 0) * tmp[0] + a4.Get(1, 1) * tmp[1] + a4.Get(1, 2) * tmp[2] + a4.Get(1, 3);// * tmp[3];
+//			float c44 = a4.Get(2, 0) * tmp[0] + a4.Get(2, 1) * tmp[1] + a4.Get(2, 2) * tmp[2] + a4.Get(2, 3);// * tmp[3];
+//
+//
+//			if (weight1 > 0.0f)
+//				pos = FbxVector4(a11, b11, c11, 1) * weight1;
+//			if (weight2 > 0.0f)
+//				pos = FbxVector4(a22, b22, c22, 1) * weight2;
+//			if (weight3 > 0.0f)
+//				pos = FbxVector4(a33, b33, c33, 1) * weight3;
+//			if (weight4 > 0.0f)
+//				pos = FbxVector4(a44, b44, c44, 1) * weight4;
+//
+//
+//			vec3 result = { (float)pos[0], (float)pos[1], (float)pos[2] };
+//
+//			s_vertices[j].position.pos = result;
+//		
 //		}
 //	}
 //
 //}
 //
-//
 //bool FBXAnimation::InitializeBuffers(ID3D11Device* device)
 //{
-//	//sun::VertexWithBlending* m_vertices;
-//	sun::VertexWithBlending* m_vertices;
+//
+//	sun::Ani_VertexWithBlending* m_vertices; // 얘를 헤더파일로 보낸다.
 //	unsigned int* m_indices;
 //	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 //	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 //	HRESULT result;
-//	int i;
-//	int m_BufferCount = vertices.size();
-//	m_indexCount2 = indices.size();
+//	
+//	int m_BufferCount = s_vertices.size(); // 얘도 헤더파일로 따로 빼 m_bufferCount
+//	m_indexCount2 = s_indices.size();
 //
-//	m_vertices = new sun::VertexWithBlending[m_BufferCount];
+//	m_vertices = new sun::Ani_VertexWithBlending[m_BufferCount];
 //	if (!m_vertices) { return false; }
 //
 //	m_indices = new unsigned int[m_indexCount2];
 //	if (!m_indices) { return false; }
 //
 //
-//	for (int i = 0; i < m_BufferCount; ++i)
-//	{
-//		m_vertices[i] = vertices[i];
-//
-//
+//	for (int i = 0; i < m_BufferCount; ++i)	   // 얘 updatebUffer로
+//	{										   //
+//		m_vertices[i] = s_vertices[i];		   //
 //	}
 //
 //	for (int i = 0; i < m_indexCount2; ++i)
 //	{
-//		m_indices[i] = indices[i];
+//		m_indices[i] = s_indices[i];
 //	}
 //	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT; // 버퍼가 쓰이는 방식
-//	vertexBufferDesc.ByteWidth = sizeof(sun::VertexWithBlending) * m_BufferCount; //생성할 버퍼의 크기
+//	vertexBufferDesc.ByteWidth = sizeof(sun::Ani_VertexWithBlending) * m_BufferCount; //생성할 버퍼의 크기
 //	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // 무슨 버퍼인지
 //	vertexBufferDesc.CPUAccessFlags = 0; // cpu가 버퍼에 접근하는 방식
 //	vertexBufferDesc.MiscFlags = 0;
 //	vertexBufferDesc.StructureByteStride = 0;
+//
+//	// Set up the description of the dynamic vertex buffer.
+//	//vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+//	//vertexBufferDesc.ByteWidth = sizeof(sun::Ani_VertexWithBlending) * m_BufferCount;//vertexBufferSize;
+//	//vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+//	//vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+//	//vertexBufferDesc.MiscFlags = 0;
+//	//vertexBufferDesc.StructureByteStride = 0;
 //
 //	// 정점 데이터를 가리키는 보조 리소스 구조체를 작성한다.
 //	// = 정점 배열을 가져온다.
@@ -694,8 +836,8 @@
 //	}
 //
 //	// 필요 없어진 정점 배열, 인덱스 배열을 제거 한다.
-//	delete[] m_vertices;
-//	m_vertices = 0;
+//	delete[] m_vertices;	//
+//	m_vertices = 0;			//
 //
 //	delete[] m_indices;
 //	m_indices = 0;
@@ -710,7 +852,7 @@
 //
 //
 //	// 정점 버퍼의 단위와 오프셋을 설정한다.
-//	stride = sizeof(sun::VertexWithBlending);
+//	stride = sizeof(sun::Ani_VertexWithBlending);
 //	offset = 0;
 //
 //	// input assmbler(렌더링 파이프라인의 첫번째 단계)에 정점 버퍼를 활성화 하여 그려질 수 있게 한다.
@@ -728,21 +870,17 @@
 //void FBXAnimation::ParseControlPoints(FbxMesh* mesh)
 //{
 //	//메쉬의 정점 갯수를 가져온다.
-//	m_count = mesh->GetControlPointsCount();
-//	positions = new sun::Position[m_count];
+//	s_rawPositionCount = mesh->GetControlPointsCount();
+//	s_rawPositions = new sun::Ani_Position[s_rawPositionCount];
 //
 //	for (unsigned int i = 0; i < m_count; ++i)
 //	{
 //		vec3 position;
-//		//제어점을 가져오려면 GetControlPointAt(int index)멤버 함수를 이용한다.
-//		//position.x = static_cast<float>(mesh->GetControlPointAt(i).mData[0]);
-//		//position.y = static_cast<float>(mesh->GetControlPointAt(i).mData[1]);
-//		//position.z = static_cast<float>(mesh->GetControlPointAt(i).mData[2]);
 //		position.x = static_cast<float>(mesh->GetControlPointAt(i).mData[0]);
 //		position.y = static_cast<float>(mesh->GetControlPointAt(i).mData[1]);
 //		position.z = static_cast<float>(mesh->GetControlPointAt(i).mData[2]);
 //
-//		positions[i].pos = position;
+//		s_rawPositions[i].pos = position;
 //
 //	}
 //}
@@ -759,7 +897,7 @@
 //void FBXAnimation::SetFrame(uint frame)
 //{
 //	if (frame > s_AnimationLength) frame = 0;
-//
+//	
 //
 //}
 //
@@ -809,5 +947,6 @@
 //
 //	return;
 //}
-
-
+//
+//
+//

@@ -62,14 +62,7 @@ namespace sun
 	typedef std::vector<Joint> Skeleton;
 
 
-	struct BlendingIndexWeightPair
-	{
-		uint blendingIndex;
-		float blendingWeight;
 
-		BlendingIndexWeightPair() : blendingIndex(0), blendingWeight(0.f)
-		{}
-	};
 
 	struct Position
 	{
@@ -106,12 +99,68 @@ namespace sun
 		vec3 binormal;
 
 	};
+
+	struct BlendingIndexWeightPair
+	{
+		uint blendingIndex;
+		float blendingWeight;
+
+		BlendingIndexWeightPair() : blendingIndex(0), blendingWeight(0.0f)
+		{}
+	};
+
+	struct Ani_Position
+	{
+		vec3 pos;
+
+		std::vector<BlendingIndexWeightPair> blendingInfo;
+		
+		Ani_Position()
+		{
+			blendingInfo.reserve(8);
+		}
+	};
+
+	struct Ani_VertexWithBlending
+	{
+		Ani_Position position;
+		vec2 uv;
+		vec3 normal;
+		vec3 tangent;
+		vec3 binormal;
+
+		bool operator==(const Ani_VertexWithBlending& other) const
+		{
+			return position.pos == other.position.pos && uv == other.uv && normal == other.normal && tangent == other.tangent && binormal == other.binormal;
+		}
+	};
+
+	struct Ani_Vertex
+	{
+		vec3 position;
+		vec2 uv;
+		vec3 normal;
+		vec3 tangent;
+		vec3 binormal;
+
+	};
 }
 
 template<>
 struct std::hash<sun::VertexWithBlending>
 {
 	const size_t operator()(const sun::VertexWithBlending& key) const
+	{
+		return key.position.pos.GetHash() ^ key.uv.GetHash() ^ key.normal.GetHash() ^ key.tangent.GetHash() ^ key.binormal.GetHash();
+	}
+};
+
+
+
+template<>
+struct std::hash<sun::Ani_VertexWithBlending>
+{
+	const size_t operator()(const sun::Ani_VertexWithBlending& key) const
 	{
 		return key.position.pos.GetHash() ^ key.uv.GetHash() ^ key.normal.GetHash() ^ key.tangent.GetHash() ^ key.binormal.GetHash();
 	}

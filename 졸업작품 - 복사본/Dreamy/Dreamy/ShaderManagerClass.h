@@ -25,6 +25,7 @@ using namespace std;
 #include "WaterReflectionShaderClass.h"
 #include "FireShaderClass.h"
 #include "InstancingShaderClass.h"
+#include "ParticleShaderClass.h"
 
 class ShaderManagerClass
 {
@@ -77,6 +78,7 @@ public:
 
 	bool RenderInstancingShader(ID3D11DeviceContext*, int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
+	bool RenderParticleShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
 	TextureShaderClass* m_TextureShader = nullptr;
 
@@ -98,6 +100,7 @@ private:
 	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
 	FireShaderClass* m_FireShader = nullptr;
 	InstancingShaderClass* m_InstancingShader = nullptr;
+	ParticleShaderClass* m_particleShader = nullptr;
 
 
 };

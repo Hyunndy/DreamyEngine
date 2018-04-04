@@ -186,6 +186,8 @@
     <ClCompile Include="ModelManagerClass.cpp" />
     <ClCompile Include="MoveClass.cpp" />
     <ClCompile Include="MultiTextureShaderClass.cpp" />
+    <ClCompile Include="ParticleShaderClass.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ReflectionShaderClass.cpp" />
     <ClCompile Include="RefractionShaderClass.cpp" />
     <ClCompile Include="RTTClass.cpp" />
@@ -248,6 +250,8 @@
     <ClInclude Include="ModelManagerClass.h" />
     <ClInclude Include="MoveClass.h" />
     <ClInclude Include="MultiTextureShaderClass.h" />
+    <ClInclude Include="ParticleShaderClass.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ReflectionShaderClass.h" />
     <ClInclude Include="RefractionShaderClass.h" />
     <ClInclude Include="RTTClass.h" />

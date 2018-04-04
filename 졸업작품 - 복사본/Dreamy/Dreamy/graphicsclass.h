@@ -41,6 +41,7 @@
 #include "WaterClass.h"
 #include "MinimapClass.h"
 #include "InstancingClass.h"
+#include "ParticleSystem.h"
 
 
 
@@ -143,6 +144,8 @@ private:
 
 	FBXModel* m_fbx;
 
+
+
 	//호수
 	RTTTextureClass* m_RefractionTexture; //*m_ReflectionTexture;
 	WaterClass* m_Water;
@@ -151,6 +154,7 @@ private:
 
 	//이펙트
 	ModelClass* m_Fire_Effect;
+	ParticleSystem* m_Particle;
 
 	//이펙트 관련 변수
 	D3DXVECTOR3 scrollSpeeds, scales;

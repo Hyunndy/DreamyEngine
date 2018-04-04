@@ -869,6 +869,7 @@ void D3DClass::TurnOffAlphaBlending()
 	return;
 }
 
+//파티클 섞는데에 쓰인다.
 void D3DClass::EnableSecondBlendState()
 {
 	float blendFactor[4];

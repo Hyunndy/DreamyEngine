@@ -208,6 +208,12 @@
       <Filter>FBX</Filter>
     </ClCompile>
     <ClCompile Include="FBXAnimation.cpp">
+      <Filter>FBX</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -393,6 +399,12 @@
       <Filter>FBX</Filter>
     </ClInclude>
     <ClInclude Include="FBXAnimation.h">
+      <Filter>FBX</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
