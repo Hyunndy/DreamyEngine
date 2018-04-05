@@ -12,8 +12,9 @@
 #include <D3DX10math.h>
 
 #include "TextureClass.h"
+#include "MatrixClass.h"
 
-class ParticleSystem
+class ParticleSystem : public MatrixClass
 {
 private:
 
@@ -48,6 +49,8 @@ public:
 
 	ID3D11ShaderResourceView* GetTexture();
 	int GetIndexCount();
+
+	bool active;
 
 private:
 
@@ -95,6 +98,9 @@ private:
 	int m_vertexCount, m_indexCount;
 	VertexType* m_vertices;
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
+
+	float time;
+
 
 
 };

@@ -48,7 +48,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
@@ -155,6 +155,7 @@ private:
 	//이펙트
 	ModelClass* m_Fire_Effect;
 	ParticleSystem* m_Particle;
+	bool m_Particleactive;
 
 	//이펙트 관련 변수
 	D3DXVECTOR3 scrollSpeeds, scales;

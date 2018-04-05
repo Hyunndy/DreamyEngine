@@ -9,6 +9,8 @@ ParticleSystem::ParticleSystem()
 	m_vertices = 0;
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
+
+	active = false;
 }
 
 ParticleSystem::ParticleSystem(const ParticleSystem&) {}
@@ -52,16 +54,43 @@ bool ParticleSystem::Initialize(ID3D11Device* device, WCHAR* textureFilename)
 bool ParticleSystem::Frame(float frameTime, ID3D11DeviceContext* deviceContext)
 {
 	bool result;
+	
 
 	KillParticles();
 
-	EmitParticles(frameTime);
+	if (active == true)
+	{
+		EmitParticles(frameTime);
 
-	UpdateParticles(frameTime);
+		UpdateParticles(frameTime);
 
-	// Update the dynamic vertex buffer with the new position of each particle.
-	result = UpdateBuffers(deviceContext);
-	if (!result) { return false; }
+		// Update the dynamic vertex buffer with the new position of each particle.
+		result = UpdateBuffers(deviceContext);
+		if (!result) { return false; }
+
+
+		time += 0.5f;
+
+		if ((time > 100.0f && active == true))
+		{
+			active = false;
+			time = 0.0f;
+		//	InitializeParticleSystem();
+			m_particleList = new ParticleType[m_maxParticles];
+			InitializeParticleSystem();
+		}
+	}
+
+	if (active == false)
+	{
+		active = false;
+		time = 0.0f;
+		//	InitializeParticleSystem();
+		m_particleList = new ParticleType[m_maxParticles];
+		InitializeParticleSystem();
+	}
+
+
 
 	return true;
 }
@@ -75,22 +104,22 @@ bool ParticleSystem::Frame(float frameTime, ID3D11DeviceContext* deviceContext)
 bool ParticleSystem::InitializeParticleSystem()
 {
 	// 파티클이 방출되는 장소를 random하게 한다.
-	m_particleDeviationX = 0.5f;
+	m_particleDeviationX = 2.0f;
 	m_particleDeviationY = 0.1f;
 	m_particleDeviationZ = 2.0f;
 
 	// 파티클의 속도와 속도 변화 변수를 세팅한다.
-	m_particleVelocity = 1.0f;
-	m_particleVelocityVariation = 0.2f;
+	m_particleVelocity = 3.0f;
+	m_particleVelocityVariation = 0.1f;
 
 	// 파티클의 사이즈를 설정한다.
-	m_particleSize = 0.2f;
+	m_particleSize = 0.4f;
 
 	// 초당 방출되는 파티클을 설정한다.
-	m_particlesPerSecond = 250.0f;
+	m_particlesPerSecond = 500.0f;
 
 	// 파티클 시스템에서 맥스 파티클을 정한다.
-	m_maxParticles = 5000;
+	m_maxParticles = 1000;
 
 	// 맥스 파티클 파티클타입리스트를 정의한다.
 	m_particleList = new ParticleType[m_maxParticles];
@@ -106,7 +135,6 @@ bool ParticleSystem::InitializeParticleSystem()
 	}
 
 	// 아직 방출되지 않았기 때문에 현재 파티클 카운트를 0으로 초기화한다.
-	
 	m_currentParticleCount = 0;
 	// 초당 파티클 방출에 대한 시간을 초기화한다.
 	m_accumulatedTime = 0.0f;
@@ -330,7 +358,7 @@ void ParticleSystem::KillParticles()
 	// Kill all the particles that have gone below a certain height range.
 	for (i = 0; i<m_maxParticles; i++)
 	{
-		if ((m_particleList[i].active == true) && (m_particleList[i].posY > 3.0f))
+		if ((m_particleList[i].active == true) && (m_particleList[i].posY > 6.0f))
 		{
 			m_particleList[i].active = false;
 			m_currentParticleCount--;
@@ -488,9 +516,9 @@ ID3D11ShaderResourceView* ParticleSystem::GetTexture()
 
 void ParticleSystem::Render(ID3D11DeviceContext* deviceContext)
 {
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(deviceContext);
 
+		RenderBuffers(deviceContext);
+	
 	return;
 }
 

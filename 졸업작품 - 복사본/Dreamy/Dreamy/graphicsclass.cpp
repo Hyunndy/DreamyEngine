@@ -61,6 +61,7 @@ GraphicsClass::GraphicsClass()
 	m_Fire_Effect = 0;
 	frameTime = 0.0f;
 	m_Particle = 0;
+	m_Particleactive = false;
 
 	//빌보드
 	m_Billboard_Tree = 0;
@@ -522,8 +523,8 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	//미니맵
 	m_Minimap->PositionUpdate(CameraPos.x, CameraPos.z);
 
+	//파티클
 	m_Particle->Frame(frameTime, m_D3D->GetDeviceContext());
-
 	return true;
 }
 
@@ -589,7 +590,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXVECTOR3 cameraPosition;
 
 
-	D3DXMATRIX ParticleWorldMatrix, TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix,  MirrorworldMatrix;
+	D3DXMATRIX  TerrainworldMatrix, SkyworldMatrix, WaterworldMatrix, PlaneworldMatrix,  MirrorworldMatrix;
 	D3DXMATRIX CrossHairworldMatrix;
 	D3DXMATRIX FBXworldMatrix, FBXRotationMatrix;
 	D3DXMATRIX  TranslationMatrix2, Cube3RotationMatrix;
@@ -643,7 +644,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//m_Camera->GetBaseViewMatrix(baseViewMatrix);
 
 	m_D3D->GetWorldMatrix(TerrainworldMatrix);
-	m_D3D->GetWorldMatrix(ParticleWorldMatrix);
 	m_D3D->GetWorldMatrix(WaterworldMatrix);
 	m_D3D->GetWorldMatrix(SkyworldMatrix);
 	m_D3D->GetWorldMatrix(PlaneworldMatrix);
@@ -848,25 +848,36 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	
 	//빌보드, 이펙트
 	//-------------------------------------------------------------------------------------
-	m_D3D->EnableSecondBlendState();
+	
+	//파티클
+	D3DXVECTOR3 ParticlePosition = { 767.0f, 30.0f, 389.0f };
+	D3DXMATRIX ParticleWorldMatrix;
+	m_D3D->GetWorldMatrix(ParticleWorldMatrix);
+	m_Particle->Translation(ParticlePosition.x, ParticlePosition.y, ParticlePosition.z);
+	m_Particle->RotationY(CalculateBillboarding(cameraPosition, ParticlePosition));
+	m_Particle->Multiply(m_Particle->GetRotationYMatrix(), m_Particle->GetTranslationMatrix());
+	D3DXMatrixMultiply(&ParticleWorldMatrix, &m_Particle->GetFinalMatrix(), &ParticleWorldMatrix);
 
-	D3DXMatrixTranslation(&ParticleWorldMatrix, 946.0f, 56.0f, 464.0f);
-	m_Particle->Render(m_D3D->GetDeviceContext());
+	if (m_Particle->active == true)
+	{
+		m_D3D->EnableSecondBlendState();
 
-	result = m_Shader->RenderParticleShader(m_D3D->GetDeviceContext(), m_Particle->GetIndexCount(), ParticleWorldMatrix, viewMatrix, projectionMatrix,
-		m_Particle->GetTexture());
-	if (!result) { return false; }
-	
-	
-	D3DXVECTOR3 firePosition;
-	
-	firePosition = { 760.0f, 46.0f, 380.0f };
+		m_Particle->Render(m_D3D->GetDeviceContext());
+
+		result = m_Shader->RenderParticleShader(m_D3D->GetDeviceContext(), m_Particle->GetIndexCount(), ParticleWorldMatrix, viewMatrix, projectionMatrix,
+			m_Particle->GetTexture());
+		if (!result) { return false; }
+
+	}
+
+	//불
+	D3DXVECTOR3 firePosition = { 760.0f, 46.0f, 380.0f };
 	
 	m_D3D->TurnOnAlphaBlending();
 	
 	D3DXMATRIX FireWorldMatrix;
 	m_D3D->GetWorldMatrix(FireWorldMatrix);
-	m_Fire_Effect->Translation(760.0f, 46.0f, 380.0f);
+	m_Fire_Effect->Translation(firePosition.x, firePosition.y, firePosition.z);
 	m_Fire_Effect->RotationY(CalculateBillboarding(cameraPosition,firePosition));
 	m_Fire_Effect->Scale(5.0f, 5.0f, 5.0f);
 	m_Fire_Effect->Multiply(m_Fire_Effect->GetRotationYMatrix(), m_Fire_Effect->GetTranslationMatrix());
@@ -880,6 +891,8 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 	if (!result) { return false; }
 	
+
+
 	D3DXMATRIX InstancingWorldMatrix;
 	m_D3D->GetWorldMatrix(InstancingWorldMatrix);
 	
@@ -944,7 +957,9 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 마우스 커서
 	result = m_Cursor->Render(m_D3D->GetDeviceContext(), MousePosX, MousePosY);  if (!result) { return false; }
-	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Cursor->GetIndexCount(), CrossHairworldMatrix, baseViewMatrix, orthoMatrix, m_Cursor->GetTexture());
+	D3DXMATRIX MouseWorldMatrix;
+	D3DXMatrixScaling(&MouseWorldMatrix, 1.5f, 1.5f, 1.5f);
+	result = m_Shader->RenderTextureShader(m_D3D->GetDeviceContext(), m_Cursor->GetIndexCount(), MouseWorldMatrix, baseViewMatrix, orthoMatrix, m_Cursor->GetTexture());
 
 
 	m_D3D->TurnOffAlphaBlending();
@@ -1271,6 +1286,8 @@ void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth,
 	origin = m_Camera->GetPosition();
 
 	sibal = m_Model_Cube3->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, ProjectionMatrix, ViewMatrix, WorldMatrix, origin);
+	m_Particle->active = m_Model_Cube3->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, ProjectionMatrix, ViewMatrix, WorldMatrix, origin);
+
 }
 
 void GraphicsClass::SetEffectVariable()

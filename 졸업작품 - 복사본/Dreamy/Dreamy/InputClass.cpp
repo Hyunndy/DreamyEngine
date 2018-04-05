@@ -334,7 +334,8 @@ void InputClass::SetMousePosition()
 bool InputClass::IsLeftTurned()
 {
 	//if (m_mouseX >= 0 && m_mouseX < (m_screenWidth/4))
-	if (m_mouseX <= 440.0f)
+	//if (m_mouseX <= 440.0f) 800
+	if(m_mouseX <= (m_screenWidth/3))
 		return true;
 	else
 		return false;
@@ -343,7 +344,7 @@ bool InputClass::IsLeftTurned()
 bool InputClass::IsRightTurned()
 {
 	//if (m_mouseX > (m_screenWidth/4)*3 && m_mouseX <= m_screenWidth)
-	if(m_mouseX >= 840.0f)
+	if(m_mouseX >= (m_screenWidth / 3)*2)
 		return true;
 	else
 		return false;
@@ -351,7 +352,7 @@ bool InputClass::IsRightTurned()
 
 bool InputClass::IsLookUpTurned()
 {
-	if (m_mouseY <= 200.0f)
+	if (m_mouseY <= (m_screenHeight / 4))
 		return true;
 	else
 		return false;
@@ -359,8 +360,8 @@ bool InputClass::IsLookUpTurned()
 
 bool InputClass::IsLookDownTurned()
 {
-
-	if (m_mouseY >= 600.0f)
+	
+	if (m_mouseY >= (m_screenHeight/4)*3)
 		return true;
 	else
 		return false;
