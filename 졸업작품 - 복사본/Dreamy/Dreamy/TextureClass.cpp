@@ -33,13 +33,13 @@ TextureClass::~TextureClass()
 	Direct3D 디바이스와 텍스처의 파일 이름을 가지고 m_texture이라는 셰이더 자원 변수에 텍스처 파일을 로드한다.
 	여기서 텍스처자원인 m_texture가 resourceview인것을 기억하자!
 */
-bool TextureClass::Initialize(ID3D11Device* device, WCHAR* filename)
+bool TextureClass::Initialize(WCHAR* filename)
 {
 	HRESULT result;
 	
 	
 	// 이미지 파일로부터 d3d11texture2d 객체 생성 + shaderresourceview에 연결해주는 함수!
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL,&m_texture,  NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(D3D::GetDevice(), filename, NULL, NULL,&m_texture,  NULL);
 	if (FAILED(result))
 	{
 		return false;
@@ -49,40 +49,40 @@ bool TextureClass::Initialize(ID3D11Device* device, WCHAR* filename)
 	return true;
 }
 
-bool TextureClass::InitializeMulti(ID3D11Device* device, WCHAR* filename, WCHAR* filename2)
+bool TextureClass::InitializeMulti( WCHAR* filename, WCHAR* filename2)
 {
 	HRESULT result;
 
 
 	// 이미지 파일로부터 d3d11texture2d 객체 생성 + shaderresourceview에 연결해주는 함수!
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &m_multitexture[0], NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(D3D::GetDevice(), filename, NULL, NULL, &m_multitexture[0], NULL);
 	if (FAILED(result)){	return false;	}
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename2, NULL, NULL, &m_multitexture[1], NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(D3D::GetDevice(), filename2, NULL, NULL, &m_multitexture[1], NULL);
 	if (FAILED(result)) { return false; }
 
 	return true;
 }
 
-bool TextureClass::InitializeTriple(ID3D11Device* device, WCHAR* filename, WCHAR* filename2, WCHAR* filename3)
+bool TextureClass::InitializeTriple( WCHAR* filename, WCHAR* filename2, WCHAR* filename3)
 {
 	HRESULT result;
 
 
 	// 이미지 파일로부터 d3d11texture2d 객체 생성 + shaderresourceview에 연결해주는 함수!
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename, NULL, NULL, &m_tripletexture[0], NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(D3D::GetDevice(), filename, NULL, NULL, &m_tripletexture[0], NULL);
 	if (FAILED(result)) { return false; }
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename2, NULL, NULL, &m_tripletexture[1], NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(D3D::GetDevice(), filename2, NULL, NULL, &m_tripletexture[1], NULL);
 	if (FAILED(result)) { return false; }
 
-	result = D3DX11CreateShaderResourceViewFromFile(device, filename3, NULL, NULL, &m_tripletexture[2], NULL);
+	result = D3DX11CreateShaderResourceViewFromFile(D3D::GetDevice(), filename3, NULL, NULL, &m_tripletexture[2], NULL);
 	if (FAILED(result)) { return false; }
 
 	return true;
 }
 
-bool TextureClass::InitializeTGA(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* filename)
+bool TextureClass::InitializeTGA( char* filename)
 {
 	bool result;
 	int height, width;
@@ -113,7 +113,7 @@ bool TextureClass::InitializeTGA(ID3D11Device* device, ID3D11DeviceContext* devi
 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	// Create the empty texture.
-	hResult = device->CreateTexture2D(&textureDesc, NULL, &m_TGAtexture);
+	hResult = D3D::GetDevice()->CreateTexture2D(&textureDesc, NULL, &m_TGAtexture);
 	if (FAILED(hResult))
 	{
 		return false;
@@ -123,7 +123,7 @@ bool TextureClass::InitializeTGA(ID3D11Device* device, ID3D11DeviceContext* devi
 	rowPitch = (width * 4) * sizeof(unsigned char);
 
 	// Copy the targa image data into the texture.
-	deviceContext->UpdateSubresource(m_TGAtexture, 0, NULL, m_targaData, rowPitch, 0);
+	D3D::GetDeviceContext()->UpdateSubresource(m_TGAtexture, 0, NULL, m_targaData, rowPitch, 0);
 
 	// Setup the shader resource view description.
 	srvDesc.Format = textureDesc.Format;
@@ -132,14 +132,14 @@ bool TextureClass::InitializeTGA(ID3D11Device* device, ID3D11DeviceContext* devi
 	srvDesc.Texture2D.MipLevels = -1;
 
 	// Create the shader resource view for the texture.
-	hResult = device->CreateShaderResourceView(m_TGAtexture, &srvDesc, &m_TGAtextureView);
+	hResult = D3D::GetDevice()->CreateShaderResourceView(m_TGAtexture, &srvDesc, &m_TGAtextureView);
 	if (FAILED(hResult))
 	{
 		return false;
 	}
 
 	// Generate mipmaps for this texture.
-	deviceContext->GenerateMips(m_TGAtextureView);
+	D3D::GetDeviceContext()->GenerateMips(m_TGAtextureView);
 
 	// Release the targa image data now that the image data has been loaded into the texture.
 	delete[] m_targaData;

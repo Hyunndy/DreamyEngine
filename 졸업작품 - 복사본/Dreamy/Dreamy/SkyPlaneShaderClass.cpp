@@ -15,13 +15,13 @@ SkyPlaneShaderClass::~SkyPlaneShaderClass()
 }
 
 
-bool SkyPlaneShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool SkyPlaneShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
 
 		// Initialize the vertex and pixel shaders.
-		result = InitializeShader(device, hwnd, L"../Dreamy/skyplane.vs", L"../Dreamy/skyplane.ps");
+		result = InitializeShader( hwnd, L"../Dreamy/shader/skyplane.vs", L"../Dreamy/shader/skyplane.ps");
 	if (!result)
 	{
 		return false;
@@ -32,7 +32,7 @@ bool SkyPlaneShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 
 
-bool SkyPlaneShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool SkyPlaneShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
 	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ, float brightness)
 {
@@ -40,7 +40,7 @@ bool SkyPlaneShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCo
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, firstTranslationX, firstTranslationZ,
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, texture, texture2, firstTranslationX, firstTranslationZ,
 		secondTranslationX, secondTranslationZ, brightness);
 	if (!result)
 	{
@@ -48,13 +48,13 @@ bool SkyPlaneShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCo
 	}
 
 	// Now render the prepared buffers with the shader.
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }
 
 
-bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool SkyPlaneShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -113,14 +113,14 @@ bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result))
 	{
 		return false;
@@ -147,7 +147,7 @@ bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
 		&m_layout);
 	if (FAILED(result))
 	{
@@ -177,7 +177,7 @@ bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -192,7 +192,7 @@ bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -200,7 +200,7 @@ bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 
 
 		// Setup the description of the sky constant buffer that is in the pixel shader.
-		skyBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	skyBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	skyBufferDesc.ByteWidth = sizeof(SkyBufferType);
 	skyBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	skyBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -208,7 +208,7 @@ bool SkyPlaneShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	skyBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&skyBufferDesc, NULL, &m_skyBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&skyBufferDesc, NULL, &m_skyBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -269,7 +269,7 @@ void SkyPlaneShaderClass::ShutdownShader()
 
 
 
-bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool SkyPlaneShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
 	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ,
 	float brightness)
@@ -287,7 +287,7 @@ bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	// Lock the constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -302,17 +302,17 @@ bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Finally set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 
 		// Lock the sky constant buffer so it can be written to.
-		result = deviceContext->Map(m_skyBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_skyBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -330,18 +330,18 @@ bool SkyPlaneShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	dataPtr2->padding = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_skyBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_skyBuffer, 0);
 
 	// Set the position of the sky constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Finally set the sky constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_skyBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_skyBuffer);
 
 
-		// Set the shader texture resource in the pixel shader.
-		deviceContext->PSSetShaderResources(0, 1, &texture);
-	deviceContext->PSSetShaderResources(1, 1, &texture2);
+	// Set the shader texture resource in the pixel shader.
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
+	D3D::GetDeviceContext()->PSSetShaderResources(1, 1, &texture2);
 
 	return true;
 }

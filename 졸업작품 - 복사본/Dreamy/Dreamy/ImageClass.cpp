@@ -26,7 +26,7 @@ ImageClass::~ImageClass()
  - 이전 렌더링 위치 변수는 이전 프레임과 위치를 비교하여 위치가 변하지 않았다면 동적 정점 버퍼를 바꾸지 않기 때문에 성능 향상을 꾀할 수 있다.
  -------------------------------------------------------------------------------------------------------------------------------------------------------------
 */ 
-bool ImageClass::Initialize(ID3D11Device* device, int screenWidth, int screenHegiht, WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
+bool ImageClass::Initialize(int screenWidth, int screenHegiht, WCHAR* textureFilename, int bitmapWidth, int bitmapHeight)
 {
 	bool result;
 
@@ -43,11 +43,11 @@ bool ImageClass::Initialize(ID3D11Device* device, int screenWidth, int screenHeg
 	m_previousPosY = -1;
 
 	//정점&인덱스 버퍼 초기화(생성)
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//이미지 불러오기
-	result = LoadTexture(device, textureFilename);
+	result = LoadTexture(textureFilename);
 	if (!result) { return false; }
 
 	return true;
@@ -80,16 +80,16 @@ void ImageClass::Shutdown()
 - RenderBuffer() : 최종적으로 파이프라인에 보내질 정점/인덱스 버퍼를 준비한다.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-bool ImageClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY)
+bool ImageClass::Render( int positionX, int positionY)
 {
 	bool result;
 
 	// 동적 정점 버퍼 리빌딩
-	result = UpdateBuffers(deviceContext, positionX, positionY);
+	result = UpdateBuffers( positionX, positionY);
 	if (!result) { return false; }
 
 	// 그래픽 파이프라인에 최종 정점/인덱스 버퍼를 보냄
-	RenderBuffers(deviceContext);
+	RenderBuffers();
 
 	return true;
 }
@@ -136,7 +136,7 @@ ID3D11ShaderResourceView* ImageClass::GetTexture()
 - 하지만 인덱스는 2D이미지이가 고정이기 때문에 항상 6이다. 따라서 인덱스 버퍼는 정적버퍼로 만든다.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-bool ImageClass::InitializeBuffers(ID3D11Device* device)
+bool ImageClass::InitializeBuffers()
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -190,7 +190,7 @@ bool ImageClass::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -210,7 +210,7 @@ bool ImageClass::InitializeBuffers(ID3D11Device* device)
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -268,7 +268,7 @@ void ImageClass::ShutdownBuffers()
 - 5. 버퍼를 해제시킨다.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-bool ImageClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int positionX, int positionY)
+bool ImageClass::UpdateBuffers( int positionX, int positionY)
 {
 	float left, right, top, bottom;
 	VertexType* vertices;
@@ -327,7 +327,7 @@ bool ImageClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int positionX
 	vertices[5].texture = D3DXVECTOR2(1.0f, 1.0f);
 
 	//InitializeBuffer()에서 생성한 정점 버퍼를 Map함수를 통해 열어 내용 변경을 할 수 있게 한다. (lock함수랑 기능이 같은듯)
-	result = deviceContext->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -341,7 +341,7 @@ bool ImageClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int positionX
 
 	// 포인터를 얻어와서 값을 바꿨기 때문에 값이 바뀐다.
 	// 값을 바꾼 후 버텍스 버퍼를 다시 unlock해준다.
-	deviceContext->Unmap(m_vertexBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_vertexBuffer, 0);
 
 	// 정점을 해제한다.
 	delete[] vertices;
@@ -359,7 +359,7 @@ bool ImageClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int positionX
 - I/A다음에 정점 셰이더 단계에 들어가게된다!
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-void ImageClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void ImageClass::RenderBuffers()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -368,11 +368,11 @@ void ImageClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	stride = sizeof(VertexType);
 	offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
@@ -383,14 +383,14 @@ void ImageClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 용도 : 2D 이미지로 그릴 텍스쳐를 로드한다. (텍스처 클래스로 부터)
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 */
-bool ImageClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool ImageClass::LoadTexture( WCHAR* filename)
 {
 	bool result;
 
 	m_Texture = new TextureClass;
 	if (!m_Texture)	{	return false;	}
 
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize(filename);
 	if (!result){	return false;	}
 
 	return true;

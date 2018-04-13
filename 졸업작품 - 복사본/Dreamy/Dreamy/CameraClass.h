@@ -8,7 +8,7 @@
 //////////////
 // INCLUDES //
 //////////////
-#include <d3dx10math.h>
+#include "D3D.h"
 
 /*
 	우리가 어떻게 장면을 보는지에 대한 정보를 DirectX11에게 전달하는 카메라 클래스.
@@ -60,7 +60,12 @@ public:
 	void GetWaterReflectionViewMatrix(D3DXMATRIX&);
 	D3DXMATRIX GetReflectionViewMatrix();
 
+	void UpdateProjectionMatrix();
+	D3DXMATRIX GetProjectionMatrix();
+
 private:
+	const static float screenNear; //거리
+	const static float screenDepth; //깊이
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
 
@@ -69,6 +74,12 @@ private:
 
 	D3DXMATRIX m_viewMatrix, m_baseViewMatrix, m_reflectionViewMatrix;
 	D3DXMATRIX m_WaterReflectionViewMatrix;
+
+	D3D11_VIEWPORT viewport;
+	float fieldOfView; //시야각
+	float screenAspect; //화면비율
+
+	D3DXMATRIX projection;
 };
 
 #endif

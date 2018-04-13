@@ -16,6 +16,9 @@
 //////////////
 #include <windows.h>
 
+#include "D3D.h"
+#include "AnimationFrames.h"
+#include "Sampler.h"
 
 ///////////////////////
 // MY CLASS INCLUDES // 
@@ -27,6 +30,8 @@
 #include "CpuClass.h"
 #include "TimerClass.h"
 #include "MoveClass.h"
+/////////////////////////
+
 
 
 
@@ -79,7 +84,7 @@ public:
 	int m_state = STATE::INIT;
 
 private:
-	bool HandleInput(float frameTime);
+	bool HandleInput();
 	bool Frame();
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();

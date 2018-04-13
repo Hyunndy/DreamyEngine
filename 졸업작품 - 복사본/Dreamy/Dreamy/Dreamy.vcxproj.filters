@@ -1,458 +1,283 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shader Files">
-      <UniqueIdentifier>{6edc8e4f-051d-4799-b9af-9a49a0b4365b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics">
-      <UniqueIdentifier>{d1e2e1ed-91ce-46cc-92a6-af1df657c355}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{39584a7f-e49b-4f20-b177-2b9b41861423}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Header">
-      <UniqueIdentifier>{7cdf006f-a0b6-4ffa-acb3-96bf9893448f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Source">
+    <Filter Include="Source">
       <UniqueIdentifier>{92fdb974-c56f-49c3-a3a7-628a6415eb32}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\Header">
-      <UniqueIdentifier>{97ecf03e-7980-4cd6-b993-a5b7513ba6d1}</UniqueIdentifier>
+    <Filter Include="FBXAnimation">
+      <UniqueIdentifier>{0266bcf7-36cc-4046-910c-fee85fd77de9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\Source">
-      <UniqueIdentifier>{fa405aaf-2ac4-4a2f-a060-9c910f91f1b2}</UniqueIdentifier>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{c9141200-6ec1-4066-a0ac-4a0e5dee2cfc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FBX">
-      <UniqueIdentifier>{0f5653a6-ae01-4f51-b1ba-372ad46ac4e6}</UniqueIdentifier>
+    <Filter Include="LandScape">
+      <UniqueIdentifier>{b8c0f47b-48e5-4a4e-b15e-1dbbd42721c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{4255da6a-dd5c-483c-9828-b586c8f87109}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2DTexture">
+      <UniqueIdentifier>{5bf8d4e8-0e19-4252-a62d-b8cca6aa73f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="graphicsclass.cpp" />
+    <ClCompile Include="InputClass.cpp" />
+    <ClCompile Include="MoveClass.cpp" />
+    <ClCompile Include="SoundClass.cpp" />
+    <ClCompile Include="AnimationFrames.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="SystemClass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="FBXAnimationModel.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="graphicsclass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="FBXShader.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="InputClass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ModelAnimation.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="SoundClass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ModelAnimationController.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="FpsClass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ModelAnimationKeyFrames.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="CpuClass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ModelBoneWeights.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="TimerClass.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="String.cpp">
+      <Filter>FBXAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelMaterial.cpp">
+      <Filter>FBXAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelPart.cpp">
+      <Filter>FBXAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelScene.cpp">
+      <Filter>FBXAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelSkeleton.cpp">
+      <Filter>FBXAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelSkeletonBone.cpp">
+      <Filter>FBXAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TextureShaderClass.cpp">
+      <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManagerClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureManagerClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="CameraClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="FontClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="FrustumClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="LightClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="MatrixClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelManagerClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="RTTClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="RTTTextureClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
+    <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="TerrainCellClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyClass.cpp">
-      <Filter>Graphics\Source</Filter>
+      <Filter>LandScape</Filter>
     </ClCompile>
     <ClCompile Include="TerrainClass.cpp">
-      <Filter>Graphics\Source</Filter>
+      <Filter>LandScape</Filter>
     </ClCompile>
-    <ClCompile Include="TextureClass.cpp">
-      <Filter>Graphics\Source</Filter>
+    <ClCompile Include="FrustumClass.cpp" />
+    <ClCompile Include="TextureClass.cpp" />
+    <ClCompile Include="LightClass.cpp" />
+    <ClCompile Include="TerrainShaderClass.cpp">
+      <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="WaterClass.cpp">
-      <Filter>Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="TextClass.cpp">
-      <Filter>Graphics\Header</Filter>
-    </ClCompile>
-    <ClCompile Include="AlphaMapShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="BumpMapShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="FogShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="FontShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="LightShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiTextureShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ReflectionShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="RefractionShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="ModelClass.cpp" />
+    <ClCompile Include="SkyClass.cpp">
+      <Filter>LandScape</Filter>
     </ClCompile>
     <ClCompile Include="SkyDomeShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+      <Filter>LandScape</Filter>
     </ClCompile>
     <ClCompile Include="SkyPlaneShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+      <Filter>LandScape</Filter>
     </ClCompile>
-    <ClCompile Include="SpecMapShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="VertexLayout.cpp">
+      <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="CpuClass.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="TextureShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="D3D.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="TranslateShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="Blender.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="TransparentShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="FpsClass.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="WaterReflectionShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="TimerClass.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="WaterShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="SystemClass.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="FireShaderClass.cpp">
-      <Filter>Shader\Source</Filter>
+    <ClCompile Include="Sampler.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="InstancingClass.cpp">
-      <Filter>Graphics</Filter>
+    <ClCompile Include="Rasterizer.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="InstancingShaderClass.cpp">
-      <Filter>Shader</Filter>
+    <ClCompile Include="D3DClass.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="MinimapClass.cpp">
-      <Filter>Graphics</Filter>
+    <ClCompile Include="CameraClass.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="FBXModel.cpp">
-      <Filter>FBX</Filter>
+    <ClCompile Include="DepthStencil.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="FBXVec2.cpp">
-      <Filter>FBX</Filter>
+    <ClCompile Include="FBXCamera.cpp">
+      <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="FBXVec3.cpp">
-      <Filter>FBX</Filter>
+    <ClCompile Include="ImageClass.cpp">
+      <Filter>2DTexture</Filter>
     </ClCompile>
-    <ClCompile Include="FBXMatrix.cpp">
-      <Filter>FBX</Filter>
-    </ClCompile>
-    <ClCompile Include="FBXVec4.cpp">
-      <Filter>FBX</Filter>
-    </ClCompile>
-    <ClCompile Include="FBXAnimation.cpp">
-      <Filter>FBX</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleShaderClass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
+    <ClCompile Include="MatrixClass.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SystemClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="graphicsclass.h" />
+    <ClInclude Include="InputClass.h" />
+    <ClInclude Include="MoveClass.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="AnimationFrames.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="graphicsclass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FBXAnimationModel.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="InputClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FBXCameraBuffer.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FBXShader.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="FpsClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FBXShaderBuffer.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="CpuClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FBXSunBuffer.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="TimerClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FBXWorldBuffer.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManagerClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="ModelAnimation.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="MoveClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="ModelAnimationController.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManagerClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="ModelAnimationKeyFrames.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderClass.h">
-      <Filter>Shader</Filter>
+    <ClInclude Include="ModelBoneWeights.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="CameraClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelBuffer.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="D3DClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="String.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="FontClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelMaterial.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="FrustumClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelPart.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="ImageClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelScene.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="LightClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelSkeleton.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="MatrixClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelSkeletonBone.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="ModelClass.h">
-      <Filter>Graphics\Header</Filter>
+    <ClInclude Include="ModelUtility.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="ModelManagerClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="RTTClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="RTTTextureClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainCellClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TextClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="WaterClass.h">
-      <Filter>Graphics\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="AlphaMapShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="BumpMapShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="FogShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="FontShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="LightShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiTextureShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ReflectionShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="RefractionShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyDomeShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyPlaneShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="SpecMapShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainShaderClass.h">
-      <Filter>Shader\Header</Filter>
+    <ClInclude Include="stdafx_fbx.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
     <ClInclude Include="TextureShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TranslateShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="TransparentShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="WaterReflectionShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="WaterShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="FireShaderClass.h">
-      <Filter>Shader\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="InstancingClass.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="InstancingShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="MinimapClass.h">
-      <Filter>Graphics</Filter>
+    <ClInclude Include="ShaderManagerClass.h">
+      <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="FBXModel.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="ShaderClass.h" />
+    <ClInclude Include="TerrainCellClass.h">
+      <Filter>LandScape</Filter>
     </ClInclude>
-    <ClInclude Include="FBXHeader.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="TerrainClass.h">
+      <Filter>LandScape</Filter>
     </ClInclude>
-    <ClInclude Include="FBXMath.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="FrustumClass.h" />
+    <ClInclude Include="TextureClass.h" />
+    <ClInclude Include="LightClass.h" />
+    <ClInclude Include="ModelClass.h" />
+    <ClInclude Include="SkyClass.h">
+      <Filter>LandScape</Filter>
     </ClInclude>
-    <ClInclude Include="FBXMath_func.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="SkyDomeShaderClass.h">
+      <Filter>LandScape</Filter>
     </ClInclude>
-    <ClInclude Include="FBXVec2.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="SkyPlaneShaderClass.h">
+      <Filter>LandScape</Filter>
     </ClInclude>
-    <ClInclude Include="FBXVec3.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="TerrainShaderClass.h">
+      <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="FBXMatrix.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="VertexLayout.h">
+      <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="FBXVec4.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="CpuClass.h">
+      <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="FBXUtil.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="D3D.h">
+      <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="FBXAnimation.h">
-      <Filter>FBX</Filter>
+    <ClInclude Include="Blender.h">
+      <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="FpsClass.h">
+      <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleShaderClass.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="TimerClass.h">
+      <Filter>System</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="texture.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="texture.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="light.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="light.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="font.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="color.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="font.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="multitexture.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="multitexture.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="bumpmap.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="bumpmap.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="alphamap.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="alphamap.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="specularmap.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="specularmap.vs">
-      <Filter>Shader Files</Filter>
-    </None>
+    <ClInclude Include="SystemClass.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Rasterizer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DClass.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraClass.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencil.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXCamera.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageClass.h">
+      <Filter>2DTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixClass.h" />
   </ItemGroup>
 </Project>

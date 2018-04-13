@@ -96,8 +96,7 @@ void SystemClass::Main()
 	while (Start==false)
 	{
 		result = m_Graphics->RenderMainScene();
-		if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK);  }
-
+		if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
 		// 키보드&마우스 상태를 갱신하도록 한다.
 		result = m_Input->Frame();
 
@@ -105,7 +104,6 @@ void SystemClass::Main()
 		{
 			Start = true;
 			m_state = STATE::LOADING;
-
 		}
 
 		if (m_Input->IsEscapePressed() == true)
@@ -128,10 +126,6 @@ bool SystemClass::Loading()
 {
 	bool result;
 
-	// Graphics 객체 생성
-	//-------------------------------------------------------------------------------------
-	result = m_Graphics->Loading(screenWidth, screenHeight, m_hwnd);
-	//-------------------------------------------------------------------------------------
 
 	// FPS 객체 생성
 	//-------------------------------------------------------------------------------------
@@ -154,15 +148,27 @@ bool SystemClass::Loading()
 	m_Timer = new TimerClass;
 	if (!m_Timer) { return false; }
 
-	m_Timer->Initialize();
+	result = m_Timer->Initialize();
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
 
-	// Sound 객체 생성
+	//애니메이션 프레임 객체 생성
+	//-------------------------------------------------------------------------------------
+	Frames::Get()->Start();
+	//-------------------------------------------------------------------------------------
+	DepthStencil::Get();
+	Sampler::Get();
+
+	m_Graphics->Loading(screenWidth, screenHeight, m_hwnd);
+	//-------------------------------------------------------------------------------------
+
+
+
+	//// Sound 객체 생성
 	//-------------------------------------------------------------------------------------
 	m_Sound = new SoundClass;
 	if (!m_Sound) { return false; }
-
+	
 	result = m_Sound->Initialize(m_hwnd);
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Sound object.", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
@@ -186,38 +192,22 @@ bool SystemClass::Loading()
 // 객체를 정리한다. 
 void SystemClass::Shutdown()
 {
-	// Release the timer object.
-	if(m_Timer) { delete m_Timer; m_Timer = 0; }
+
 	
-	// Release the cpu object.
-	if(m_Cpu) { m_Cpu->Shutdown(); delete m_Cpu; m_Cpu = 0; }
-	
-	// Release the fps object.
-	if(m_FPS) { delete m_FPS; m_FPS = 0; } 
+	SAFE_DELETE(m_Timer);
+	SAFE_SHUTDOWN(m_Cpu);
+	SAFE_DELETE(m_FPS);
+	SAFE_SHUTDOWN(m_Sound);
 
 	if (m_Move) { delete m_Move; m_Move = 0; }
-	if (m_Sound)
-	{
-		m_Sound->Shutdown();
-		delete m_Sound;
-		m_Sound = 0;
-	}
 
-	// Release the graphics object.
-	if (m_Graphics)
-	{
-		m_Graphics->Shutdown();
-		delete m_Graphics;
-		m_Graphics = 0;
-	}
+	Frames::Delete();
+	Sampler::Delete();
+	DepthStencil::Delete();
 
-	// Release the input object.
-	if (m_Input)
-	{
-		m_Input->Shutdown();
-		delete m_Input;
-		m_Input = 0;
-	}
+
+	SAFE_SHUTDOWN(m_Graphics);
+	SAFE_SHUTDOWN(m_Input);
 
 	// Shutdown the window.
 	ShutdownWindows();
@@ -262,6 +252,8 @@ void SystemClass::Run()
 				done = true;
 			}
 
+
+
 			// ESC키를 확인하는 함수
 			if (m_Input->IsEscapePressed() == true)
 			{
@@ -274,34 +266,43 @@ void SystemClass::Run()
 	return;
 }
 
-bool SystemClass::HandleInput(float frametime)
+bool SystemClass::HandleInput()
 {
 	bool result;
 
 
 
-	//매 프레임 마다 프레임 시간을 갱신한다.
-	m_Move->SetFrameTime(frametime);
+	////매 프레임 마다 프레임 시간을 갱신한다.
+	//m_Move->SetFrameTime(frametime);
 
-
-
-
+	if(m_Input->IsUpPressed())
+		Camera::Get()->MoveForward();
+	if (m_Input->IsDownPressed())
+		Camera::Get()->MoveBackward();
+	if (m_Input->IsLeftTurned())
+		Camera::Get()->RotateRight();
+	if (m_Input->IsRightTurned())
+		Camera::Get()->RotateLeft();
+	if (m_Input->IsLookDownTurned())
+		Camera::Get()->RotateDown();
+	if (m_Input->IsLookUpTurned())
+		Camera::Get()->RotateUp();
 
 	//m_Move->TurnLeft(m_Input->IsLeftPressed());
 	//m_Move->TurnRight(m_Input->IsRightPressed());
-	m_Move->TurnLeft(m_Input->IsLeftTurned());
-	m_Move->TurnRight(m_Input->IsRightTurned());
-	m_Move->LookUpward(m_Input->IsLookUpTurned());
-	m_Move->LookDownward(m_Input->IsLookDownTurned());
-	m_Move->GoForward(m_Input->IsUpPressed());
-	m_Move->GoBackward(m_Input->IsDownPressed());
+	//m_Move->TurnLeft(m_Input->IsLeftTurned());
+	//m_Move->TurnRight(m_Input->IsRightTurned());
+	//m_Move->LookUpward(m_Input->IsLookUpTurned());
+	//m_Move->LookDownward(m_Input->IsLookDownTurned());
+	//m_Move->GoForward(m_Input->IsUpPressed());
+	//m_Move->GoBackward(m_Input->IsDownPressed());
 	//m_Move->LookUpward(m_Input->IsLookUpPressed());
 	//m_Move->LookDownward(m_Input->IsLookDownPressed());
 
 	
 
-	m_Move->GetPosition(pos);
-	m_Move->GetRotation(rot);
+	//m_Move->GetPosition(pos);
+	//m_Move->GetRotation(rot);
 
 	
 
@@ -323,10 +324,11 @@ bool SystemClass::Frame()
 	m_FPS->Frame();
 	m_Cpu->Frame();
 
-	result = HandleInput(m_Timer->GetTime());
+	result = HandleInput();
 	if (!result) { return false; }
 
 	// m_Graphics객체를 통해 화면에 그리는 작업을 수행한다.
+	Frames::Get()->Update();
 
 	result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(),pos, rot, mouseX, mouseY);
 	//result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(), pos, rot, W);
@@ -336,12 +338,7 @@ bool SystemClass::Frame()
 	result = m_Graphics->Render(F1pressed, m_FPS->GetFps());
 	if (!result) { return false; }
 
-	result = m_Input->IsLeftMouseButtonDown();
-	if (result == true)
-	{	
-		m_Graphics->CheckIntersection(mouseX, mouseY, screenWidth, screenHeight);
-		//m_Graphics->TestIntersection(mouseX, mouseY, screenWidth, screenHeight);
-	}
+
 
 
 
@@ -435,7 +432,20 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetFocus(m_hwnd);
 
 	// 마우스 커서를 표시 유/무
-	ShowCursor(false);
+	ShowCursor(true);
+
+
+	D3DInfo info;
+	info.appName = m_applicationName;
+	info.instance = m_hinstance;
+	info.isFullScreen = FULL_SCREEN;
+	info.isVsync = true;
+	info.mainHandle = m_hwnd;
+	info.screenWidth = screenWidth;
+	info.screenHeight = screenHeight;
+	info.clearColor = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+	D3D::SetInfo(info);
+	
 
 	return;
 }

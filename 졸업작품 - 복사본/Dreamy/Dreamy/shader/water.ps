@@ -1,0 +1,141 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: water.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+
+//물 표면을 위한 반사 텍스처
+//물 내부를 위한 굴절 텍스처
+//물결을 표현하기 위한 노말 맵 텍스처
+Texture2D refractionTexture;
+//Texture2D reflectionTexture;
+Texture2D normalTexture;
+
+SamplerState SampleType;
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+//waterTranslation = 매 프레임 마다 텍스처 샘플링 위치를 바꿔서 물이 흐르는 것처럼 보이게 한다.
+//reflectRefractScale = 노말맵에 사용되어 물결의 크기를 조절하는데 사용된다.
+//                      어떤 노말맵은 값이 급격하게 바뀌기도 하고 그렇지 않기도 한다.
+
+cbuffer WaterBuffer
+{
+    float4 refractionTint;
+    float3 lightDirection;
+    float waterTranslation;
+    float reflectRefractScale;
+    float specularShininess;
+    float2 padding;
+}
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+   // float4 reflectionPosition : TEXCOORD0;
+    float4 refractionPosition : TEXCOORD1;
+    float3 viewDirection : TEXCOORD2;
+    float2 tex1 : TEXCOORD3;
+    float2 tex2 : TEXCOORD4;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 WaterPixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 normalMap1;
+    float4 normalMap2;
+
+    float3 normal1;
+    float3 normal2;
+
+    float3 normal;
+
+    float2 refractTexCoord;
+   // float2 reflectTexCoord;
+
+    //float4 reflectionColor;
+    float4 refractionColor;
+
+    float3 heightView;
+    float r;
+    float fresnelFactor;
+    float4 color;
+    float3 reflection;
+    float specular;
+
+    //매 프레임마다 업데이트 되는 위치 변수를 사용하여 물 노맙맵이 Y축으로 흐르는 효과를 낸다.
+	input.tex1.y += waterTranslation;
+	input.tex2.y += waterTranslation;
+
+    //노말맵 텍스처를 2번 샘플링해서 다른 텍스처 좌표에 넣는다.
+    //더 리얼함을 위해서?
+	normalMap1 = normalTexture.Sample(SampleType, input.tex1);
+	normalMap2 = normalTexture.Sample(SampleType, input.tex2);
+
+    // 노말맵 텍스처 좌표 -1~1정규화
+	normal1 = (normalMap1.rgb * 2.0f) - 1.0f;
+	normal2 = (normalMap2.rgb * 2.0f) - 1.0f;
+
+
+    //2개의 다르게 타일링된 노말맵 텍스처를 합쳐준다. 잔물결효과를 이용해서.(노말맵 하나가 그냥 돌아가는거대신에)
+    normal = normalize(normal1 + normal2);
+
+
+    // 굴절과 반사에 사용하는 좌표값들을 -1과 +1 사이에 들어가게 한다.
+    refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / 2.0f + 0.5f;
+    refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / 2.0f + 0.5f;
+
+    //reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / 2.0f + 0.5f;
+    //reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / 2.0f + 0.5f;
+
+    // 굴절과 반사에 사용하는 텍스처 좌표를 다시계산한다. 잔물결효과를 위해 노말맵 scale값이 들어갔으니까!
+	//reflectTexCoord = reflectTexCoord + (normal.xy * reflectRefractScale);
+	refractTexCoord = refractTexCoord + (normal.xy * reflectRefractScale);
+
+    // 텍스처좌표에서 색깔을 뽑아낸다.
+   // reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord);
+    refractionColor = refractionTexture.Sample(SampleType, refractTexCoord);
+
+
+    // 굴절 색에 tint(흰색 비율)을 더해준다.
+	refractionColor = saturate(refractionColor * refractionTint);
+
+    //광나게 보이게 하기위해 카메라 보는 방향을 얻어온다.
+	heightView.x = input.viewDirection.y;
+	heightView.y = input.viewDirection.y;
+	heightView.z = input.viewDirection.y; 
+
+    // 높이에 근거해서 프리즌을 계산한다.
+	r = (1.2f - 1.0f) / (1.2f + 1.0f);
+	fresnelFactor = max(0.0f, min(1.0f, r + (1.0f - r) * pow(1.0f - dot(normal, heightView), 2)));
+
+    // 반사, 굴절색과 프리즌컬러를 선형보간 해준다. 광나게 하기위해!
+	//color = lerp(reflectionColor, refractionColor, fresnelFactor);
+    color = saturate(refractionColor*fresnelFactor);
+    // 빛의 방향과 법선벡터를 사용하기 위해 반사 벡터를 계산한다.
+	reflection = -reflect(normalize(lightDirection), normal);
+	
+    // 카메라 위치와 반사에 의거한 정반사광을 계산한다.
+	specular = dot(normalize(reflection), normalize(input.viewDirection));
+
+    // Check to make sure the specular was positive so we aren't adding black spots to the water.
+	if(specular > 0.0f)
+	{
+		// Increase the specular light by the shininess value.
+		specular = pow(specular, specularShininess);
+
+		// Add the specular to the final color.
+		color = saturate(color + specular);
+	}
+
+    return color;
+}

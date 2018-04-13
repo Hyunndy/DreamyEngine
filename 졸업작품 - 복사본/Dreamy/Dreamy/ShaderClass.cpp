@@ -61,20 +61,20 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 2.정점 버퍼를 그리기 위한 정점 셰이더와 픽셀 셰이더를 설정한다.
 셰이더가 설정 되면 D3D 디바이스 컨텍스트에서 DirectX11의 DrawIndexed 함수를 사용하여 삼각형을 그려낸다.
 ------------------------------------------------------------------------------------------------------------------------*/
-void ShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void ShaderClass::RenderShader( int indexCount)
 {
 	// 정점쉐이더 INPUT 레이아웃을 설정한다.
-	deviceContext->IASetInputLayout(m_layout);
+	D3D::GetDeviceContext()->IASetInputLayout(m_layout);
 
 	// 삼각형을 그릴 정점 셰이더, 픽셀 셰이더를 설정한다.
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+	D3D::GetDeviceContext()->VSSetShader(m_vertexShader, NULL, 0);
+	D3D::GetDeviceContext()->PSSetShader(m_pixelShader, NULL, 0);
 
 	// 텍스처 샘플러 상태를 픽셀 셰이더에 설정한다.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+	D3D::GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
 
 	// 삼각형을 그린다.
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+	D3D::GetDeviceContext()->DrawIndexed(indexCount, 0, 0);
 
 	return;
 }

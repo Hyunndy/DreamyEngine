@@ -8,9 +8,7 @@
 - 렌더링 및 개별 지형 셀에 대한 계산 기능을 캡슐화 한다.
 */
 
-#include <d3d11.h>
-#include <stdio.h>
-#include <d3dx10math.h>
+#include "D3D.h"
 
 
 
@@ -55,10 +53,10 @@ public:
 	TerrainCellClass(const TerrainCellClass&);
 	~TerrainCellClass();
 
-	bool Initialize(ID3D11Device*, void*, int, int, int, int, int);
+	bool Initialize(void*, int, int, int, int, int);
 	void Shutdown();
-	void Render(ID3D11DeviceContext*);
-	void RenderLineBuffers(ID3D11DeviceContext*);
+	void Render();
+	void RenderLineBuffers();
 
 	int GetVertexCount();
 	int GetIndexCount();
@@ -66,11 +64,11 @@ public:
 	void GetCellDimensions(float&, float&, float&, float&, float&, float&);
 
 private:
-	bool InitializeBuffers(ID3D11Device*, int, int, int, int, int, ModelType*);
+	bool InitializeBuffers( int, int, int, int, int, ModelType*);
 	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers();
 	void CalculateCellDimensions();
-	bool BuildLineBuffers(ID3D11Device*);
+	bool BuildLineBuffers();
 	void ShutdownLineBuffers();
 
 public:

@@ -21,14 +21,9 @@
 */
 
 
-#include <d3d11.h>
-#include <D3DX10math.h>
-#include <fstream>
+
 #include "TextureClass.h"
 
-
-
-using namespace std;
 
 class SkyClass
 {
@@ -66,9 +61,9 @@ public:
 	~SkyClass();
 
 	//스카이돔
-	bool InitializeSky(ID3D11Device*);
+	bool InitializeSky();
 	void Shutdown();
-	void RenderSky(ID3D11DeviceContext*);
+	void RenderSky();
 
 	int GetIndexCount();
 
@@ -77,8 +72,8 @@ public:
 
 
 	//skyplane(구름)
-	bool InitializeCloud(ID3D11Device*, WCHAR*, WCHAR*);
-	void RenderCloud(ID3D11DeviceContext*);
+	bool InitializeCloud( WCHAR*, WCHAR*);
+	void RenderCloud();
 	void Frame(float, float, float, float);
 
 	int GetCloudIndexCount();
@@ -94,21 +89,21 @@ private:
 	bool LoadSkyDomeModel(char*);
 	void ReleaseSkyDomeModel();
 
-	bool InitializeSkyBuffers(ID3D11Device*);
+	bool InitializeSkyBuffers();
 	void ReleaseBuffers();
-	void RenderSkyBuffers(ID3D11DeviceContext*);
+	void RenderSkyBuffers();
 
 	//skyplane(구름)
 	bool InitializeSkyPlane(int, float, float, float, int);
 
-	void RenderCloudBuffers(ID3D11DeviceContext*);
+	void RenderCloudBuffers();
 	void ShutdownSkyPlane();
 
-	bool InitializeCloudBuffers(ID3D11Device*, int);
+	bool InitializeCloudBuffers( int);
 
 
 
-	bool LoadTextures(ID3D11Device*, WCHAR*, WCHAR*);
+	bool LoadTextures( WCHAR*, WCHAR*);
 	void ReleaseTextures();
 
 

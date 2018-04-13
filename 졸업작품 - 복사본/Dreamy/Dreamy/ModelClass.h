@@ -8,9 +8,8 @@
 //////////////
 // INCLUDES //
 //////////////
-#include <fstream> // 텍스트 파일로 부터 3D 모델을 읽어 그려내기 때문에
+#include "D3D.h"
 #include "TextureClass.h" // 모델에 텍스처 파일을 붙여야 하기 때문에!
-#include <iostream>
 #include "MatrixClass.h"
 
 using namespace std;
@@ -78,24 +77,24 @@ public:
 	~ModelClass();
 
 	// 3D모델의 정점 버퍼와 인덱스 버퍼들의 초기화와 종료 과정을 제어한다.
-	virtual bool Initialize(ID3D11Device*,  char*, WCHAR*);
+	virtual bool Initialize( char*, WCHAR*);
 
 	//모델의 멀티텍스쳐도 지원한다.
-	bool InitializeMulti(ID3D11Device*, char*, WCHAR*, WCHAR*);
+	bool InitializeMulti(char*, WCHAR*, WCHAR*);
 
 	//모델의 세 개의 텍스처(알파맵 포함)을 지원한다.
-	bool InitializeTriple(ID3D11Device*, char*, WCHAR*, WCHAR*, WCHAR*);
+	bool InitializeTriple(char*, WCHAR*, WCHAR*, WCHAR*);
 
 	//범프맵이 지원되는 텍스처를 초기화한다.(tangent, binormal사용)
-	bool InitializeBumpMap(ID3D11Device*, char*, WCHAR*, WCHAR*);
+	bool InitializeBumpMap(char*, WCHAR*, WCHAR*);
 
 	//반사맵이 지원되는 텍스처를 초기화한다. (tangent, binormal사용)
-	bool InitializeSpecMap(ID3D11Device*, char*, WCHAR*, WCHAR*, WCHAR*);
+	bool InitializeSpecMap( char*, WCHAR*, WCHAR*, WCHAR*);
 
 	void Shutdown();
 
 	// 그래픽 카드에 모델들의 기하정보를 넣고 셰이더로 그릴 준비를 한다.
-	void Render(ID3D11DeviceContext*);
+	void Render();
 	
 	//셰이더에게 자신의 텍스처 자원을 전달하고 그리기 위한 GetTexure함수
 	ID3D11ShaderResourceView* GetTexture();
@@ -115,14 +114,14 @@ public:
 
 
 protected:
-	bool InitializeBuffers(ID3D11Device*);
+	bool InitializeBuffers();
 	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers();
 
 	//이 모델을 그릴 텍스처를 불러오고 반환하는데 사용할 LoadTexture&ReleaseTexture
-	bool LoadTexture(ID3D11Device*, WCHAR*);
-	bool LoadMultiTexture(ID3D11Device*, WCHAR*, WCHAR*);
-	bool LoadTripleTexture(ID3D11Device*, WCHAR*, WCHAR*, WCHAR*);
+	bool LoadTexture(WCHAR*);
+	bool LoadMultiTexture( WCHAR*, WCHAR*);
+	bool LoadTripleTexture( WCHAR*, WCHAR*, WCHAR*);
 	void ReleaseTexture();
 
 	//모델 데이터를 읽어들이고 해제하는 역할을 하는 함수들.

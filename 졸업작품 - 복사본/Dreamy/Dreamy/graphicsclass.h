@@ -23,26 +23,20 @@
 //////////////
 #pragma once
 
-#include <math.h>
-#include "D3DClass.h"
-#include "CameraClass.h"
-#include "ModelClass.h"
+
 #include "ShaderManagerClass.h"
-#include "LightClass.h"
-#include "ImageClass.h"
-#include "TextClass.h"
-#include "FrustumClass.h"
-#include "ModelManagerClass.h"
-#include "RTTTextureClass.h"
+#include "ModelClass.h"
+#include "D3D.h"
+#include "FBXShader.h"
+#include "ModelScene.h"
 #include "TerrainClass.h"
 #include "TerrainShaderClass.h"
+#include "LightClass.h"
+#include "FrustumClass.h"
 #include "SkyClass.h"
-#include "FBXModel.h"
-#include "WaterClass.h"
-#include "MinimapClass.h"
-#include "InstancingClass.h"
-#include "ParticleSystem.h"
-
+#include "Rasterizer.h"
+#include "Blender.h"
+#include "ImageClass.h"
 
 
 /////////////
@@ -81,7 +75,6 @@ public:
 	//bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
 public:
 	bool F1pressed;
-	D3DXMATRIX baseViewMatrix; //글꼴이 항상 같은 위치에 출력되게
 	D3DXMATRIX minimapMatrix; // 미니맵 
 
 
@@ -101,77 +94,39 @@ private:
 private:
 	bool sibal = true;
 
-	D3DClass* m_D3D; 
-	
-	CameraClass* m_Camera;
-	CameraClass* m_minimapCamera;
-
-	ShaderManagerClass* m_Shader;
-	LightClass* m_Light;
-
-	ModelClass* m_Model_Plane;
-	ModelClass* m_Model_Plane2;
-
-	ModelClass* m_Model_Cube;
-	ModelClass* m_Model_Cube3;
-
-	ModelClass* m_Model_Mirror;
-
-	ModelClass* m_Model_Circle;
-	ModelManagerClass* m_Model_CircleList;
-
-	ImageClass* m_2D_Love;
-	ImageClass* m_Loading;
-	ImageClass* m_CrossHair;
-	ImageClass* m_Cursor;
-
-	TextClass* m_Title;
-
-	FrustumClass* m_Frustum;
-
-	RTTTextureClass* m_RTTTexture;
-	
-	TerrainClass* m_Terrain;
-	TerrainShaderClass* m_TerrainShader;
 
 
-	SkyClass* m_Sky;
-	SkyClass* m_Cloud;
+private:
+	FrustumClass* m_Frustum =  nullptr;
+	ShaderManagerClass* m_Shader = nullptr;
+	LightClass* m_Light = nullptr;
 
-	D3DXVECTOR3 CharacterPos;
-	D3DXVECTOR3 CharacterRot;
-	int MousePosX, MousePosY;
+private:
+	TerrainClass* m_Terrain= nullptr;
+	TerrainShaderClass* m_TerrainShader= nullptr;
+	SkyClass* m_Sky= nullptr;
 
-	FBXModel* m_fbx;
+private:
+	ModelClass* m_cube= nullptr;
+	ModelScene* m_horse= nullptr;
 
+private:
+	ImageClass* m_Start= nullptr;
+	ImageClass* m_Loading= nullptr;
+	ImageClass* m_CrossHair= nullptr;
 
+	float MousePosX, MousePosY;
+	ImageClass* m_MouseCursor= nullptr;
 
-	//호수
-	RTTTextureClass* m_RefractionTexture; //*m_ReflectionTexture;
-	WaterClass* m_Water;
-	TerrainClass* m_WaterTerrain;
-	TerrainShaderClass* m_WaterTerrainShader;
+private:
+	wstring tPosePath;
+	wstring idlePath;
+	wstring runPath;
+	wstring attackPath;
 
-	//이펙트
-	ModelClass* m_Fire_Effect;
-	ParticleSystem* m_Particle;
-	bool m_Particleactive;
+private:
+	D3DXMATRIX ImageViewMatrix;
 
-	//이펙트 관련 변수
-	D3DXVECTOR3 scrollSpeeds, scales;
-	D3DXVECTOR2 distortion1, distortion2, distortion3;
-	float distortionScale, distortionBias; 
-	float frameTime;
-	float frameTime2;
-
-	//빌보드
-	ModelClass* m_Billboard_Tree;
-
-	//미니맵
-	MinimapClass* m_Minimap;
-
-	//인스턴싱
-	InstancingClass* m_Instancing;
 
 };
 

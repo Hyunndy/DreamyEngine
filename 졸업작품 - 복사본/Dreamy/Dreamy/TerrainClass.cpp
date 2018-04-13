@@ -44,7 +44,7 @@ TerrainClass::~TerrainClass()
 -> 전체 지형에 대한 정점, 인덱스 버퍼를 만드는 대신 지형 모델을 Cell에 로드 한다. (컬링을 위해)
 -> 텍스처로딩 -> 모델 데이터 해제
 -----------------------------------------------------------------------------------------------*/
-bool TerrainClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* SetupFilename, CHAR* ColorTexture, CHAR* NormalMapTexture)
+bool TerrainClass::Initialize( char* SetupFilename, CHAR* ColorTexture, CHAR* NormalMapTexture)
 {
 	bool result;
 
@@ -86,20 +86,20 @@ bool TerrainClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceC
 	//if (!result) { return false; }
 
 	// 지형 데이터로 셀을 만들고 로드한다.
-	result = LoadTerrainCells(device);
+	result = LoadTerrainCells();
 	if (!result) { return false; }
 
 	//렌더링 버퍼가 로드되었으므로 지형 모델을 해제한다.
 	ShutdownTerrainModel();
 
 	//텍스처 로드
-	result = LoadTexture(device, deviceContext, ColorTexture, NormalMapTexture);
+	result = LoadTexture( ColorTexture, NormalMapTexture);
 	if (!result) { return true; }
 
 	return true;
 }
 
-bool TerrainClass::Initializeforwater(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* SetupFilename, CHAR* ColorTexture, CHAR* NormalMapTexture)
+bool TerrainClass::Initializeforwater(char* SetupFilename, CHAR* ColorTexture, CHAR* NormalMapTexture)
 {
 	bool result;
 
@@ -150,7 +150,7 @@ bool TerrainClass::Initializeforwater(ID3D11Device* device, ID3D11DeviceContext*
 	CalculateTerrainVectors();
 
 	// Load the rendering buffers with the terrain data.
-	result = InitializeBufferforwater(device);
+	result = InitializeBufferforwater();
 	if (!result)
 	{
 		return false;
@@ -160,21 +160,21 @@ bool TerrainClass::Initializeforwater(ID3D11Device* device, ID3D11DeviceContext*
 	ShutdownTerrainModel();
 
 	//텍스처 로드
-	result = LoadTexture(device, deviceContext, ColorTexture, NormalMapTexture);
+	result = LoadTexture( ColorTexture, NormalMapTexture);
 	if (!result) { return true; }
 
 
 	return true;
 }
-bool TerrainClass::Renderforwater(ID3D11DeviceContext* deviceContext)
+bool TerrainClass::Renderforwater()
 {
 	//렌더링 파이프 라인에 꼭지점, 인덱스 버퍼를 놓아 렌더링을 준비한다.
-	RenderBuffersforwater(deviceContext);
+	RenderBuffersforwater();
 
 	return true;
 }
 
-void TerrainClass::RenderBuffersforwater(ID3D11DeviceContext* deviceContext)
+void TerrainClass::RenderBuffersforwater()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -185,13 +185,13 @@ void TerrainClass::RenderBuffersforwater(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
@@ -1030,7 +1030,7 @@ void TerrainClass::CalculateTangentBinormal(TempVertexType vertex1, TempVertexTy
 -> 배열이 만들어지면 루프를 돌면서 각 셀을 내부의 Terrain 모델의 일부로 초기화 한다.
 -> Terrain의 포인터와 지표를 셀의 현재 위치에 보내 Terrain에서 데이터를 읽을 위치를 알고 현재 Cell을 로드한다.
 -----------------------------------------------------------------------------------------------*/
-bool TerrainClass::LoadTerrainCells(ID3D11Device* device)
+bool TerrainClass::LoadTerrainCells()
 {
 	int cellHeight, cellWidth, cellRowCount, index;
 	bool result;
@@ -1056,7 +1056,7 @@ bool TerrainClass::LoadTerrainCells(ID3D11Device* device)
 		{
 			index = (cellRowCount * j) + i;
 
-			result = m_TerrainCells[index].Initialize(device, m_terrainModel, i, j, cellHeight, cellWidth, m_terrainWidth);
+			result = m_TerrainCells[index].Initialize( m_terrainModel, i, j, cellHeight, cellWidth, m_terrainWidth);
 			if (!result) { return false; }
 		}
 	}
@@ -1271,20 +1271,20 @@ bool TerrainClass::CheckHeightOfTriangle(float x, float z, float & height, float
 이름: LoadTexture()
 용도: 텍스처를 생성한다.
 -----------------------------------------------------------------------------------------------*/
-bool TerrainClass::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, CHAR* ColorTexture, CHAR* NormalMapTexture)
+bool TerrainClass::LoadTexture(CHAR* ColorTexture, CHAR* NormalMapTexture)
 {
 	bool result;
 
 	m_ColorTexture = new TextureClass;
 	if (!m_ColorTexture) { return false; }
 
-	result = m_ColorTexture->InitializeTGA(device, deviceContext, ColorTexture);
+	result = m_ColorTexture->InitializeTGA(ColorTexture);
 	if (!result) { return false; }
 
 	m_NormalMapTexture = new TextureClass;
 	if (!m_NormalMapTexture) { return false; }
 
-	result = m_NormalMapTexture->InitializeTGA(device, deviceContext, NormalMapTexture);
+	result = m_NormalMapTexture->InitializeTGA(NormalMapTexture);
 	if (!m_NormalMapTexture) { return false; }
 
 
@@ -1316,7 +1316,7 @@ int TerrainClass::GetVertexCount()
 - Terrain Cell Culling을 수행한다.
 - Terrain Cell의 크기를 가져온 다음 절두체 객체를 사용해 Cell을 볼 수 있는지 여부를 결정한다.
 -----------------------------------------------------------------------------------------------*/
-bool TerrainClass::RenderCell(ID3D11DeviceContext* deviceContext, int cellId, FrustumClass* Frustum)
+bool TerrainClass::RenderCell( int cellId, FrustumClass* Frustum)
 {
 	float maxWidth, maxHeight, maxDepth, minWidth, minHeight, minDepth;
 	bool result;
@@ -1329,7 +1329,7 @@ bool TerrainClass::RenderCell(ID3D11DeviceContext* deviceContext, int cellId, Fr
 	if (!result) { return false; }
 
 	//셀을 렌더링한다.
-	m_TerrainCells[cellId].Render(deviceContext);
+	m_TerrainCells[cellId].Render();
 	
 	
 	return true;
@@ -1337,9 +1337,9 @@ bool TerrainClass::RenderCell(ID3D11DeviceContext* deviceContext, int cellId, Fr
 }
 
 
-void TerrainClass::RenderCellLines(ID3D11DeviceContext* deviceContext, int cellId)
+void TerrainClass::RenderCellLines(int cellId)
 {
-	m_TerrainCells[cellId].RenderLineBuffers(deviceContext);
+	m_TerrainCells[cellId].RenderLineBuffers();
 	return;
 }
 
@@ -1499,7 +1499,7 @@ X*Y격자를 만들면 큰 사각형 만드는데 점이 8개 필요하고 그걸 이루는 사각형들의 선�
 - quadtree를 쓰면서 더이상 정점 버퍼, 인덱스 버퍼, 인덱스 배열을 생성하지 않는다.
 - 오직 정점 배열만 생성한다...............
 ---------------------------------------------------------------------------------------------*/
-bool TerrainClass::InitializeBufferforwater(ID3D11Device* device)
+bool TerrainClass::InitializeBufferforwater()
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -1543,7 +1543,7 @@ bool TerrainClass::InitializeBufferforwater(ID3D11Device* device)
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -1563,7 +1563,7 @@ bool TerrainClass::InitializeBufferforwater(ID3D11Device* device)
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result))
 	{
 		return false;

@@ -2,7 +2,8 @@
 // Filename: cameraclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "cameraclass.h"
-
+const float CameraClass::screenNear = 0.1f;
+const float CameraClass::screenDepth = 1000.0f;
 
 CameraClass::CameraClass()
 {
@@ -228,6 +229,30 @@ D3DXMATRIX CameraClass::GetReflectionViewMatrix()
 {
 	return m_reflectionViewMatrix;
 	
+}
+
+D3DXMATRIX CameraClass::GetProjectionMatrix()
+{
+	return projection;
+}
+
+void CameraClass::UpdateProjectionMatrix()
+{
+	D3DInfo info;
+	D3D::GetInfo(&info);
+
+	viewport.Width = (float)info.screenWidth;
+	viewport.Height = (float)info.screenHeight;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	D3D::GetDeviceContext()->RSSetViewports(1, &viewport);
+
+	fieldOfView = (float)D3DX_PI / 4.0f;
+	screenAspect = (float)info.screenWidth / (float)info.screenHeight;
+
+	D3DXMatrixPerspectiveFovLH(&projection, fieldOfView, screenAspect, screenNear, screenDepth);
 }
 
 void CameraClass::GenerateBaseViewMatrix()

@@ -1,9 +1,6 @@
 #pragma once
-#ifndef _IMAGECLASS_H_
-#define _IMAGECLASS_H_
 
-#include "stdafx.h"
-#include "TextureClass.h"
+
 /*
 	ImageClass
 	- 화면에 그리는데 필요한 각 2D이미지를 표현하는데 사용된다.
@@ -14,6 +11,8 @@
 	2. 동적정점버퍼(마우스 피킹처럼 이미지가 이동하는 경우가 있기 때문에)
 	3. Z버퍼 끄기(깊이&스텐실값이 같은 버퍼를 1개 더 만들어야 한다)
 */
+#include "TextureClass.h"
+#include "MatrixClass.h"
 
 class ImageClass
 {
@@ -30,9 +29,9 @@ public:
 	ImageClass(const ImageClass&);
 	~ImageClass();
 
-	bool Initialize(ID3D11Device*,  int, int, WCHAR*, int, int);
+	bool Initialize( int, int, WCHAR*, int, int);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, int);
+	bool Render( int, int);
 	int GetIndexCount();
 
 	//**텍스쳐는 절대 텍스쳐자체로 파이프라인에 묶이지 않는다.
@@ -40,11 +39,11 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	private:
-		bool InitializeBuffers(ID3D11Device*);
+		bool InitializeBuffers();
 		void ShutdownBuffers();
-		bool UpdateBuffers(ID3D11DeviceContext*, int, int);
-		void RenderBuffers(ID3D11DeviceContext*);
-		bool LoadTexture(ID3D11Device*, WCHAR*);
+		bool UpdateBuffers( int, int);
+		void RenderBuffers();
+		bool LoadTexture( WCHAR*);
 		void ReleaseTexture();
 
 	private:
@@ -67,4 +66,3 @@ public:
 
 
 };
-#endif

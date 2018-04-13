@@ -51,10 +51,8 @@
 --------------------------------------------------------------------------------------------
 */
 
-#include <d3d11.h>
-#include <d3dx10math.h>
+#include "D3D.h"
 #include <stdio.h>
-#include <fstream>
 #include "TextureClass.h"
 #include "TerrainCellClass.h"
 #include "FrustumClass.h"
@@ -112,11 +110,11 @@ public:
 	TerrainClass(const TerrainClass&);
 	~TerrainClass();
 
-	bool Initialize(ID3D11Device*, ID3D11DeviceContext*, char*, CHAR*, CHAR*);
+	bool Initialize( char*, CHAR*, CHAR*);
 	void Shutdown();
 	//호수용Render
-	bool Initializeforwater(ID3D11Device*, ID3D11DeviceContext*, char*, CHAR*, CHAR*);
-	bool Renderforwater(ID3D11DeviceContext*);
+	bool Initializeforwater(char*, CHAR*, CHAR*);
+	bool Renderforwater();
 	void Shutdownforwater();
 
 	int GetVertexCount();
@@ -126,8 +124,8 @@ public:
 	ID3D11ShaderResourceView* GetNormalMapTexture();
 
 	//Terrain Cell
-	bool RenderCell(ID3D11DeviceContext*, int, FrustumClass*);
-	void RenderCellLines(ID3D11DeviceContext*, int);
+	bool RenderCell( int, FrustumClass*);
+	void RenderCellLines( int);
 
 	int GetCellIndexCount(int);
 	int GetCellLinesIndexCount(int);
@@ -162,20 +160,20 @@ private:
 
 	// Terrain 텍스처
 	void CalculateTextureCoordinates();
-	bool LoadTexture(ID3D11Device*, ID3D11DeviceContext*, CHAR*, CHAR*);
+	bool LoadTexture(  CHAR*, CHAR*);
 	void ReleaseTexture();
 	
 	// 컬러 맵
 	bool LoadColorMap();
 
 	//호수용
-	bool InitializeBufferforwater(ID3D11Device*);
-	void RenderBuffersforwater(ID3D11DeviceContext*);
+	bool InitializeBufferforwater();
+	void RenderBuffersforwater();
 	void ShutdownBufferforwater();
 
 
 	//Terrain Cell
-	bool LoadTerrainCells(ID3D11Device*);
+	bool LoadTerrainCells();
 	void ShutdownTerrainCells();
 
 	//높이기반이동

@@ -21,13 +21,13 @@ public:
 	SkyPlaneShaderClass(const SkyPlaneShaderClass&);
 	~SkyPlaneShaderClass();
 
-	virtual bool Initialize(ID3D11Device*, HWND);
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float, float,
+	virtual bool Initialize(HWND);
+	bool Render( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float, float,
 		float, float);
 
 private:
-	virtual bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float,
+	virtual bool InitializeShader( HWND, WCHAR*, WCHAR*);
+	bool SetShaderParameters( D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float,
 		float, float, float);
 
 	virtual void ShutdownShader();

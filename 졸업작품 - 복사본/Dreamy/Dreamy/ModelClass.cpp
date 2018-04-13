@@ -23,7 +23,7 @@ ModelClass::~ModelClass(){}
 - m_model배열이 채워지면 이를 이용해 정점/인덱스 버퍼(기하구조)를 생성한다.
 - LoadModel을 호출해서 데이터를 받아옴으로써 InitializeBuffer함수는 불러오는 모델 데이터에 의존한다.
 ------------------------------------------------------------------------------------------------*/
-bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
+bool ModelClass::Initialize( char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 
@@ -33,18 +33,18 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	if (!result) { return false; }
 
 	//정점버퍼, 인덱스 버퍼를 초기화 한다.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//모델에서 사용할 텍스처 파일의 이름을 인자로 받는다.
-	result = LoadTexture(device, textureFilename);
+	result = LoadTexture( textureFilename);
 	if (!result) { return false; }
 	
 
 	return true;
 }
 
-bool ModelClass::InitializeMulti(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2)
+bool ModelClass::InitializeMulti( char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2)
 {
 	bool result;
 
@@ -55,17 +55,17 @@ bool ModelClass::InitializeMulti(ID3D11Device* device, char* modelFilename, WCHA
 
 
 	//정점버퍼, 인덱스 버퍼를 초기화 한다.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//모델에서 사용할 텍스처 파일의 이름을 인자로 받는다.
-	result = LoadMultiTexture(device, textureFilename, textureFilename2);
+	result = LoadMultiTexture( textureFilename, textureFilename2);
 	if (!result) { return false; }
 
 
 	return true;
 }
-bool ModelClass::InitializeTriple(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2, WCHAR* textureFilename3)
+bool ModelClass::InitializeTriple( char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2, WCHAR* textureFilename3)
 {
 	bool result;
 
@@ -76,17 +76,17 @@ bool ModelClass::InitializeTriple(ID3D11Device* device, char* modelFilename, WCH
 
 
 	//정점버퍼, 인덱스 버퍼를 초기화 한다.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//모델에서 사용할 텍스처 파일의 이름을 인자로 받는다.
-	result = LoadTripleTexture(device, textureFilename, textureFilename2, textureFilename3);
+	result = LoadTripleTexture(textureFilename, textureFilename2, textureFilename3);
 	if (!result) { return false; }
 
 
 	return true;
 }
-bool ModelClass::InitializeBumpMap(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2)
+bool ModelClass::InitializeBumpMap( char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2)
 {
 	bool result;
 
@@ -100,18 +100,18 @@ bool ModelClass::InitializeBumpMap(ID3D11Device* device, char* modelFilename, WC
 	CalculateModelVectors();
 
 	//정점버퍼, 인덱스 버퍼를 초기화 한다.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//모델에서 사용할 텍스처 파일의 이름을 인자로 받는다.
-	result = LoadMultiTexture(device, textureFilename, textureFilename2);
+	result = LoadMultiTexture( textureFilename, textureFilename2);
 	if (!result) { return false; }
 
 
 	return true;
 }
 
-bool ModelClass::InitializeSpecMap(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2, WCHAR* textureFilename3)
+bool ModelClass::InitializeSpecMap( char* modelFilename, WCHAR* textureFilename, WCHAR* textureFilename2, WCHAR* textureFilename3)
 {
 	bool result;
 
@@ -125,11 +125,11 @@ bool ModelClass::InitializeSpecMap(ID3D11Device* device, char* modelFilename, WC
 	CalculateModelVectors();
 
 	//정점버퍼, 인덱스 버퍼를 초기화 한다.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//모델에서 사용할 텍스처 파일의 이름을 인자로 받는다.
-	result = LoadTripleTexture(device, textureFilename, textureFilename2, textureFilename3);
+	result = LoadTripleTexture( textureFilename, textureFilename2, textureFilename3);
 	if (!result) { return false; }
 
 
@@ -145,10 +145,10 @@ bool ModelClass::InitializeSpecMap(ID3D11Device* device, char* modelFilename, WC
 - ***기억할것은 "세이더, 셰이더에서 활용될 정점버퍼들의 DESC LAYOUT" 은 I/A단계에 셰이더클래스에서 들어가고,
   정점/인덱스버퍼(기하구조)는 MODELCLASS에서 I/A단계에 들어간다.
 ------------------------------------------------------------------------------------------------*/
-void ModelClass::Render(ID3D11DeviceContext* deviceContext)
+void ModelClass::Render()
 {
 	//정점 버퍼와 인덱스 버퍼를 그래픽스 파이프라인에 넣어 화면에 그릴 준비를 한다.
-	RenderBuffers(deviceContext);
+	RenderBuffers();
 
 	return;
 }
@@ -170,7 +170,7 @@ int ModelClass::GetIndexCount()
 - 정점 배열이 ModelType 배열에서 로드되는 것으로 바뀌었다.
 - ModelType배열은 tangent와 binormal값을 가지고 있기 때문에 이를 복사하고 나중에 정점 버퍼로 복사한다.
 ------------------------------------------------------------------------------------------------*/
-bool ModelClass::InitializeBuffers(ID3D11Device* device)
+bool ModelClass::InitializeBuffers()
 {
 
 VertexType* vertices;
@@ -245,7 +245,7 @@ vertexData.SysMemPitch = 0;
 vertexData.SysMemSlicePitch = 0;
 
 // 정점 버퍼 생성
-result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 if (FAILED(result))
 {
 	return false;
@@ -265,7 +265,7 @@ indexData.SysMemPitch = 0;
 indexData.SysMemSlicePitch = 0;
 
 // Create the index buffer.
-result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 if (FAILED(result))
 {
 	return false;
@@ -290,7 +290,7 @@ return true;
  - 일단 GPU가 활성화 된 정점 버퍼를 가지게 되면 세이더를 이용해 버퍼의 내용을 그릴 수 있다.
  - 또한 정점들을 삼각형, 선분, 부채꼴 등 어떤 모양으로 그릴지 정의한다.
  ------------------------------------------------------------------------------------------------*/
-void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void ModelClass::RenderBuffers()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -301,13 +301,13 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// input assmbler(렌더링 파이프라인의 첫번째 단계)에 정점 버퍼를 활성화 하여 그려질 수 있게 한다.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	// 입력 조립기(I/A)에 인덱스 버퍼를 활성화 하여 그려질 수 있게 한다.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// 정점 버퍼로 그릴 기본형을 설정한다. 여기선 삼각형. 부채꼴이 될 수도 있고 그렇다.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
@@ -317,38 +317,38 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 용도: 제공된 파일 이름으로 텍스처 개체를 만들고 초기화한다.
 ------------------------------------------------------------------------------------------------*/
 
-bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool ModelClass::LoadTexture( WCHAR* filename)
 {
 	bool result;
 
 	m_Texture = new TextureClass;
 	if (!m_Texture) { return false; }
 
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize( filename);
 	if (!result) { return false; }
 
 	return true;
 }
-bool ModelClass::LoadMultiTexture(ID3D11Device* device, WCHAR* filename, WCHAR* filename2)
+bool ModelClass::LoadMultiTexture( WCHAR* filename, WCHAR* filename2)
 {
 	bool result;
 
 	m_Texture = new TextureClass;
 	if (!m_Texture) { return false; }
 
-	result = m_Texture->InitializeMulti(device, filename, filename2);
+	result = m_Texture->InitializeMulti( filename, filename2);
 	if (!result) { return false; }
 
 	return true;
 }
-bool ModelClass::LoadTripleTexture(ID3D11Device* device, WCHAR* filename, WCHAR* filename2, WCHAR* filename3)
+bool ModelClass::LoadTripleTexture( WCHAR* filename, WCHAR* filename2, WCHAR* filename3)
 {
 	bool result;
 
 	m_Texture = new TextureClass;
 	if (!m_Texture) { return false; }
 
-	result = m_Texture->InitializeTriple(device, filename, filename2, filename3);
+	result = m_Texture->InitializeTriple( filename, filename2, filename3);
 	if (!result) { return false; }
 
 	return true;

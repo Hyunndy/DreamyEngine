@@ -47,18 +47,18 @@ public:
 	TerrainShaderClass(const TerrainShaderClass&);
 	~TerrainShaderClass();
 
-	virtual bool Initialize(ID3D11Device*, HWND);
+	virtual bool Initialize( HWND);
 
 	//bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,  ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,D3DXVECTOR3, D3DXVECTOR4);
-	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, float, float);
+	bool Render( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, float, float);
 
-	void RenderShader(ID3D11DeviceContext*, int);
+	void RenderShader( int);
 	//bool SetShaderParameters(ID3D11DeviceContext*,int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,  D3DXVECTOR3, D3DXVECTOR4);
-	bool SetShaderParameters(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, float, float);
+	bool SetShaderParameters( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, float, float);
 
 private:
 
-	virtual bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
+	virtual bool InitializeShader( HWND, WCHAR*, WCHAR*);
 	virtual void ShutdownShader();
 
 

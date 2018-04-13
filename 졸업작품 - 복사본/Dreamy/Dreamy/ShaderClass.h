@@ -9,12 +9,6 @@
 */
 
 
-#include <d3d11.h>
-#include <d3dx11tex.h>
-#include <d3dx10math.h>
-#include <D3DX11async.h>
-#include <fstream>
-using namespace std;
 
 /*
 	추상 클래스(abstract Class)
@@ -28,6 +22,8 @@ using namespace std;
 	- 자식 클래스에서 "무조건" 재정의가 되어야한다.
 
 */
+#include "D3D.h"
+
 class ShaderClass
 {
 private:
@@ -48,11 +44,11 @@ protected:
 	ID3D11SamplerState* m_sampleState;
 
 
-	virtual bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*) =0;
+	virtual bool InitializeShader( HWND, WCHAR*, WCHAR*) =0;
 	virtual void ShutdownShader() = 0;
 	
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
-	virtual void RenderShader(ID3D11DeviceContext*, int);
+	virtual void RenderShader( int);
 
 public:
 	ShaderClass();
@@ -60,7 +56,7 @@ public:
 	~ShaderClass();
 
 
-	virtual bool Initialize(ID3D11Device*, HWND) = 0;
+	virtual bool Initialize(HWND) = 0;
 	void Shutdown();
 
 };

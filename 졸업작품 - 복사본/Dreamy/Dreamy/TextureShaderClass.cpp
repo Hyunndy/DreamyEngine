@@ -25,7 +25,7 @@ TextureShaderClass::~TextureShaderClass()
 }
 
 // 셰이더의 초기화를 수행하는 함수를 호출한다.
-bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool TextureShaderClass::Initialize(HWND hwnd)
 {
 	bool result;
 
@@ -35,7 +35,7 @@ bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	//result = InitializeShader(device, hwnd, L"../Dreamy/color.vs", L"../Dreamy/color.ps");
 
 	//2. 텍스처 붙어있는 삼각형 render하는 셰이더
-	result = InitializeShader(device, hwnd, L"../Dreamy/texture.vs", L"../Dreamy/texture.ps");
+	result = InitializeShader( hwnd, L"../Dreamy/shader/texture.vs", L"../Dreamy/shader/texture.ps");
 	if (!result) { return false; }
 
 
@@ -46,17 +46,17 @@ bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 // SetShaderParameter함수를 사용하여 셰이더에서 사용될 인자들을 설정한다.
 // 인자들이 설정되면 RenderShader함수를 호출하여 HLSL셰이더를 이용한 물체 그리기를 수행한다.
 // 텍스처 자원을 가리키는 포인터인 texture을 받는다. 이것은 setShaderParameter로 연결되어 렌더링에 사용될 셰이더에 연결된다.
-bool TextureShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+bool TextureShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	bool result;
 
 	// 렌더링에 사용할 셰이더의 인자를 입력한다.
 	// 빛의 방향과 조명 색상을 입력 받는다.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, texture);
 	if (!result)	{	return false;	}
 
 	// 셰이더를 이용하여 준비된 버퍼를 그린다.
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }
@@ -69,7 +69,7 @@ bool TextureShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCou
 3. 레이아웃을 세팅하고 어떻게 정점 버퍼의 데이터가 GPU에서 사용되는지 볼 수 있다.
 (이 레이아웃은 modelclass와 color.vs에 선언된 VertexType과 일치해야 한다.)
 */
-bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool TextureShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	//https://blog.naver.com/lifeisforu/80103346516
 	HRESULT result;
@@ -134,14 +134,14 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	*/
 
 	// 정점 셰이더 생성
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// 픽셀 셰이더를 생성
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result))
 	{
 		return false;
@@ -187,7 +187,7 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// 정점 입력 레이아웃을 생성한다.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
 	{
@@ -217,7 +217,7 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// 상수 버퍼 포인터를 만들어 이 클래스에서 정점 셰이더 상수 버퍼에 접근할 수 있게 한다.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result)) { return false; }
 
 	/*
@@ -245,7 +245,7 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// 텍스처 렌더 상태를 생성한다.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result)) { return false; }
 
 
@@ -300,7 +300,7 @@ void TextureShaderClass::ShutdownShader()
 // 이 함수에 사용된 행렬들은 GraphicsClass에서 만들어졌다.
 // 이제 텍스처 자원의 포인터를 인자로 받고 그것을 셰이더에 등록한다.
 // ***텍스처는 반드시 버퍼에 렌더링이 일어나기 전에 설정되어 있어야 한다***
-bool TextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool TextureShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	HRESULT result;
@@ -308,13 +308,13 @@ bool TextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	MatrixBufferType* dataPtr; // 월드, 뷰, 프로젝션 행렬을 묶어놓은 행렬 상수 버퍼
 	unsigned int bufferNumber;
 
-								// 행렬을 transpose하여 셰이더에서 사용할 수 있게 한다.
+	// 행렬을 transpose하여 셰이더에서 사용할 수 있게 한다.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	// 상수 버퍼의 내용을 쓸 수 있도록 잠근다.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
 	// 상수 버퍼의 데이터에 대한 포인터를 가져온다.
@@ -326,16 +326,16 @@ bool TextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr->projection = projectionMatrix;
 
 	// 상수 버퍼의 잠금을 푼다.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// 정점 셰이더에서의 상수 버퍼의 위치를 설정한다.
 	bufferNumber = 0;
 
 	// 정점 셰이더의 상수 버퍼를 바뀐 값으로 바꾼다.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
 
 
 

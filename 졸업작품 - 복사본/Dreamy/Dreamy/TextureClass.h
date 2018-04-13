@@ -8,8 +8,7 @@
 //////////////
 // INCLUDES //
 //////////////
-#include "stdafx.h"
-#include <fstream>
+#include "D3D.h"
 
 /*
 	Texture클래스는 텍스처 자원을 불러오고, 해제하고, 접근하는 작업을 캡슐화 한다.
@@ -40,10 +39,10 @@ public:
 	~TextureClass();
 
 	// 주어진 파일 이름으로 텍스처를 불러오고 더이상 사용되지 않는 텍스처를 해제한다.
-	bool Initialize(ID3D11Device*, WCHAR*);
-	bool InitializeMulti(ID3D11Device*, WCHAR*, WCHAR*);
-	bool InitializeTriple(ID3D11Device*, WCHAR*, WCHAR*, WCHAR*);
-	bool InitializeTGA(ID3D11Device*, ID3D11DeviceContext*, char*);
+	bool Initialize( WCHAR*);
+	bool InitializeMulti( WCHAR*, WCHAR*);
+	bool InitializeTriple( WCHAR*, WCHAR*, WCHAR*);
+	bool InitializeTGA(char*);
 
 
 

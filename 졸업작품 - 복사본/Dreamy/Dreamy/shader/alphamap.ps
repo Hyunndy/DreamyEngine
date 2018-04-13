@@ -1,0 +1,53 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: texture.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+
+//알파 맵 텍스처, 텍스처1, 텍스처2를 저장하기 위해 텍스처 배열의 크기를 증가시킨다.
+Texture2D shaderTexture[3];
+
+SamplerState SampleType;
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+
+
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+
+// 1. 각 텍스처의 픽셀과 알파 텍스처에서 픽셀 값을 샘플링한다.
+// 2. 기본 텍스처 픽셀에 해당 알파값을 곱한다.
+// 3. 그리고 다른 텍스처 픽셀은(1.0-alpha)값을 곱한다.
+// 4. 계산된 두 픽셀값을 더하고 0과 1사이의 숫자가 되도록 잘라내어 최종 결과를 얻어낸다.
+float4 AlphaMapPixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 color1;
+    float4 color2;
+    float4 alphaValue;
+    float4 blendColor;
+
+    color1 = shaderTexture[0].Sample(SampleType, input.tex);
+    color2 = shaderTexture[1].Sample(SampleType, input.tex);
+    alphaValue = shaderTexture[2].Sample(SampleType, input.tex);
+
+    blendColor = (alphaValue*color1) + ((1.0-alphaValue) * color2);
+
+    blendColor = saturate(blendColor);
+
+    return blendColor;
+
+}

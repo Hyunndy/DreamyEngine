@@ -22,10 +22,10 @@ TerrainShaderClass::~TerrainShaderClass()
 {
 }
 
-bool TerrainShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool TerrainShaderClass::Initialize( HWND hwnd)
 {
 	//정점 셰이더, 픽셀 셰이더 초기화
-	return InitializeShader(device, hwnd, L"../Dreamy/terrain.vs", L"../Dreamy/terrain.ps");
+	return InitializeShader( hwnd, L"../Dreamy/shader/terrain.vs", L"../Dreamy/shader/terrain.ps");
 
 
 }
@@ -45,7 +45,7 @@ bool TerrainShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 - 함수의 지역변수 matrixBufferDesc, lightBufferDesc을 이용해 m_matrixBuffer, m_lightBuffer에 desc를 설정한다.
 -----------------------------------------------------------------------------------------------*/
-bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool TerrainShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -104,14 +104,14 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result))
 	{
 		return false;
@@ -170,7 +170,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
 	{
@@ -193,7 +193,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -215,7 +215,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -229,7 +229,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	fogBufferDesc.MiscFlags = 0;
 	fogBufferDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&fogBufferDesc, NULL, &m_fogBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&fogBufferDesc, NULL, &m_fogBuffer);
 	if (FAILED(result)) { return false; }
 
 	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
@@ -241,7 +241,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	lightBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -259,7 +259,7 @@ bool TerrainShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 - Render할 때 실질적으로 들어가는 셰이더 안의 요소들을 설정한다.
 - 픽셀 셰이더에 텍스처를 설정한다.
 -----------------------------------------------------------------------------------------------*/
-bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool TerrainShaderClass::SetShaderParameters( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix,ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor,
 	float fogStart, float fogEnd)
 
@@ -278,7 +278,7 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	 D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	// Lock the constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -293,17 +293,17 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Finanly set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// 안개 버퍼는 정점셰이더상에서 2번째 버퍼이므로 bufferNumber을 2로 지정한다.
 
-	result = deviceContext->Map(m_fogBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_fogBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
 	dataPtr3 = (FogBufferType*)mappedResource.pData;
@@ -311,18 +311,18 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr3->fogStart = fogStart;
 	dataPtr3->fogEnd = fogEnd;
 
-	deviceContext->Unmap(m_fogBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_fogBuffer, 0);
 
 	bufferNumber = 1;
 
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_fogBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_fogBuffer);
 
 	// Set shader texture resources in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
-	deviceContext->PSSetShaderResources(1, 1, &texture2);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
+	D3D::GetDeviceContext()->PSSetShaderResources(1, 1, &texture2);
 
 	// Lock the light constant buffer so it can be written to.
-	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -337,46 +337,46 @@ bool TerrainShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->padding = 0.0f;
 
 	// Unlock the light constant buffer.
-	deviceContext->Unmap(m_lightBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_lightBuffer, 0);
 
 	// Set the position of the light constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
 
 	return true;
 }
 
-bool TerrainShaderClass::Render(ID3D11DeviceContext* deviceContext,int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool TerrainShaderClass::Render(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix,ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor,
 	float fogStart, float fogEnd)
 {
 	// 렌더링에 사용할 셰이더 매개 변수를 설정합니다.
-	if (!SetShaderParameters(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, lightDirection, diffuseColor,fogStart, fogEnd ))
+	if (!SetShaderParameters( indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, lightDirection, diffuseColor,fogStart, fogEnd ))
 	{
 		return false;
 	}
 
 	// 설정된 버퍼를 셰이더로 렌더링한다.
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }
-void TerrainShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void TerrainShaderClass::RenderShader( int indexCount)
 {
 	// 정점쉐이더 INPUT 레이아웃을 설정한다.
-	deviceContext->IASetInputLayout(m_layout);
+	D3D::GetDeviceContext()->IASetInputLayout(m_layout);
 
 	// 삼각형을 그릴 정점 셰이더, 픽셀 셰이더를 설정한다.
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+	D3D::GetDeviceContext()->VSSetShader(m_vertexShader, NULL, 0);
+	D3D::GetDeviceContext()->PSSetShader(m_pixelShader, NULL, 0);
 
 	// 텍스처 샘플러 상태를 픽셀 셰이더에 설정한다.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+	D3D::GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
 
 	// 삼각형을 그린다.
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+	D3D::GetDeviceContext()->DrawIndexed(indexCount, 0, 0);
 
 	return;
 }

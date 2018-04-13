@@ -37,16 +37,16 @@ SkyClass::~SkyClass()
 - 구름에 쓰일 텍스처들을 로드한다.
 - 
 -----------------------------------------------------------------------------------------------*/
-bool SkyClass::InitializeSky(ID3D11Device* device)
+bool SkyClass::InitializeSky()
 {
 	bool result;
 
 	//스카이돔 모델을 불러온다.
-	result = LoadSkyDomeModel("../Dreamy/skydome.txt");
+	result = LoadSkyDomeModel("../Dreamy/Data/skydome.txt");
 	if (!result) { return false; }
 
 	//렌더링을 위해 스카이돔 데이터를 정점버퍼, 인덱스버퍼에 로드한다.
-	result = InitializeSkyBuffers(device);
+	result = InitializeSkyBuffers();
 	if (!result) { return false; }
 
 	// Set the color at the top of the sky dome.
@@ -59,7 +59,7 @@ bool SkyClass::InitializeSky(ID3D11Device* device)
 
 }
 
-bool SkyClass::InitializeCloud(ID3D11Device* device, WCHAR* textureFilename1, WCHAR* textureFilename2)
+bool SkyClass::InitializeCloud( WCHAR* textureFilename1, WCHAR* textureFilename2)
 {
 	bool result;
 
@@ -91,11 +91,11 @@ bool SkyClass::InitializeCloud(ID3D11Device* device, WCHAR* textureFilename1, WC
 	if (!result) { return false; }
 
 	//skyplane 정점버퍼, 인덱스버퍼 생성
-	result = InitializeCloudBuffers(device, skyPlaneResolution);
+	result = InitializeCloudBuffers( skyPlaneResolution);
 	if (!result) { return false; }
 
 	//skyplane 텍스처를 로드한다.
-	result = LoadTextures(device, textureFilename1, textureFilename2);
+	result = LoadTextures( textureFilename1, textureFilename2);
 	if (!result) { return false; }
 }
 /*---------------------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ bool SkyClass::LoadSkyDomeModel(char* filename)
 이름: InitializeBuffers()
 용도: 정점 버퍼, 인덱스 버퍼에 스카이돔 모델을 로드해준다.
 -----------------------------------------------------------------------------------------------*/
-bool SkyClass::InitializeSkyBuffers(ID3D11Device* device)
+bool SkyClass::InitializeSkyBuffers()
 {
 	VertexType* vertices; //위치
 	unsigned long* indices;
@@ -213,7 +213,7 @@ bool SkyClass::InitializeSkyBuffers(ID3D11Device* device)
 	vertexData.SysMemSlicePitch = 0;
 
 	// 정점 버퍼 생성.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -233,7 +233,7 @@ bool SkyClass::InitializeSkyBuffers(ID3D11Device* device)
 	indexData.SysMemSlicePitch = 0;
 
 	// 인덱스 버퍼 생성
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -249,7 +249,7 @@ bool SkyClass::InitializeSkyBuffers(ID3D11Device* device)
 	return true;
 }
 
-bool SkyClass::InitializeCloudBuffers(ID3D11Device* device, int skyPlaneResolution)
+bool SkyClass::InitializeCloudBuffers( int skyPlaneResolution)
 {
 	SkyPlaneVertexType* vertices;
 	unsigned long* indices;
@@ -344,7 +344,7 @@ bool SkyClass::InitializeCloudBuffers(ID3D11Device* device, int skyPlaneResoluti
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now finally create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_SkyPlanevertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_SkyPlanevertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -364,7 +364,7 @@ bool SkyClass::InitializeCloudBuffers(ID3D11Device* device, int skyPlaneResoluti
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_SkyPlaneindexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_SkyPlaneindexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -443,17 +443,17 @@ bool SkyClass::InitializeSkyPlane(int skyPlaneResolution, float skyPlaneWidth, f
 }
 
 
-void SkyClass::RenderSky(ID3D11DeviceContext* deviceContext)
+void SkyClass::RenderSky()
 {
 	// Render the sky dome.
-	RenderSkyBuffers(deviceContext);
+	RenderSkyBuffers();
 
 	return;
 }
 
-void SkyClass::RenderCloud(ID3D11DeviceContext* deviceContext)
+void SkyClass::RenderCloud()
 {
-	RenderCloudBuffers(deviceContext);
+	RenderCloudBuffers();
 
 	return;
 }
@@ -462,39 +462,39 @@ void SkyClass::RenderCloud(ID3D11DeviceContext* deviceContext)
 이름: RenderBuffers()
 용도: 렌더링을 위해 그래픽스 파이프라인에 정전 버퍼, 인덱스 버퍼를 놓는다.
 -----------------------------------------------------------------------------------------------*/
-void SkyClass::RenderSkyBuffers(ID3D11DeviceContext* deviceContext)
+void SkyClass::RenderSkyBuffers()
 {
 	unsigned int stride = sizeof(VertexType);
 	unsigned int offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
-void SkyClass::RenderCloudBuffers(ID3D11DeviceContext* deviceContext)
+void SkyClass::RenderCloudBuffers()
 {
 	unsigned int stride = sizeof(SkyPlaneVertexType);
 	unsigned int offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &m_SkyPlanevertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_SkyPlanevertexBuffer, &stride, &offset);
 
-	deviceContext->IASetIndexBuffer(m_SkyPlaneindexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_SkyPlaneindexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 /*---------------------------------------------------------------------------------------------
 이름: LoadTextures()
 용도: 구름 텍스처를 로드한다.
 -----------------------------------------------------------------------------------------------*/
-bool SkyClass::LoadTextures(ID3D11Device* device, WCHAR* textureFilename1, WCHAR* textureFilename2)
+bool SkyClass::LoadTextures( WCHAR* textureFilename1, WCHAR* textureFilename2)
 {
 	bool result;
 
@@ -507,7 +507,7 @@ bool SkyClass::LoadTextures(ID3D11Device* device, WCHAR* textureFilename1, WCHAR
 	}
 
 	// Initialize the first cloud texture object.
-	result = m_CloudTexture1->Initialize(device, textureFilename1);
+	result = m_CloudTexture1->Initialize( textureFilename1);
 	if (!result)
 	{
 		return false;
@@ -521,7 +521,7 @@ bool SkyClass::LoadTextures(ID3D11Device* device, WCHAR* textureFilename1, WCHAR
 	}
 
 	// Initialize the second cloud texture object.
-	result = m_CloudTexture2->Initialize(device, textureFilename2);
+	result = m_CloudTexture2->Initialize(textureFilename2);
 	if (!result)
 	{
 		return false;

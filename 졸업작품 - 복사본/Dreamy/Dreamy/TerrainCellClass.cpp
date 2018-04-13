@@ -28,7 +28,7 @@ TerrainCellClass::~TerrainCellClass()
 - TerrainCell 초기화.
 - ModelType생성 -> 지형 데이터를 넣을 버퍼 생성 -> cell의 면적 계산
 -----------------------------------------------------------------------------------------------*/
-bool TerrainCellClass::Initialize(ID3D11Device* device, void* TerrainModelPtr, int nodeIndexX, int nodeIndexY,
+bool TerrainCellClass::Initialize( void* TerrainModelPtr, int nodeIndexX, int nodeIndexY,
 	int cellHeight, int cellWidth, int terrainWidth)
 {
 	ModelType* TerrainModel;
@@ -40,7 +40,7 @@ bool TerrainCellClass::Initialize(ID3D11Device* device, void* TerrainModelPtr, i
 	TerrainModel = (ModelType*)TerrainModelPtr;
 
 	//셀 안에 있는 Terrain 데이터를 채울 버퍼를 로드한다.
-	result = InitializeBuffers(device, nodeIndexX, nodeIndexY, cellHeight, cellWidth, terrainWidth, TerrainModel);
+	result = InitializeBuffers( nodeIndexX, nodeIndexY, cellHeight, cellWidth, terrainWidth, TerrainModel);
 	if (!result) { return false; }
 
 	// 필요 없으니까 TerrainModel을 해제한다.
@@ -50,7 +50,7 @@ bool TerrainCellClass::Initialize(ID3D11Device* device, void* TerrainModelPtr, i
 	CalculateCellDimensions();
 
 	// 셀주위의 바운딩박스를 생성한다.
-	result = BuildLineBuffers(device);
+	result = BuildLineBuffers();
 
 	if (!result) { return false; }
 
@@ -66,7 +66,7 @@ bool TerrainCellClass::Initialize(ID3D11Device* device, void* TerrainModelPtr, i
   nodeIndexX, nodeIndexY를 사용하여 이 셀의 물리적 위치를 기반으로 만들어진다.
 - ModelIndex가 뭔지 모르겠음....아마 셀 하나인거같음
 -----------------------------------------------------------------------------------------------*/
-bool TerrainCellClass::InitializeBuffers(ID3D11Device* device, int nodeIndexX, int nodeIndexY, int cellHeight, int cellWidth,
+bool TerrainCellClass::InitializeBuffers( int nodeIndexX, int nodeIndexY, int cellHeight, int cellWidth,
 	int terrainWidth, ModelType * terrainModel)
 {
 	VertexType* vertices;
@@ -125,7 +125,7 @@ bool TerrainCellClass::InitializeBuffers(ID3D11Device* device, int nodeIndexX, i
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -145,7 +145,7 @@ bool TerrainCellClass::InitializeBuffers(ID3D11Device* device, int nodeIndexX, i
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -246,7 +246,7 @@ void TerrainCellClass::CalculateCellDimensions()
 이름: 라인그리는애들
 용도:
 -----------------------------------------------------------------------------------------------*/
-bool TerrainCellClass::BuildLineBuffers(ID3D11Device* device)
+bool TerrainCellClass::BuildLineBuffers()
 {
 	ColorVertexType* vertices;
 	unsigned long* indices;
@@ -431,14 +431,14 @@ bool TerrainCellClass::BuildLineBuffers(ID3D11Device* device)
 	indices[index] = index;
 
 	// Create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_lineVertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_lineVertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_lineIndexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_lineIndexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -457,7 +457,7 @@ bool TerrainCellClass::BuildLineBuffers(ID3D11Device* device)
 	return true;
 }
 
-void TerrainCellClass::RenderLineBuffers(ID3D11DeviceContext* deviceContext)
+void TerrainCellClass::RenderLineBuffers()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -468,13 +468,13 @@ void TerrainCellClass::RenderLineBuffers(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_lineVertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_lineVertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_lineIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_lineIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case lines.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	return;
 }
@@ -514,14 +514,14 @@ void TerrainCellClass::GetCellDimensions(float& maxWidth, float& maxHeight, floa
 이름: Render()
 용도: 정점, 인덱스 버퍼를 그래픽스 파이프라인에 등록한다.
 -----------------------------------------------------------------------------------------------*/
-void TerrainCellClass::Render(ID3D11DeviceContext* deviceContext)
+void TerrainCellClass::Render()
 {
 	// 정점, 인덱스 버퍼를 그래픽스 파이프라인에 등록한다.
-	RenderBuffers(deviceContext);
+	RenderBuffers();
 
 	return;
 }
-void TerrainCellClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void TerrainCellClass::RenderBuffers()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -532,13 +532,13 @@ void TerrainCellClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
