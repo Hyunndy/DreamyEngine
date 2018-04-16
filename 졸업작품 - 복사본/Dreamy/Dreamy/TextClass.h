@@ -45,45 +45,45 @@ public:
 	TextClass(const TextClass&);
 	~TextClass();
 
-	bool Initialize(ID3D11Device*, ID3D11DeviceContext*, HWND, int, int, D3DXMATRIX);
+	bool Initialize(HWND, int, int, D3DXMATRIX);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX);
+	bool Render( D3DXMATRIX, D3DXMATRIX);
 
 	//GraphicsClass에서 마우스,fps,cpu를 프레임 마다 얻어서 Text로 출력하려고 만든 함수들.
-	bool SetMousePosition(int, int, ID3D11DeviceContext*);
-	bool SetPosition(float, float, float, ID3D11DeviceContext*);
-	bool SetFps(int, ID3D11DeviceContext*); 
-	bool SetCpu(int, ID3D11DeviceContext*);
+	bool SetMousePosition(int, int);
+	bool SetPosition(float, float, float);
+	bool SetFps(int); 
+	bool SetCpu(int);
 
 
 
 private:
-	bool InitializeSentence(SentenceType**, int, ID3D11Device*);
-	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float, ID3D11DeviceContext*);
+	bool InitializeSentence(SentenceType**, int);
+	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float);
 	void ReleaseSentence(SentenceType**);
-	bool RenderSentence(ID3D11DeviceContext*, SentenceType*, D3DXMATRIX, D3DXMATRIX);
+	bool RenderSentence( SentenceType*, D3DXMATRIX, D3DXMATRIX);
 
 
 
 private:
-	FontClass* m_Font;
-	FontShaderClass* m_FontShader;
+	FontClass* m_Font = nullptr;
+	FontShaderClass* m_FontShader = nullptr;
 
 	int m_screenWidth, m_screenHeight;
 
 	D3DXMATRIX m_baseViewMatrix;
 
-	SentenceType* m_sentence1; // Title출력
+	SentenceType* m_sentence1= nullptr; // Title출력
 
-	SentenceType* m_sentence2; // FPS출력
-	SentenceType* m_sentence3; // CPU출력
-
-	SentenceType* m_sentence4; // PosX
-	SentenceType* m_sentence5; // PosY
-	SentenceType* m_sentence6; // PosZ
-
-	SentenceType* m_sentence7; // mouseposx
-	SentenceType* m_sentence8; // mouseposy
+	SentenceType* m_sentence2=nullptr; // FPS출력
+	SentenceType* m_sentence3=nullptr; // CPU출력
+						
+	SentenceType* m_sentence4=nullptr; // PosX
+	SentenceType* m_sentence5=nullptr; // PosY
+	SentenceType* m_sentence6=nullptr; // PosZ
+							
+	SentenceType* m_sentence7=nullptr; // mouseposx
+	SentenceType* m_sentence8=nullptr; // mouseposy
 
 	
 };

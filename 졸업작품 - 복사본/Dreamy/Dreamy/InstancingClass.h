@@ -1,8 +1,8 @@
 #pragma once
+#include "D3D.h"
 #include "MatrixClass.h"
-#include <fstream> // 텍스트 파일로 부터 3D 모델을 읽어 그려내기 때문에
 #include "TextureClass.h" // 모델에 텍스처 파일을 붙여야 하기 때문에!
-#include <iostream>
+
 
 
 /*
@@ -50,7 +50,7 @@ public:
 	InstancingClass(const InstancingClass&);
 	~InstancingClass();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*);
+	bool Initialize( char*, WCHAR*);
 
 	int GetVertexCount();
 	int GetInstanceCount();
@@ -58,18 +58,18 @@ public:
 
 	void Shutdown();
 
-	void Render(ID3D11DeviceContext*);
+	void Render();
 	void SetInstancePosition(float, float, float);
 
 	ID3D11ShaderResourceView* GetTexture();
 
 protected:
-	bool InitializeBuffers(ID3D11Device*);
+	bool InitializeBuffers();
 	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers();
 
 	//이 모델을 그릴 텍스처를 불러오고 반환하는데 사용할 LoadTexture&ReleaseTexture
-	bool LoadTexture(ID3D11Device*, WCHAR*);
+	bool LoadTexture( WCHAR*);
 	void ReleaseTexture();
 
 	//모델 데이터를 읽어들이고 해제하는 역할을 하는 함수들.

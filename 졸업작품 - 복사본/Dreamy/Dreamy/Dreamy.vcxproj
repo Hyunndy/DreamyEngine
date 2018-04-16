@@ -163,15 +163,20 @@
     <ClCompile Include="FBXAnimationModel.cpp" />
     <ClCompile Include="FBXCamera.cpp" />
     <ClCompile Include="FBXShader.cpp" />
+    <ClCompile Include="FontClass.cpp" />
+    <ClCompile Include="FontShaderClass.cpp" />
     <ClCompile Include="FpsClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="FrustumClass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="ImageClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
+    <ClCompile Include="InstancingClass.cpp" />
+    <ClCompile Include="InstancingShaderClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MatrixClass.cpp" />
+    <ClCompile Include="MinimapClass.cpp" />
     <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ModelAnimationController.cpp" />
     <ClCompile Include="ModelAnimationKeyFrames.cpp" />
@@ -183,6 +188,8 @@
     <ClCompile Include="ModelSkeleton.cpp" />
     <ClCompile Include="ModelSkeletonBone.cpp" />
     <ClCompile Include="MoveClass.cpp" />
+    <ClCompile Include="ParticleShaderClass.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
@@ -196,9 +203,11 @@
     <ClCompile Include="TerrainCellClass.cpp" />
     <ClCompile Include="TerrainClass.cpp" />
     <ClCompile Include="TerrainShaderClass.cpp" />
+    <ClCompile Include="TextClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="TimerClass.cpp" />
+    <ClCompile Include="TranslateShaderClass.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -215,14 +224,19 @@
     <ClInclude Include="FBXShaderBuffer.h" />
     <ClInclude Include="FBXSunBuffer.h" />
     <ClInclude Include="FBXWorldBuffer.h" />
+    <ClInclude Include="FontClass.h" />
+    <ClInclude Include="FontShaderClass.h" />
     <ClInclude Include="FpsClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="FrustumClass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="ImageClass.h" />
     <ClInclude Include="InputClass.h" />
+    <ClInclude Include="InstancingClass.h" />
+    <ClInclude Include="InstancingShaderClass.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="MatrixClass.h" />
+    <ClInclude Include="MinimapClass.h" />
     <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ModelAnimationController.h" />
     <ClInclude Include="ModelAnimationKeyFrames.h" />
@@ -236,6 +250,8 @@
     <ClInclude Include="ModelSkeletonBone.h" />
     <ClInclude Include="ModelUtility.h" />
     <ClInclude Include="MoveClass.h" />
+    <ClInclude Include="ParticleShaderClass.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="ShaderClass.h" />
@@ -250,9 +266,11 @@
     <ClInclude Include="TerrainCellClass.h" />
     <ClInclude Include="TerrainClass.h" />
     <ClInclude Include="TerrainShaderClass.h" />
+    <ClInclude Include="TextClass.h" />
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="TimerClass.h" />
+    <ClInclude Include="TranslateShaderClass.h" />
     <ClInclude Include="VertexLayout.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

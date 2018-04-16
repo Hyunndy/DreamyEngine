@@ -6,19 +6,7 @@
 
 TextClass::TextClass()
 {
-	m_Font = 0;
-	m_FontShader = 0;
 
-	m_sentence1 = 0;
-	m_sentence2 = 0;
-	m_sentence3 = 0;
-
-	m_sentence4 = 0;
-	m_sentence5 = 0;
-	m_sentence6 = 0;
-
-	m_sentence7 = 0;
-	m_sentence8 = 0;
 }
 
 
@@ -42,7 +30,7 @@ TextClass::~TextClass()
 - 폰트->셰이더->문장 순으로 생성&초기화되어야 한다.
 - 폰트의 정점/인덱스 버퍼, 셰이더를 문장이 써먹어야 하니까!
 ------------------------------------------------------------------------------------------------------------------------------*/
-bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd, int screenWidth, int screenHeight,
+bool TextClass::Initialize( HWND hwnd, int screenWidth, int screenHeight,
 	D3DXMATRIX baseViewMatrix)
 {
 	bool result;
@@ -60,7 +48,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	if (!m_Font){ return false;	}
 
 	// Initialize the font object.
-	result = m_Font->Initialize(device, "../Dreamy/fontdata.txt", L"../Dreamy/font.dds");
+	result = m_Font->Initialize( "../Dreamy/Data/fontdata.txt", L"../Dreamy/Data/font.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the font object.", L"Error", MB_OK);
@@ -72,7 +60,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	if (!m_FontShader) {	return false;	}
 
 	// Initialize the font shader object.
-	result = m_FontShader->Initialize(device, hwnd);
+	result = m_FontShader->Initialize( hwnd);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the font shader object.", L"Error", MB_OK);
@@ -80,32 +68,32 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// 문장을 생성&초기화 한다.
-	result = InitializeSentence(&m_sentence1, 16, device);
+	result = InitializeSentence(&m_sentence1, 16);
 	if (!result)	{ return false;	}
 
-	result = InitializeSentence(&m_sentence2, 16, device);
+	result = InitializeSentence(&m_sentence2, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence3, 16, device);
+	result = InitializeSentence(&m_sentence3, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence4, 16, device);
+	result = InitializeSentence(&m_sentence4, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence5, 16, device);
+	result = InitializeSentence(&m_sentence5, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence6, 16, device);
+	result = InitializeSentence(&m_sentence6, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence7, 16, device);
+	result = InitializeSentence(&m_sentence7, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence8, 16, device);
+	result = InitializeSentence(&m_sentence8, 16);
 	if (!result) { return false; }
 
 	// 사용할 문장을 업데이트 한다.
-	result = UpdateSentence(m_sentence1, "Dreamy", 30, 30, 1.0f, 0.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence1, "Dreamy", 30, 30, 1.0f, 0.0f, 0.0f);
 	if (!result) { return false;}
 
 	return true;
@@ -122,7 +110,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 - 문장의 내용을 언제든 바꿀 수 있도록 정점 버퍼의 description을 작성할 때 Usage를 dynamic으로 설정한다.
 - 인덱스 버퍼는 항상 6으로 바뀔리 없기 때문에 정적 버퍼로 생성한다.
 ------------------------------------------------------------------------------------------------------------------------------*/
-bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D11Device* device)
+bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength)
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -189,7 +177,7 @@ bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D1
 	vertexData.SysMemSlicePitch = 0;
 
 	// Create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &(*sentence)->vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &(*sentence)->vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -209,7 +197,7 @@ bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D1
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &(*sentence)->indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &(*sentence)->indexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -235,8 +223,7 @@ bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D1
 
 - FontClass의 BuildVertexArray를 여기서 써먹는다.
 ------------------------------------------------------------------------------------------------------------------------------*/
-bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX, int positionY, float red, float green, float blue,
-	ID3D11DeviceContext* deviceContext)
+bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX, int positionY, float red, float green, float blue)
 {
 	int numLetters;
 	VertexType* vertices;
@@ -278,7 +265,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	m_Font->BuildVertexArray((void*)vertices, text, drawX, drawY);
 
 	// 정점 배열의 정보를 문장 정점버퍼로 복사한다.
-	result = deviceContext->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -291,7 +278,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	memcpy(verticesPtr, (void*)vertices, (sizeof(VertexType) * sentence->vertexCount));
 
 	// Unlock the vertex buffer.
-	deviceContext->Unmap(sentence->vertexBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(sentence->vertexBuffer, 0);
 
 	// Release the vertex array as it is no longer needed.
 	delete[] vertices;
@@ -313,8 +300,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 - 입력조립기 다음 정점셰이더가 나온다는것 잊지말기!
 ------------------------------------------------------------------------------------------------------------------------------*/
 
-bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType* sentence, D3DXMATRIX worldMatrix,
-	D3DXMATRIX orthoMatrix)
+bool TextClass::RenderSentence( SentenceType* sentence, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
 {
 	unsigned int stride, offset;
 	D3DXVECTOR4 pixelColor;
@@ -326,20 +312,19 @@ bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType*
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &sentence->vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &sentence->vertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(sentence->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(sentence->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Create a pixel color vector with the input sentence color.
 	pixelColor = D3DXVECTOR4(sentence->red, sentence->green, sentence->blue, 1.0f);
 
 	// Render the text using the font shader.
-	result = m_FontShader->Render(deviceContext, sentence->indexCount, worldMatrix, m_baseViewMatrix, orthoMatrix, m_Font->GetTexture(),
-		pixelColor);
+	result = m_FontShader->Render(sentence->indexCount, worldMatrix, m_baseViewMatrix, orthoMatrix, m_Font->GetTexture(), pixelColor);
 	if (!result)
 	{
 		false;
@@ -354,19 +339,19 @@ bool TextClass::RenderSentence(ID3D11DeviceContext* deviceContext, SentenceType*
 - GraphicsClass에서 호출되는 함수.
 - RenderSentence()를 호출해서 문장을 화면에 그린다.
 ------------------------------------------------------------------------------------------------------------------------------*/
-bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
+bool TextClass::Render( D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
 {
 	bool result;
 
 	// Draw the first sentence.
-	result = RenderSentence(deviceContext, m_sentence1, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence2, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence3, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence5, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence7, worldMatrix, orthoMatrix);
-	result = RenderSentence(deviceContext, m_sentence8, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence1, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence2, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence3, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence4, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence5, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence6, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence7, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence8, worldMatrix, orthoMatrix);
 	if (!result) {	return false;	}
 
 	return true;
@@ -429,7 +414,7 @@ void TextClass::Shutdown()
 	return;
 }
 
-bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext)
+bool TextClass::SetMousePosition(int mouseX, int mouseY)
 {
 	char tempString[16];
 	char mouseString[16];
@@ -444,7 +429,7 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 	strcat_s(mouseString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence7, mouseString, 30, 130, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentence7, mouseString, 30, 130, 1.0f, 1.0f, 1.0f);
 	if (!result)
 	{
 		return false;
@@ -458,7 +443,7 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 	strcat_s(mouseString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence8, mouseString, 110, 130, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentence8, mouseString, 110, 130, 1.0f, 1.0f, 1.0f);
 	if (!result)
 	{
 		return false;
@@ -469,7 +454,7 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 
 
 
-bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceContext* deviceContext)
+bool TextClass::SetPosition(float posX, float posY, float posZ)
 {
 	int positionX, positionY, positionZ;
 	char tempString[16];
@@ -498,7 +483,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 
 	// 1535, 35
 	// 1535, 55, 0.0f, 1.0f, 0.0f
-	result = UpdateSentence(m_sentence4, dataString, 30, 105, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence4, dataString, 30, 105, 0.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -509,7 +494,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 	strcpy_s(dataString, "Y: ");
 	strcat_s(dataString, tempString);
 
-	result = UpdateSentence(m_sentence5, dataString, 78, 105, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence5, dataString, 78, 105, 0.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -520,7 +505,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 	strcpy_s(dataString, "Z: ");
 	strcat_s(dataString, tempString);
 
-	result = UpdateSentence(m_sentence6, dataString, 120, 105, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence6, dataString, 120, 105, 0.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -541,7 +526,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ, ID3D11DeviceCont
 - Sentence2에 FPS그려지게했음!
 - Sentence3에 Cpu사용량이 그려진다.
 ------------------------------------------------------------------------------------------------------------------------------*/
-bool TextClass::SetFps(int fps, ID3D11DeviceContext* deviceContext)
+bool TextClass::SetFps(int fps)
 {
 	char tempString[16];
 	char fpsString[16];
@@ -587,7 +572,7 @@ bool TextClass::SetFps(int fps, ID3D11DeviceContext* deviceContext)
 	}
 
 	//
-	result = UpdateSentence(m_sentence2, fpsString, 30, 55, red, green, blue, deviceContext);
+	result = UpdateSentence(m_sentence2, fpsString, 30, 55, red, green, blue);
 	if (!result)
 	{
 		return false;
@@ -597,7 +582,7 @@ bool TextClass::SetFps(int fps, ID3D11DeviceContext* deviceContext)
 }
 
 
-bool TextClass::SetCpu(int cpu, ID3D11DeviceContext* deviceContext)
+bool TextClass::SetCpu(int cpu)
 {
 	char tempString[16];
 	char cpuString[16];
@@ -613,7 +598,7 @@ bool TextClass::SetCpu(int cpu, ID3D11DeviceContext* deviceContext)
 	strcat_s(cpuString, "%");
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence3, cpuString, 30, 80, 1.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence3, cpuString, 30, 80, 1.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;

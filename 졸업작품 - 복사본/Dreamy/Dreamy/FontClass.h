@@ -1,9 +1,6 @@
-#ifndef _FONTCLASS_H_
-#define _FONTCLASS_H_
 
 #pragma once
-#include "stdafx.h"
-#include <fstream>
+#include "D3D.h"
 #include "TextureClass.h"
 
 /*--------------------------------------------------------------------------------------------------------
@@ -45,7 +42,7 @@ public:
 	FontClass(const FontClass&);
 	~FontClass();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*);
+	bool Initialize( char*, WCHAR*);
 	void ShutDown();
 	ID3D11ShaderResourceView* GetTexture();
 
@@ -56,14 +53,13 @@ public:
 private:
 	bool LoadFontPositionTextFile(char*);
 	void ReleaseFontData();
-	bool LoadTexture(ID3D11Device*, WCHAR*);
+	bool LoadTexture( WCHAR*);
 	void ReleaseTexture();
 
 
 private:
-	FontType* m_Font;
-	TextureClass* m_Texture;
+	FontType* m_Font = nullptr;
+	TextureClass* m_Texture = nullptr;
 
 };
-#endif
 

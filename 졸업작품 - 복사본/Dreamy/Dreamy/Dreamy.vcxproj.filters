@@ -141,6 +141,33 @@
       <Filter>2DTexture</Filter>
     </ClCompile>
     <ClCompile Include="MatrixClass.cpp" />
+    <ClCompile Include="TextClass.cpp">
+      <Filter>2DTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="FontClass.cpp">
+      <Filter>2DTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="FontShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingClass.cpp">
+      <Filter>2DTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="MinimapClass.cpp">
+      <Filter>2DTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="TranslateShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>2DTexture</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h" />
@@ -279,5 +306,32 @@
       <Filter>2DTexture</Filter>
     </ClInclude>
     <ClInclude Include="MatrixClass.h" />
+    <ClInclude Include="TextClass.h">
+      <Filter>2DTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="FontClass.h">
+      <Filter>2DTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="FontShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingClass.h">
+      <Filter>2DTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="MinimapClass.h">
+      <Filter>2DTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="TranslateShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>2DTexture</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

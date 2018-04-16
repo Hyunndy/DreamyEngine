@@ -25,12 +25,12 @@ InstancingShaderClass::~InstancingShaderClass()
 }
 
 // 셰이더의 초기화를 수행하는 함수를 호출한다.
-bool InstancingShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool InstancingShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
 	//2. 텍스처 붙어있는 삼각형 render하는 셰이더
-	result = InitializeShader(device, hwnd, L"../Dreamy/Data/instancing.vs", L"../Dreamy/Data/instancing.ps");
+	result = InitializeShader(hwnd, L"../Dreamy/shader/instancing.vs", L"../Dreamy/shader/instancing.ps");
 	if (!result) { return false; }
 
 
@@ -38,18 +38,18 @@ bool InstancingShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 }
 
 
-bool InstancingShaderClass::Render(ID3D11DeviceContext* deviceContext, int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool InstancingShaderClass::Render(int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	bool result;
 
 	// 렌더링에 사용할 셰이더의 인자를 입력한다.
 	// 빛의 방향과 조명 색상을 입력 받는다.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
+	result = SetShaderParameters(worldMatrix, viewMatrix, projectionMatrix, texture);
 	if (!result) { return false; }
 
 	// 셰이더를 이용하여 준비된 버퍼를 그린다.
-	RenderShader(deviceContext, vertexCount, instanceCount);
+	RenderShader( vertexCount, instanceCount);
 
 	return true;
 }
@@ -62,7 +62,7 @@ bool InstancingShaderClass::Render(ID3D11DeviceContext* deviceContext, int verte
 3. 레이아웃을 세팅하고 어떻게 정점 버퍼의 데이터가 GPU에서 사용되는지 볼 수 있다.
 (이 레이아웃은 modelclass와 color.vs에 선언된 VertexType과 일치해야 한다.)
 */
-bool InstancingShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool InstancingShaderClass::InitializeShader(HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 
 	HRESULT result;
@@ -129,14 +129,14 @@ bool InstancingShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	*/
 
 	// 정점 셰이더 생성
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// 픽셀 셰이더를 생성
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result))
 	{
 		return false;
@@ -200,7 +200,7 @@ bool InstancingShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// 정점 입력 레이아웃을 생성한다.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
 	{
@@ -230,7 +230,7 @@ bool InstancingShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// 상수 버퍼 포인터를 만들어 이 클래스에서 정점 셰이더 상수 버퍼에 접근할 수 있게 한다.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result)) { return false; }
 
 	/*
@@ -258,7 +258,7 @@ bool InstancingShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// 텍스처 렌더 상태를 생성한다.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result)) { return false; }
 
 
@@ -313,7 +313,7 @@ void InstancingShaderClass::ShutdownShader()
 // 이 함수에 사용된 행렬들은 GraphicsClass에서 만들어졌다.
 // 이제 텍스처 자원의 포인터를 인자로 받고 그것을 셰이더에 등록한다.
 // ***텍스처는 반드시 버퍼에 렌더링이 일어나기 전에 설정되어 있어야 한다***
-bool InstancingShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool InstancingShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	HRESULT result;
@@ -327,7 +327,7 @@ bool InstancingShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	// 상수 버퍼의 내용을 쓸 수 있도록 잠근다.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
 	// 상수 버퍼의 데이터에 대한 포인터를 가져온다.
@@ -339,16 +339,16 @@ bool InstancingShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 	dataPtr->projection = projectionMatrix;
 
 	// 상수 버퍼의 잠금을 푼다.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// 정점 셰이더에서의 상수 버퍼의 위치를 설정한다.
 	bufferNumber = 0;
 
 	// 정점 셰이더의 상수 버퍼를 바뀐 값으로 바꾼다.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
 
 
 
@@ -356,20 +356,20 @@ bool InstancingShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 }
 
 //인덱스 버퍼 대신 인스턴스 카운트를 사용한다.
-void InstancingShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int vertexCount, int instanceCount)
+void InstancingShaderClass::RenderShader(int vertexCount, int instanceCount)
 {
 	// Set the vertex input layout.
-	deviceContext->IASetInputLayout(m_layout);
+	D3D::GetDeviceContext()->IASetInputLayout(m_layout);
 
 	// Set the vertex and pixel shaders that will be used to render this triangle.
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+	D3D::GetDeviceContext()->VSSetShader(m_vertexShader, NULL, 0);
+	D3D::GetDeviceContext()->PSSetShader(m_pixelShader, NULL, 0);
 
 	// Set the sampler state in the pixel shader.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
+	D3D::GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
 
 	// Render the triangle.
-	deviceContext->DrawInstanced(vertexCount, instanceCount, 0, 0);
+	D3D::GetDeviceContext()->DrawInstanced(vertexCount, instanceCount, 0, 0);
 
 	return;
 }

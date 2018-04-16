@@ -93,17 +93,19 @@ void SystemClass::Main()
 	bool result;
 	bool Start = false;
 
+	result = m_Graphics->RenderMainScene();
+	if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
+
 	while (Start==false)
 	{
-		result = m_Graphics->RenderMainScene();
-		if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
+
 		// 키보드&마우스 상태를 갱신하도록 한다.
 		result = m_Input->Frame();
 
 		if (m_Input->IsF1Pressed() == true)
 		{
-			Start = true;
 			m_state = STATE::LOADING;
+			Start = true;
 		}
 
 		if (m_Input->IsEscapePressed() == true)
@@ -126,6 +128,15 @@ bool SystemClass::Loading()
 {
 	bool result;
 
+	//애니메이션 프레임 객체 생성
+	//-------------------------------------------------------------------------------------
+	Frames::Get()->Start();
+	//-------------------------------------------------------------------------------------
+	DepthStencil::Get();
+	Sampler::Get();
+
+	m_Graphics->Loading(screenWidth, screenHeight, m_hwnd);
+	//-------------------------------------------------------------------------------------
 
 	// FPS 객체 생성
 	//-------------------------------------------------------------------------------------
@@ -150,16 +161,6 @@ bool SystemClass::Loading()
 
 	result = m_Timer->Initialize();
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK); return false; }
-	//-------------------------------------------------------------------------------------
-
-	//애니메이션 프레임 객체 생성
-	//-------------------------------------------------------------------------------------
-	Frames::Get()->Start();
-	//-------------------------------------------------------------------------------------
-	DepthStencil::Get();
-	Sampler::Get();
-
-	m_Graphics->Loading(screenWidth, screenHeight, m_hwnd);
 	//-------------------------------------------------------------------------------------
 
 
@@ -338,6 +339,11 @@ bool SystemClass::Frame()
 	result = m_Graphics->Render(F1pressed, m_FPS->GetFps());
 	if (!result) { return false; }
 
+	result = m_Input->IsLeftMouseButtonDown();
+	if (result == true)
+	{
+		m_Graphics->CheckIntersection(mouseX, mouseY, screenWidth, screenHeight);
+	}
 
 
 
@@ -432,7 +438,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetFocus(m_hwnd);
 
 	// 마우스 커서를 표시 유/무
-	ShowCursor(true);
+	ShowCursor(FALSE);
 
 
 	D3DInfo info;

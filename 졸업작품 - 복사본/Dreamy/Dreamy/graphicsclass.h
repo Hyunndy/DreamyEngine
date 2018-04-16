@@ -37,6 +37,10 @@
 #include "Rasterizer.h"
 #include "Blender.h"
 #include "ImageClass.h"
+#include "TextClass.h"
+#include "InstancingClass.h"
+#include "MinimapClass.h"
+#include "ParticleSystem.h"
 
 
 /////////////
@@ -108,7 +112,11 @@ private:
 
 private:
 	ModelClass* m_cube= nullptr;
+	ModelClass* m_Tree = nullptr;
+
+private:
 	ModelScene* m_horse= nullptr;
+	ModelScene* m_tiger = nullptr;
 
 private:
 	ImageClass* m_Start= nullptr;
@@ -119,13 +127,30 @@ private:
 	ImageClass* m_MouseCursor= nullptr;
 
 private:
+	ImageClass* m_UI =nullptr;
+
+private:
+	InstancingClass* m_Instancing = nullptr;
+	MinimapClass* m_Minimap = nullptr;
+
+private:
+	TextClass* m_Text = nullptr;
+
+private:
+	ParticleSystem* m_Particle = nullptr;
+private:
 	wstring tPosePath;
 	wstring idlePath;
 	wstring runPath;
-	wstring attackPath;
+	wstring walkPath;
 
 private:
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXMATRIX ImageViewMatrix;
+
+private:
+	D3DXVECTOR3 CameraPos;
+
 
 
 };

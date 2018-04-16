@@ -4,6 +4,7 @@
 #include "TextureShaderClass.h"
 #include "SkyDomeShaderClass.h"
 #include "SkyPlaneShaderClass.h"
+#include "InstancingShaderClass.h"
 //#include "LightShaderClass.h"
 //#include "MultiTextureShaderClass.h"
 //#include "AlphaMapShaderClass.h"
@@ -11,7 +12,7 @@
 //#include "SpecMapShaderClass.h"
 //#include "ShaderManagerClass.h"
 //#include "FogShaderClass.h"
-//#include "TranslateShaderClass.h"
+#include "TranslateShaderClass.h"
 //#include "TransparentShaderClass.h"
 //#include "ColorShaderClass.h"
 
@@ -20,8 +21,8 @@
 //#include "WaterShaderClass.h"
 //#include "WaterReflectionShaderClass.h"
 //#include "FireShaderClass.h"
-//#include "InstancingShaderClass.h"
-//#include "ParticleShaderClass.h"
+
+#include "ParticleShaderClass.h"
 
 class ShaderManagerClass
 {
@@ -51,7 +52,7 @@ public:
 
 	//bool RenderFogShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float, float);
 
-	//bool RenderTranslateShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, D3DXVECTOR4, float, float);
+	bool RenderTranslateShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, D3DXVECTOR4, float, float);
 
 	//bool RenderTransparentShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float);
 
@@ -72,9 +73,9 @@ public:
 	//bool RenderFireShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
 	//	float, D3DXVECTOR3, D3DXVECTOR3, D3DXVECTOR2, D3DXVECTOR2, D3DXVECTOR2, float, float);
 
-	//bool RenderInstancingShader(ID3D11DeviceContext*, int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
+	bool RenderInstancingShader( int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
-	//bool RenderParticleShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
+	bool RenderParticleShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
 	TextureShaderClass* m_TextureShader = nullptr;
 
@@ -86,7 +87,7 @@ private:
 	//BumpMapShaderClass* m_BumpMapShader = nullptr;
 	//SpecMapShaderClass* m_SpecMapShader = nullptr;
 	//FogShaderClass* m_FogShader = nullptr;
-	//TranslateShaderClass* m_TranslateShader = nullptr;
+	TranslateShaderClass* m_TranslateShader = nullptr;
 	//TransparentShaderClass* m_TransparentShader = nullptr;
 	SkyDomeShaderClass* m_SkydomeShader = nullptr;
 	SkyPlaneShaderClass* m_CloudShader = nullptr;
@@ -95,8 +96,8 @@ private:
 	//WaterShaderClass* m_WaterShader = nullptr;
 	//WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
 	//FireShaderClass* m_FireShader = nullptr;
-	//InstancingShaderClass* m_InstancingShader = nullptr;
-	//ParticleShaderClass* m_particleShader = nullptr;
+	InstancingShaderClass* m_InstancingShader = nullptr;
+	ParticleShaderClass* m_particleShader = nullptr;
 
 
 };

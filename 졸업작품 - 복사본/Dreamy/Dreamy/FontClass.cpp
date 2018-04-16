@@ -3,8 +3,7 @@
 
 FontClass::FontClass()
 {
-	m_Font = 0;
-	m_Texture = 0;
+
 }
 
 FontClass::FontClass(const FontClass& other)
@@ -20,7 +19,7 @@ FontClass::~FontClass()
 용도 :
 - 글꼴 데이터와 글꼴 텍스처를 불러온다.
 ----------------------------------------------------------------------------------------------------------*/
-bool FontClass::Initialize(ID3D11Device* device, char* fontFilename, WCHAR* textureFilename)
+bool FontClass::Initialize( char* fontFilename, WCHAR* textureFilename)
 {
 	
 	bool result;
@@ -31,7 +30,7 @@ bool FontClass::Initialize(ID3D11Device* device, char* fontFilename, WCHAR* text
 	
 
 	// 글꼴 텍스처를 불러온다.
-	result = LoadTexture(device, textureFilename);
+	result = LoadTexture( textureFilename);
 	if(!result) { return false; } 
 	
 
@@ -104,7 +103,7 @@ bool FontClass::LoadFontPositionTextFile(char* filename)
 
 - 이 텍스처에서 글자를 뽑아 각각의 사각형에 입혀 화면에 그린다.
 ----------------------------------------------------------------------------------------------------------*/
-bool FontClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool FontClass::LoadTexture(WCHAR* filename)
 {
 	bool result;
 
@@ -114,7 +113,7 @@ bool FontClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 	if (!m_Texture) { return false;}
 
 	// Initialize the texture object.
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize( filename);
 	if (!result) { return false; }
 
 	return true;

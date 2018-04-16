@@ -8,9 +8,7 @@
 - 블렌드를 사용하여 파티클을 함께 블렌드하여 계층화 된 파티클이 누적되어 서로 색상을 추가한다.
 */
 
-#include <d3d11.h>
-#include <D3DX10math.h>
-
+#include "D3D.h"
 #include "TextureClass.h"
 #include "MatrixClass.h"
 
@@ -40,12 +38,12 @@ public:
 	ParticleSystem(const ParticleSystem&);
 	~ParticleSystem();
 
-	bool Initialize(ID3D11Device*, WCHAR*);
+	bool Initialize(WCHAR*);
 	void Shutdown();
 
 	// Frame함수는 파티클이 그려질 수 있게 매 프레임 마다 버텍스 버퍼를 리빌딩 하는 것이다.
-	bool Frame(float, ID3D11DeviceContext*);
-	void Render(ID3D11DeviceContext*);
+	bool Frame(float);
+	void Render();
 
 	ID3D11ShaderResourceView* GetTexture();
 	int GetIndexCount();
@@ -54,22 +52,22 @@ public:
 
 private:
 
-	bool LoadTexture(ID3D11Device*, WCHAR*);
+	bool LoadTexture( WCHAR*);
 	void ReleaseTexture();
 
 	bool InitializeParticleSystem();
 	void ShutdownParticleSystem();
 
-	bool InitializeBuffers(ID3D11Device*);
+	bool InitializeBuffers();
 	void ShutdownBuffers();
 
 	void EmitParticles(float);
 	void UpdateParticles(float);
 	void KillParticles();
 
-	bool UpdateBuffers(ID3D11DeviceContext*);
+	bool UpdateBuffers();
 
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers();
 
 private:
 

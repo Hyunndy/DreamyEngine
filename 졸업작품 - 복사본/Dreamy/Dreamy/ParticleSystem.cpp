@@ -24,19 +24,19 @@ ParticleSystem::~ParticleSystem()
 용도: 
 - 텍스처->파티클시스템-> Empty버퍼를 초기화 한다.
 ------------------------------------------------------------------------*/
-bool ParticleSystem::Initialize(ID3D11Device* device, WCHAR* textureFilename)
+bool ParticleSystem::Initialize( WCHAR* textureFilename)
 {
 	bool result;
 
 
-	result = LoadTexture(device, textureFilename);
+	result = LoadTexture( textureFilename);
 	if (!result) { return false; }
 
 
 	result = InitializeParticleSystem();
 	if (!result) {return false;}
 
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	return true;
@@ -51,7 +51,7 @@ bool ParticleSystem::Initialize(ID3D11Device* device, WCHAR* textureFilename)
 - 파티클이 업데이트 되면 각각의 파티클의 업데이트된 위치에 따른 버텍스 버퍼를 업데이트 해야 한다.
 - 버텍스 버퍼는 동적이여야 업데이트하기 쉬워진다.
 ------------------------------------------------------------------------*/
-bool ParticleSystem::Frame(float frameTime, ID3D11DeviceContext* deviceContext)
+bool ParticleSystem::Frame(float frameTime)
 {
 	bool result;
 	
@@ -65,7 +65,7 @@ bool ParticleSystem::Frame(float frameTime, ID3D11DeviceContext* deviceContext)
 		UpdateParticles(frameTime);
 
 		// Update the dynamic vertex buffer with the new position of each particle.
-		result = UpdateBuffers(deviceContext);
+		result = UpdateBuffers();
 		if (!result) { return false; }
 
 
@@ -150,7 +150,7 @@ bool ParticleSystem::InitializeParticleSystem()
 - 파티클이 매 프레임마다 업데이트될것이기 때문에 정점 버퍼는 동적 버퍼로 생서오디어야 한다.
 - 시작에선 방출된 파티클이 없기 때문에 정점 버퍼는 빈 상태로 생성되어야 한다.
 ------------------------------------------------------------------------*/
-bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
+bool ParticleSystem::InitializeBuffers()
 {
 	unsigned long* indices;
 	int i;
@@ -203,7 +203,7 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now finally create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -223,7 +223,7 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -339,6 +339,7 @@ void ParticleSystem::UpdateParticles(float frameTime)
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for (i = 0; i<m_currentParticleCount; i++)
 	{
+		//m_particleList[i].posX = m_particleList[i].posX + (m_particleList[i].velocity * frameTime * 0.001f);
 		m_particleList[i].posY = m_particleList[i].posY + (m_particleList[i].velocity * frameTime * 0.001f);
 	}
 
@@ -387,7 +388,7 @@ void ParticleSystem::KillParticles()
 - 정점 버퍼를 동적 생성한다.
 - 왜? 렌더링 될 때 마다 파티클의 위치가 업데이트 되니까!
 ------------------------------------------------------------------------*/
-bool ParticleSystem::UpdateBuffers(ID3D11DeviceContext* deviceContext)
+bool ParticleSystem::UpdateBuffers()
 {
 	int index, i;
 	HRESULT result;
@@ -441,7 +442,7 @@ bool ParticleSystem::UpdateBuffers(ID3D11DeviceContext* deviceContext)
 	}
 
 	// Lock the vertex buffer.
-	result = deviceContext->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -454,12 +455,12 @@ bool ParticleSystem::UpdateBuffers(ID3D11DeviceContext* deviceContext)
 	memcpy(verticesPtr, (void*)m_vertices, (sizeof(VertexType) * m_vertexCount));
 
 	// Unlock the vertex buffer.
-	deviceContext->Unmap(m_vertexBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_vertexBuffer, 0);
 
 	return true;
 }
 
-void ParticleSystem::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void ParticleSystem::RenderBuffers()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -470,19 +471,19 @@ void ParticleSystem::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
 
 
-bool ParticleSystem::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool ParticleSystem::LoadTexture( WCHAR* filename)
 {
 	bool result;
 
@@ -495,7 +496,7 @@ bool ParticleSystem::LoadTexture(ID3D11Device* device, WCHAR* filename)
 	}
 
 	// Initialize the texture object.
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize( filename);
 	if (!result)
 	{
 		return false;
@@ -514,10 +515,10 @@ ID3D11ShaderResourceView* ParticleSystem::GetTexture()
 	return m_Texture->GetTexture();
 }
 
-void ParticleSystem::Render(ID3D11DeviceContext* deviceContext)
+void ParticleSystem::Render()
 {
 
-		RenderBuffers(deviceContext);
+		RenderBuffers();
 	
 	return;
 }

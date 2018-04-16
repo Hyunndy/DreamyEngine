@@ -16,7 +16,7 @@ InstancingClass::InstancingClass(const InstancingClass& other) {}
 InstancingClass::~InstancingClass() {}
 
 
-bool InstancingClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
+bool InstancingClass::Initialize(char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 
@@ -26,11 +26,11 @@ bool InstancingClass::Initialize(ID3D11Device* device, char* modelFilename, WCHA
 	if (!result) { return false; }
 
 	//정점버퍼, 인스턴스 버퍼를 초기화 한다.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers();
 	if (!result) { return false; }
 
 	//모델에서 사용할 텍스처 파일의 이름을 인자로 받는다.
-	result = LoadTexture(device, textureFilename);
+	result = LoadTexture( textureFilename);
 	if (!result) { return false; }
 
 
@@ -54,7 +54,7 @@ int InstancingClass::GetInstanceCount()
 - 정점 배열이 ModelType 배열에서 로드되는 것으로 바뀌었다.
 - ModelType배열은 tangent와 binormal값을 가지고 있기 때문에 이를 복사하고 나중에 정점 버퍼로 복사한다.
 ------------------------------------------------------------------------------------------------*/
-bool InstancingClass::InitializeBuffers(ID3D11Device* device)
+bool InstancingClass::InitializeBuffers()
 {
 
 	VertexType* vertices;
@@ -122,7 +122,7 @@ bool InstancingClass::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemSlicePitch = 0;
 
 	// 정점 버퍼 생성
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -157,7 +157,7 @@ bool InstancingClass::InitializeBuffers(ID3D11Device* device)
 	instanceData.SysMemSlicePitch = 0;
 
 	// Create the instance buffer.
-	result = device->CreateBuffer(&instanceBufferDesc, &instanceData, &m_instanceBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&instanceBufferDesc, &instanceData, &m_instanceBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -244,20 +244,20 @@ bool InstancingClass::LoadModel(char* filename)
 
 	return true;
 }
-bool InstancingClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool InstancingClass::LoadTexture( WCHAR* filename)
 {
 	bool result;
 
 	m_Texture = new TextureClass;
 	if (!m_Texture) { return false; }
 
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize( filename);
 	if (!result) { return false; }
 
 	return true;
 }
 
-void InstancingClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void InstancingClass::RenderBuffers()
 {
 	unsigned int strides[2];
 	unsigned int offsets[2];
@@ -277,18 +277,18 @@ void InstancingClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	bufferPointers[1] = m_instanceBuffer;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
 
-void InstancingClass::Render(ID3D11DeviceContext* deviceContext)
+void InstancingClass::Render()
 {
 	//정점 버퍼와 인덱스 버퍼를 그래픽스 파이프라인에 넣어 화면에 그릴 준비를 한다.
-	RenderBuffers(deviceContext);
+	RenderBuffers();
 
 	return;
 }

@@ -20,8 +20,8 @@ ShaderManagerClass::ShaderManagerClass()
 	m_SkydomeShader = 0;
 	m_CloudShader = 0;
 	//m_FireShader = 0;
-	//m_InstancingShader = 0;
-	//m_particleShader = 0;
+	m_InstancingShader = 0;
+	m_particleShader = 0;
 
 }
 
@@ -103,11 +103,11 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	//result = m_FogShader->Initialize(device, hwnd);
 	//if (!result){	MessageBox(hwnd, L"Could not initialize the fog object.", L"Error", MB_OK); return false;}
 
-	//m_TranslateShader = new TranslateShaderClass;
-	//if (!m_TranslateShader) { return false; }
+	m_TranslateShader = new TranslateShaderClass;
+	if (!m_TranslateShader) { return false; }
 
-	//result =m_TranslateShader->Initialize(device, hwnd);
-	//if(!result) { MessageBox(hwnd, L"Could not initialize the fog object.", L"Error", MB_OK); return false; }
+	result = m_TranslateShader->Initialize(hwnd);
+	if(!result) { MessageBox(hwnd, L"Could not initialize the translaptrin object.", L"Error", MB_OK); return false; }
 
 	//m_TransparentShader = new TransparentShaderClass;
 	//if (!m_TransparentShader) { return false; }
@@ -157,17 +157,17 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	//m_FireShader->Initialize(device, hwnd);
 	//if(!result){ MessageBox(hwnd, L"Could not initialize the FireShader object.", L"Error", MB_OK); return false; }
 
-	//m_InstancingShader = new InstancingShaderClass;
-	//if (!m_InstancingShader) { return false; }
+	m_InstancingShader = new InstancingShaderClass;
+	if (!m_InstancingShader) { return false; }
 
-	//m_InstancingShader->Initialize(device, hwnd);
-	//if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
-	//
-	//m_particleShader = new ParticleShaderClass;
-	//if (!m_particleShader) { return false; }
+	m_InstancingShader->Initialize( hwnd);
+	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
+	
+	m_particleShader = new ParticleShaderClass;
+	if (!m_particleShader) { return false; }
 
-	//m_particleShader->Initialize(device, hwnd);
-	//if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
+	m_particleShader->Initialize(hwnd);
+	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
 
 	return true;
 }
@@ -176,7 +176,7 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 void ShaderManagerClass::Shutdown()
 {
 	SAFE_SHUTDOWN(m_TextureShader);
-	//if (m_InstancingShader) { m_InstancingShader->Shutdown(); delete m_InstancingShader; m_InstancingShader = 0; }
+	SAFE_SHUTDOWN(m_InstancingShader);
 	//if (m_ColorShader) { m_ColorShader->Shutdown(); delete m_ColorShader; m_ColorShader = 0; }
 	//if (m_FireShader) { m_FireShader->Shutdown(); delete m_FireShader; m_FireShader = 0; }
 	//// 라이트 쉐이더 객체를 해제합니다.
@@ -190,14 +190,14 @@ void ShaderManagerClass::Shutdown()
 	//if (m_MultiTextureShader) { m_MultiTextureShader->Shutdown(); delete m_MultiTextureShader; m_MultiTextureShader = 0; }
 	SAFE_SHUTDOWN(m_SkydomeShader);
 	SAFE_SHUTDOWN(m_CloudShader);
-
+	SAFE_SHUTDOWN(m_particleShader);
 	//if (m_AlphaMapShader) { m_AlphaMapShader->Shutdown(); delete m_AlphaMapShader; m_AlphaMapShader = 0; }
 	//if (m_BumpMapShader) { m_BumpMapShader->Shutdown(); delete m_BumpMapShader; m_BumpMapShader = 0; }
 	//if (m_SpecMapShader) { m_SpecMapShader->Shutdown(); delete m_SpecMapShader; m_SpecMapShader = 0; }
 	//if (m_FogShader) { m_FogShader->Shutdown(); delete m_FogShader; m_FogShader = 0; }
-	//if (m_TranslateShader) { m_TranslateShader->Shutdown(); delete m_TranslateShader; m_TranslateShader = 0; }
+	SAFE_SHUTDOWN(m_TranslateShader);
 	//if (m_TransparentShader) { m_TransparentShader->Shutdown(); delete m_TransparentShader; m_TransparentShader = 0; }
-	//if (m_particleShader) { m_particleShader->Shutdown(); delete m_particleShader; m_particleShader = 0; }
+
 }
 //
 //bool ShaderManagerClass::RenderColorShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
@@ -253,14 +253,14 @@ bool ShaderManagerClass::RenderTextureShader(int indexCount, D3DXMATRIX worldMat
 //	return m_FogShader->Render(device, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, FogStart, FogEnd);
 //}
 //
-//bool ShaderManagerClass::RenderTranslateShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix,
-//	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor
-//	, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float translation)
-//{
-//	return m_TranslateShader->Render(device, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower, translation);
-//}
-//
-//
+bool ShaderManagerClass::RenderTranslateShader(int indexCount, D3DXMATRIX worldMatrix,
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor
+	, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float translation)
+{
+	return m_TranslateShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower, translation);
+}
+
+
 //bool ShaderManagerClass::RenderTransparentShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
 //	ID3D11ShaderResourceView* texture, float blendAmount)
 //{
@@ -320,14 +320,14 @@ bool ShaderManagerClass::RenderCloudShader(int indexCount, D3DXMATRIX worldMatri
 //	return m_FireShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 //}
 //
-//bool ShaderManagerClass::RenderInstancingShader(ID3D11DeviceContext* deviceContext, int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-//	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
-//{
-//	return m_InstancingShader->Render(deviceContext, vertexCount, instanceCount, worldMatrix, viewMatrix, projectionMatrix, texture);
-//}
-//
-//bool ShaderManagerClass::RenderParticleShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-//	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
-//{
-//	return m_particleShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
-//}
+bool ShaderManagerClass::RenderInstancingShader( int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+{
+	return m_InstancingShader->Render(vertexCount, instanceCount, worldMatrix, viewMatrix, projectionMatrix, texture);
+}
+
+bool ShaderManagerClass::RenderParticleShader( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+{
+	return m_particleShader->Render( indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
+}

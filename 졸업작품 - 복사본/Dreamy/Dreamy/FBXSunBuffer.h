@@ -7,7 +7,7 @@ public:
 	FBXSunBuffer()
 		: ShaderBuffer(sizeof(Data))
 	{
-		data.direction = D3DXVECTOR3(-1, -1, -1);
+		data.direction = D3DXVECTOR3(0, -1, -1);
 		data.padding = 0;
 	}
 

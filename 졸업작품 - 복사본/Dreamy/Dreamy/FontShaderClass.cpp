@@ -32,11 +32,11 @@ FontShaderClass::~FontShaderClass()
 - 정점 셰이더: 정점 1개를 출력하는 함수 프로그램
 - 픽셀 셰이더: 정점 셰이더에서 출력한 정점들이 이루고 있는 도형의 픽셀들에 색을 입혀 출력하는 함수 프로그램
 -------------------------------------------------------------------------------------------------------------------------*/
-bool FontShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool FontShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/font.vs", L"../Dreamy/font.ps");
+	result = InitializeShader( hwnd, L"../Dreamy/shader/font.vs", L"../Dreamy/shader/font.ps");
 	if (!result) { return false; }
 
 	return true;
@@ -54,7 +54,7 @@ bool FontShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 - D3D11_BUFFER_DESC
   셰이더에 있는 상수 버퍼들이 어떻게 쓰일것인지 DESCRIPTION을 알려줘야한다.
 -------------------------------------------------------------------------------------------------------------------------*/
-bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool FontShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -111,7 +111,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL,
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL,
 		&m_vertexShader);
 	if (FAILED(result))
 	{
@@ -119,7 +119,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL,
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL,
 		&m_pixelShader);
 	if (FAILED(result))
 	{
@@ -148,7 +148,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
 	{
@@ -171,7 +171,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	constantBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&constantBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&constantBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -193,7 +193,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -208,7 +208,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	pixelBufferDesc.StructureByteStride = 0;
 
 	// Create the pixel constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&pixelBufferDesc, NULL, &m_pixelBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&pixelBufferDesc, NULL, &m_pixelBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -229,7 +229,7 @@ bool FontShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 - SetShaderParamer은 c++프로그램에서의 셰이더에 있는 상수 버퍼, 구조체를 Render()에서 필요한 애들만 초기화 하는듯.
 - FontShaderClass의 RenderShader()의 양을 줄이려는것같음.
 -------------------------------------------------------------------------------------------------------------------------*/
-bool FontShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool FontShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 pixelColor)
 {
 	HRESULT result;
@@ -240,7 +240,7 @@ bool FontShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 
 
 	// Lock the constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -260,19 +260,19 @@ bool FontShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Now set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
 
 	// Lock the pixel constant buffer so it can be written to.
-	result = deviceContext->Map(m_pixelBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_pixelBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -285,13 +285,13 @@ bool FontShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	dataPtr2->pixelColor = pixelColor;
 
 	// Unlock the pixel constant buffer.
-	deviceContext->Unmap(m_pixelBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_pixelBuffer, 0);
 
 	// Set the position of the pixel constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Now set the pixel constant buffer in the pixel shader with the updated value.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_pixelBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_pixelBuffer);
 
 	return true;
 }
@@ -303,17 +303,17 @@ bool FontShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 - GraphicsClass에서 불리는 Render()
 - 셰이더 인자를 설정하고 글꼴 셰이더를 사용해 버퍼를 그려낸다.
 -------------------------------------------------------------------------------------------------------------------------*/
-bool FontShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool FontShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR4 pixelColor)
 {
 	bool result;
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, pixelColor);
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, texture, pixelColor);
 	if (!result)	{	return false;	}
 
 	// Now render the prepared buffers with the shader.
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }

@@ -10,10 +10,9 @@ public:
 	MinimapClass(const MinimapClass&);
 	~MinimapClass();
 
-	bool Initialize(ID3D11Device*, int, int, float, float);
+	bool Initialize( int, int, float, float);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext* deviceContext, TextureShaderClass* ShaderManager, D3DXMATRIX worldMatrix,
-		D3DXMATRIX viewMatrix, D3DXMATRIX orthoMatrix);
+	bool Render( TextureShaderClass* ShaderManager, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX orthoMatrix);
 
 	void PositionUpdate(float, float);
 

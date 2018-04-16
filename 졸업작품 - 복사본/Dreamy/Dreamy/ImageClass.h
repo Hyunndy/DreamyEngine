@@ -14,7 +14,7 @@
 #include "TextureClass.h"
 #include "MatrixClass.h"
 
-class ImageClass
+class ImageClass : public MatrixClass
 {
 private:
 
@@ -38,31 +38,32 @@ public:
 	//**묶이는건 ResourceView형태로 묶인다!
 	ID3D11ShaderResourceView* GetTexture();
 
-	private:
-		bool InitializeBuffers();
-		void ShutdownBuffers();
-		bool UpdateBuffers( int, int);
-		void RenderBuffers();
-		bool LoadTexture( WCHAR*);
-		void ReleaseTexture();
+private:
+	bool InitializeBuffers();
+	void ShutdownBuffers();
+	bool UpdateBuffers( int, int);
+	void RenderBuffers();
+	bool LoadTexture( WCHAR*);
+	void ReleaseTexture();
 
-	private:
+private:
 
-		ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
-		int m_vertexCount, m_indexCount;
-		TextureClass* m_Texture;
+	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
+	int m_vertexCount, m_indexCount;
+	TextureClass* m_Texture;
 
-		/*
-		3D모델과는 달리 2D이미지는 화면 크기, 이미지 크기, 이전에 그려졌던 위치를 기억해야 한다.
-		
-		이전에 그려졌던 위치를 알아야 하는 이유는
-		만약 이전 프레임과 비교해서 위치가 변하지 않았다면 동적 정점 버퍼를 바꾸지 않아도 되기 때문에
-		성능의 향상을 꾀할 수 있기 때문이다!
-		*/
-		int m_screenWidth, m_screenHeight;
-		int m_bitmapWidth, m_bitmapHeight;
-		int m_previousPosX, m_previousPosY;
+	/*
+	3D모델과는 달리 2D이미지는 화면 크기, 이미지 크기, 이전에 그려졌던 위치를 기억해야 한다.
+	
+	이전에 그려졌던 위치를 알아야 하는 이유는
+	만약 이전 프레임과 비교해서 위치가 변하지 않았다면 동적 정점 버퍼를 바꾸지 않아도 되기 때문에
+	성능의 향상을 꾀할 수 있기 때문이다!
+	*/
+	int m_screenWidth, m_screenHeight;
+	int m_bitmapWidth, m_bitmapHeight;
+	int m_previousPosX, m_previousPosY;
 
-
+public:
+	bool active = false;
 
 };
