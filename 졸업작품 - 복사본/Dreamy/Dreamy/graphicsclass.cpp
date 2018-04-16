@@ -104,10 +104,10 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_horse = new ModelScene();
 
 	m_horse->LoadScene(tPosePath, true, true, true, false);
-	m_horse->LoadScene(runPath, false, false, false, true);
+	//m_horse->LoadScene(runPath, false, false, false, true);
 
 	// Default Animation 설정
-	m_horse->SetCurrentAnimation(runPath);
+	//m_horse->SetCurrentAnimation(runPath);
 
 	D3DXMATRIX HorseWorldMatrix;
 	D3DXMatrixIdentity(&HorseWorldMatrix);
@@ -116,12 +116,16 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_horse->SetWorldTransform(HorseWorldMatrix);
 
 	m_tiger = new ModelScene();
+	
+	wstring tPosePath2 = filePath + L"Elf.fbx";
+	m_tiger->TexturePath = filePath + L"Elf_D.png";
+	wstring idlePath2 = filePath + L"Elf_Idle.fbx";
 
-	m_tiger->LoadScene(tPosePath, true, true, true, false);
-	m_tiger->LoadScene(walkPath, false, false, false, true);
+	m_tiger->LoadScene(tPosePath2, true, true, true, false);
+	m_tiger->LoadScene(idlePath2, false, false, false, true);
 
 	// Default Animation 설정
-	m_tiger->SetCurrentAnimation(walkPath);
+	m_tiger->SetCurrentAnimation(idlePath2);
 
 	D3DXMATRIX TigerWorldMatrix;
 	D3DXMatrixIdentity(&TigerWorldMatrix);
@@ -222,10 +226,19 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing = new InstancingClass;
 	if (!m_Instancing) { return false; }
 
-	m_Instancing->SetInstanceCount(10);
+	m_Instancing->SetInstanceCount(3);
 	m_Instancing->SetInstancePosition(470.0f, 48.0f, 786.0f);
 
-	result = m_Instancing->Initialize( "../Dreamy/Data/square2.txt", L"../Dreamy/Data/redtree.png");
+	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/maple_bark.png");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing2 = new InstancingClass;
+	if (!m_Instancing2) { return false; }
+
+	m_Instancing2->SetInstanceCount(3);
+	m_Instancing2->SetInstancePosition(470.0f, 48.0f, 786.0f);
+
+	result = m_Instancing2->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 	//--------------------------------------------------------------------------------------
 
@@ -264,6 +277,7 @@ void GraphicsClass::Shutdown()
 	SAFE_DELETE(m_Light);
 	SAFE_SHUTDOWN(m_TerrainShader);
 	SAFE_SHUTDOWN(m_Instancing);
+	SAFE_SHUTDOWN(m_Instancing2);
 	SAFE_SHUTDOWN(m_Terrain);
 	SAFE_SHUTDOWN(m_Sky);
 	SAFE_SHUTDOWN(m_cube);
@@ -525,11 +539,22 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 인스턴싱
 	//-----------------------------
+	Rasterizer::Get()->SetOffCullMode();
 	Blender::Get()->SetLinear();
+
 	m_Instancing->Render();
 
 	result = m_Shader->RenderInstancingShader(m_Instancing->GetVertexCount(), m_Instancing->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing->GetTexture());
 	if (!result) { return false; }
+
+	m_Instancing2->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing2->GetVertexCount(), m_Instancing2->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing2->GetTexture());
+	if (!result) { return false; }
+
+	Rasterizer::Get()->SetOnCullMode();
+
+
 
 	// 나무 빌보딩
 	//-----------------------------

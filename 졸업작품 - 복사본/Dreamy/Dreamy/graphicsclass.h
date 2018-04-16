@@ -43,10 +43,11 @@
 #include "ParticleSystem.h"
 
 
+
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
@@ -131,6 +132,7 @@ private:
 
 private:
 	InstancingClass* m_Instancing = nullptr;
+	InstancingClass* m_Instancing2 = nullptr;
 	MinimapClass* m_Minimap = nullptr;
 
 private:

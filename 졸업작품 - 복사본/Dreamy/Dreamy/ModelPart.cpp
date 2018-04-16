@@ -6,7 +6,7 @@
 #include "ModelBuffer.h"
 
 ModelPart::ModelPart(FBXAnimationModel* model, ModelMaterial* material, ModelBuffer* modelBuffer)
-	: FBXShader(L"../Dreamy/Model/Model.fx")
+	: FBXShader(L"../Dreamy/Model/Model2.fx")
 	, model(model), material(material), modelBuffer(modelBuffer)
 	, vertexBuffer(NULL), indexBuffer(NULL)
 {

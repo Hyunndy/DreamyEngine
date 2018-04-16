@@ -381,6 +381,22 @@ bool LoadDataStructures(char* filename, int vertexCount, int textureCount, int n
 
 		if (faces[i].vIndex4 != 0 && faces[i].tIndex4 != 0 && faces[i].nIndex4 != 0)
 		{
+			vIndex = faces[i].vIndex1 - 1;
+			tIndex = faces[i].tIndex1 - 1;
+			nIndex = faces[i].nIndex1 - 1;
+
+			fout << vertices[vIndex].x << ' ' << vertices[vIndex].y << ' ' << vertices[vIndex].z << ' '
+				<< texcoords[tIndex].x << ' ' << texcoords[tIndex].y << ' '
+				<< normals[nIndex].x << ' ' << normals[nIndex].y << ' ' << normals[nIndex].z << endl;
+
+			vIndex = faces[i].vIndex3 - 1;
+			tIndex = faces[i].tIndex3 - 1;
+			nIndex = faces[i].nIndex3 - 1;
+
+			fout << vertices[vIndex].x << ' ' << vertices[vIndex].y << ' ' << vertices[vIndex].z << ' '
+				<< texcoords[tIndex].x << ' ' << texcoords[tIndex].y << ' '
+				<< normals[nIndex].x << ' ' << normals[nIndex].y << ' ' << normals[nIndex].z << endl;
+
 			vIndex = faces[i].vIndex4 - 1;
 			tIndex = faces[i].tIndex4 - 1;
 			nIndex = faces[i].nIndex4 - 1;

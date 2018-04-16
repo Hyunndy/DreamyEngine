@@ -4,6 +4,7 @@
 //FBXModel::FBXModel()
 //{
 //	m_Texture = 0;
+//	InstancePosition = 0;
 //}
 //
 //
@@ -11,20 +12,20 @@
 //{
 //}
 //
-//bool FBXModel::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
+//bool FBXModel::Initialize(char* modelFilename, WCHAR* textureFilename)
 //{
 //	FBXLoad(modelFilename);
 //
-//	InitializeBuffers(device);
+//	InitializeBuffers();
 //
-//	LoadTexture(device, textureFilename);
+//	LoadTexture(textureFilename);
 //
 //	return true;
 //}
 //
-//void FBXModel::Render(ID3D11DeviceContext* deviceContext)
+//void FBXModel::Render()
 //{
-//	RenderBuffers(deviceContext);
+//	RenderBuffers();
 //}
 //bool FBXModel::FBXLoad(char* modelFilename)
 //{
@@ -70,62 +71,22 @@
 //		FbxGeometryConverter geometryConverter(m_SdkManager);
 //		geometryConverter.Triangulate(scene, true);
 //
-//		//s_animStack = scene->GetSrcObject<FbxAnimStack>();
-//		//
-//		//if (s_animStack)
-//		//{
-//		//	FbxString animStackName = s_animStack->GetName();
-//		//	FbxTakeInfo* takeInfo = scene->GetTakeInfo(animStackName);
-//		//
-//		//	s_AnimationStart = takeInfo->mLocalTimeSpan.GetStart();
-//		//	s_AnimationEnd = takeInfo->mLocalTimeSpan.GetStop();
-//		//
-//		//	s_AnimationLength = s_AnimationEnd.GetFrameCount(FbxTime::eFrames24) - s_AnimationStart.GetFrameCount(FbxTime::eFrames24) + 1;
-//		//}
-//		//
-//		//LoadJoint(scene->GetRootNode(), -1, -1, -1);
-//		//
-//		//s_hasAnimation = s_skeleton.size() > 0 ? true : false;
 //
-//		//씬의 루트 노드를 가져온다.
-//		//rootNode->RotationPivot;
 //		//재귀적으로 노드를 탐색한다.
 //		LoadNode(scene->GetRootNode());
 //
-//		//씬내의 다른 객체 만들기.
-//		//mesh, light, animation
-//		//FbxMesh* mesh = FbxMesh::Create(scene, "mesh");
 //	}
 //}
-////void FBXModel::LoadJoint(FbxNode* node, int depth, int index, int parentIndex)
-////{
-////
-////	FbxNodeAttribute* nodeAttribute = node->GetNodeAttribute();
-////
-////	if (nodeAttribute && nodeAttribute->GetAttributeType() == FbxNodeAttribute::eSkeleton)
-////	{
-////		sun::Joint joint;
-////		joint.parentIndex = parentIndex;
-////		joint.name = node->GetName();
-////
-////		s_skeleton.push_back(joint);
-////	}
-////
-////	const uint childCount = node->GetChildCount();
-////
-////	// 재귀
-////	for (uint i = 0; i < childCount; ++i)
-////		LoadJoint(node->GetChild(i), depth + 1, s_skeleton.size(), index);
-////}
 //
-//bool FBXModel::LoadTexture(ID3D11Device* device, WCHAR* filename)
+//
+//bool FBXModel::LoadTexture( WCHAR* filename)
 //{
 //	bool result;
 //
 //	m_Texture = new TextureClass;
 //	if (!m_Texture) { return false; }
 //
-//	result = m_Texture->Initialize(device, filename);
+//	result = m_Texture->Initialize( filename);
 //	if (!result) { return false; }
 //
 //	return true;
@@ -179,6 +140,7 @@
 //
 //	unsigned int vertexCount = 0; // 정점의 갯수
 //
+//
 //	for (int i = 0; i < triCount; ++i) //삼각형 갯수
 //	{
 //		vec3 tanget;
@@ -211,10 +173,14 @@
 //
 //	return true;
 //}
+//int FBXModel::GetInstanceCount()
+//{
+//	return m_instanceCount;
+//}
 //
 //int FBXModel::GetIndexCount()
 //{
-//	return m_indexCount2;
+//	return m_vertexCount;
 //}
 //vec2 FBXModel::ParseUV(const FbxMesh* mesh, int ControlPointIndex, int Textureindex)
 //{
@@ -518,141 +484,34 @@
 //
 //}
 //
-////void FBXModel::ParseAnimation(FbxNode* node)
-////{
-////	FbxGeometry* geo = node->GetGeometry();
-////
-////	s_rootMatrix.SetIdentity();
-////
-////	const FbxVector4 T = node->GetGeometricTranslation(FbxNode::eSourcePivot);
-////	const FbxVector4 R = node->GetGeometricRotation(FbxNode::eSourcePivot);
-////	const FbxVector4 S = node->GetGeometricScaling(FbxNode::eSourcePivot);
-////
-////	s_rootMatrix = FbxAMatrix(T, R, S);
-////
-////	uint deformerCount = geo->GetDeformerCount();
-////
-////	// 보통 1개
-////	for (int deformerIndex = 0; deformerIndex < deformerCount; ++deformerIndex)
-////	{
-////		FbxSkin* skin = reinterpret_cast<FbxSkin*>(geo->GetDeformer(deformerIndex, FbxDeformer::eSkin));
-////
-////		if (!skin) continue;
-////
-////		uint clusterCount = skin->GetClusterCount();
-////
-////		// 클러스터 안의 link가 joint 역할
-////
-////		for (uint clusterIndex = 0; clusterIndex < clusterCount; ++clusterIndex)
-////		{
-////			FbxCluster* cluster = skin->GetCluster(clusterIndex);
-////
-////			FbxAMatrix transformMatrix;
-////			FbxAMatrix transformLinkMatrix;
-////			FbxAMatrix globalBindposeInverseMatrix;
-////
-////			cluster->GetTransformMatrix(transformMatrix);
-////			cluster->GetTransformLinkMatrix(transformLinkMatrix);
-////
-////
-////			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * s_rootMatrix;
-////			unsigned int jointIndex;
-////
-////			String jointName = cluster->GetLink()->GetName();
-////
-////			for (uint i = 0; i < s_skeleton.size(); ++i)
-////				if (s_skeleton[i].name == jointName)
-////					jointIndex = i;
-////
-////			s_skeleton[jointIndex].globalBindPositionInverse = globalBindposeInverseMatrix;
-////			s_skeleton[jointIndex].node = cluster->GetLink();
-////
-////			uint IndicesCount = cluster->GetControlPointIndicesCount();
-////
-////			for (uint i = 0; i < IndicesCount; ++i)
-////			{
-////				sun::BlendingIndexWeightPair blendingIndexWeightPair;
-////
-////				blendingIndexWeightPair.blendingIndex = jointIndex;
-////				blendingIndexWeightPair.blendingWeight = (float)(cluster->GetControlPointWeights()[i]);
-////				s_rawPositions[cluster->GetControlPointIndices()[i]].blendingInfo.push_back(blendingIndexWeightPair);
-////			}
-////
-////			// ㄴ조인트 설정 및 각 포지션별 조인트 인덱스 설정 완료
-////
-////			// 애니메이션 시작
-////			sun::KeyFrame** anim = &s_skeleton[jointIndex].animation;
-////
-////			for (FbxLongLong i = s_AnimationStart.GetFrameCount(FbxTime::eFrames24); i <= s_AnimationEnd.GetFrameCount(FbxTime::eFrames24); ++i)
-////			{
-////				FbxTime time;
-////				time.SetFrame(i, FbxTime::eFrames24);
-////				*anim = new sun::KeyFrame();
-////				(*anim)->frameNum = i;
-////
-////				const FbxVector4 Tr = cluster->GetLink()->GetGeometricTranslation(FbxNode::eSourcePivot);
-////				const FbxVector4 Rr = cluster->GetLink()->GetGeometricRotation(FbxNode::eSourcePivot);
-////				const FbxVector4 Sr = cluster->GetLink()->GetGeometricScaling(FbxNode::eSourcePivot);
-////
-////				//s_rootMatrix = ;
-////
-////				FbxAMatrix currentTransformOffset = node->EvaluateGlobalTransform(time) *FbxAMatrix(Tr, Rr, Sr);
-////				FbxAMatrix globalTransform = currentTransformOffset.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(time);
-////
-////				(*anim)->globalTransform = globalTransform;
-////
-////				anim = &((*anim)->next);
-////			}
-////		}
-////	}
-////
-////	// 4개이하 가중치 0처리
-////	sun::BlendingIndexWeightPair blendingIndexWeightPair;
-////
-////	blendingIndexWeightPair.blendingIndex = 0;
-////	blendingIndexWeightPair.blendingWeight = 0;
-////
-////	for (uint rawPositionIndex = 0; rawPositionIndex < s_rawPositionCount; ++rawPositionIndex)
-////	{
-////		for (uint i = s_rawPositions[rawPositionIndex].blendingInfo.size(); i <= 4; ++i)
-////		{
-////			s_rawPositions[rawPositionIndex].blendingInfo.push_back(blendingIndexWeightPair);
-////		}
-////	}
-////
-////}
 //
 //
-//bool FBXModel::InitializeBuffers(ID3D11Device* device)
+//
+//bool FBXModel::InitializeBuffers()
 //{
 //	//sun::VertexWithBlending* m_vertices;
 //	VertexType* m_vertices;
-//	unsigned int* m_indices;
-//	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-//	D3D11_SUBRESOURCE_DATA vertexData, indexData;
+//	InstanceType* instances;
+//
+//	D3D11_BUFFER_DESC vertexBufferDesc, instanceBufferDesc;
+//	D3D11_SUBRESOURCE_DATA vertexData, instanceData;
 //	HRESULT result;
 //	int i;
 //	int m_BufferCount = vertices.size();
-//	m_indexCount2 = indices.size();
+//
 //
 //	m_vertices = new VertexType[m_BufferCount];
 //	if (!m_vertices) { return false; }
 //
-//	m_indices = new unsigned int[m_indexCount2];
-//	if (!m_indices) { return false; }
+//	m_vertexCount = m_BufferCount;
 //
 //
 //	for (int i = 0; i < m_BufferCount; ++i)
 //	{
 //		m_vertices[i] = vertices[i];
-//
-//
 //	}
 //
-//	for (int i = 0; i < m_indexCount2; ++i)
-//	{
-//		m_indices[i] = indices[i];
-//	}
+//
 //	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT; // 버퍼가 쓰이는 방식
 //	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_BufferCount; //생성할 버퍼의 크기
 //	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // 무슨 버퍼인지
@@ -667,60 +526,96 @@
 //	vertexData.SysMemSlicePitch = 0;
 //
 //	// 정점 버퍼 생성
-//	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+//	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 //	if (FAILED(result))
 //	{
 //		return false;
 //	}
 //
-//	// Set up the description of the static index buffer.
-//	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-//	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount2;
-//	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-//	indexBufferDesc.CPUAccessFlags = 0;
-//	indexBufferDesc.MiscFlags = 0;
-//	indexBufferDesc.StructureByteStride = 0;
+//	// Create the instance array.
+//	instances = new InstanceType[m_instanceCount];
+//	if (!instances)
+//	{
+//		return false;
+//	}
 //
-//	// Give the subresource structure a pointer to the index data.
-//	indexData.pSysMem = m_indices;
-//	indexData.SysMemPitch = 0;
-//	indexData.SysMemSlicePitch = 0;
+//	for (int i = 0; i < m_instanceCount; i++)
+//	{
+//		instances[i].position = InstancePosition[i];
+//	}
+//	// Set up the description of the instance buffer.
+//	instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+//	instanceBufferDesc.ByteWidth = sizeof(InstanceType) * m_instanceCount;
+//	instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+//	instanceBufferDesc.CPUAccessFlags = 0;
+//	instanceBufferDesc.MiscFlags = 0;
+//	instanceBufferDesc.StructureByteStride = 0;
 //
-//	// Create the index buffer.
-//	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+//	delete[] InstancePosition;
+//	InstancePosition = 0;
+//
+//	// Give the subresource structure a pointer to the instance data.
+//	instanceData.pSysMem = instances;
+//	instanceData.SysMemPitch = 0;
+//	instanceData.SysMemSlicePitch = 0;
+//
+//	// Create the instance buffer.
+//	result = D3D::GetDevice()->CreateBuffer(&instanceBufferDesc, &instanceData, &m_instanceBuffer);
 //	if (FAILED(result))
 //	{
 //		return false;
 //	}
+//
+//	// Release the instance array now that the instance buffer has been created and loaded.
+//	delete[] instances;
+//	instances = 0;
 //
 //	// 필요 없어진 정점 배열, 인덱스 배열을 제거 한다.
 //	delete[] m_vertices;
 //	m_vertices = 0;
 //
-//	delete[] m_indices;
-//	m_indices = 0;
-//
 //	return true;
 //}
-//
-//void FBXModel::RenderBuffers(ID3D11DeviceContext* deviceContext)
+//void FBXModel::SetInstanceCount(int InstanceCount)
 //{
-//	unsigned int stride;
-//	unsigned int offset;
+//	m_instanceCount = InstanceCount;
+//}
 //
+//void FBXModel::SetInstancePosition(float x, float y, float z)
+//{
+//	InstancePosition = new D3DXVECTOR3[m_instanceCount];
 //
-//	// 정점 버퍼의 단위와 오프셋을 설정한다.
-//	stride = sizeof(VertexType);
-//	offset = 0;
+//	for (int i = 0; i < m_instanceCount; i++)
+//	{
+//		InstancePosition[i] = { x + (i*40.0f), y, z };
+//	}
 //
-//	// input assmbler(렌더링 파이프라인의 첫번째 단계)에 정점 버퍼를 활성화 하여 그려질 수 있게 한다.
-//	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+//	InstancePosition[2].y - 10.0f;
 //
-//	// 입력 조립기(I/A)에 인덱스 버퍼를 활성화 하여 그려질 수 있게 한다.
-//	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+//}
 //
-//	// 정점 버퍼로 그릴 기본형을 설정한다. 여기선 삼각형. 부채꼴이 될 수도 있고 그렇다.
-//	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//void FBXModel::RenderBuffers()
+//{
+//	unsigned int strides[2];
+//	unsigned int offsets[2];
+//	ID3D11Buffer* bufferPointers[2];
+//
+//	// Set the buffer strides.
+//	strides[0] = sizeof(VertexType);
+//	strides[1] = sizeof(InstanceType);
+//
+//	// Set the buffer offsets.
+//	offsets[0] = 0;
+//	offsets[1] = 0;
+//
+//	// Set the array of pointers to the vertex and instance buffers.
+//	bufferPointers[0] = m_vertexBuffer;
+//	bufferPointers[1] = m_instanceBuffer;
+//	// Set the vertex buffer to active in the input assembler so it can be rendered.
+//	D3D::GetDeviceContext()->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
+//
+//	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+//	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 //
 //	return;
 //}
@@ -729,15 +624,13 @@
 //{
 //	//메쉬의 정점 갯수를 가져온다.
 //	m_count = mesh->GetControlPointsCount();
+//	
 //	positions = new Position[m_count];
 //
 //	for (unsigned int i = 0; i < m_count; ++i)
 //	{
 //		vec3 position;
-//		//제어점을 가져오려면 GetControlPointAt(int index)멤버 함수를 이용한다.
-//		//position.x = static_cast<float>(mesh->GetControlPointAt(i).mData[0]);
-//		//position.y = static_cast<float>(mesh->GetControlPointAt(i).mData[1]);
-//		//position.z = static_cast<float>(mesh->GetControlPointAt(i).mData[2]);
+//
 //		position.x = static_cast<float>(mesh->GetControlPointAt(i).mData[0]);
 //		position.y = static_cast<float>(mesh->GetControlPointAt(i).mData[1]);
 //		position.z = static_cast<float>(mesh->GetControlPointAt(i).mData[2]);
@@ -778,10 +671,10 @@
 //void FBXModel::ShutdownBuffers()
 //{
 //	// Release the index buffer.
-//	if (m_indexBuffer)
+//	if (m_instanceBuffer)
 //	{
-//		m_indexBuffer->Release();
-//		m_indexBuffer = 0;
+//		m_instanceBuffer->Release();
+//		m_instanceBuffer = 0;
 //	}
 //
 //	// Release the vertex buffer.

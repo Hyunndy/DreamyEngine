@@ -1,4 +1,0 @@
-Vertex Count: 0
-
-Data:
-
