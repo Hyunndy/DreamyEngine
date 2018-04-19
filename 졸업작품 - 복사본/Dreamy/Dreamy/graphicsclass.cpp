@@ -115,23 +115,32 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_horse->SetWorldTransform(HorseWorldMatrix);
 
-	m_tiger = new ModelScene();
+	m_npc = new ModelScene();
 	
 	wstring tPosePath2 = filePath + L"Elf.fbx";
-	m_tiger->TexturePath = filePath + L"Elf_D.png";
+	m_npc->TexturePath = filePath + L"Elf_D.png";
 	wstring idlePath2 = filePath + L"Elf_Idle.fbx";
 
-	m_tiger->LoadScene(tPosePath2, true, true, true, false);
-	m_tiger->LoadScene(idlePath2, false, false, false, true);
+	m_npc->LoadScene(tPosePath2, true, true, true, false);
+	m_npc->LoadScene(idlePath2, false, false, false, true);
 
 	// Default Animation 설정
-	m_tiger->SetCurrentAnimation(idlePath2);
+	m_npc->SetCurrentAnimation(idlePath2);
 
-	D3DXMATRIX TigerWorldMatrix;
-	D3DXMatrixIdentity(&TigerWorldMatrix);
-	D3DXMatrixTranslation(&TigerWorldMatrix, 750.0f, 20.0f, 462.0f);
+	D3DXMATRIX NpcWorldMatrix;
+	D3DXMATRIX NpcTranslationMatrix;
+	D3DXMATRIX NpcRotationMatrix;
 
-	m_tiger->SetWorldTransform(TigerWorldMatrix);
+	D3DXMatrixIdentity(&NpcWorldMatrix);
+	D3DXMatrixIdentity(&NpcRotationMatrix);
+	D3DXMatrixIdentity(&NpcTranslationMatrix);
+	D3DXMatrixRotationY(&NpcRotationMatrix, -35.0f);
+	D3DXMatrixTranslation(&NpcTranslationMatrix, 545.0f, 10.0f, 341.0f);
+	D3DXMatrixMultiply(&NpcWorldMatrix, &NpcRotationMatrix, &NpcTranslationMatrix);
+
+	
+
+	m_npc->SetWorldTransform(NpcWorldMatrix);
 	//--------------------------------------------------------------------------------------
 
 	// OBJ모델
@@ -226,17 +235,19 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing = new InstancingClass;
 	if (!m_Instancing) { return false; }
 
-	m_Instancing->SetInstanceCount(3);
-	m_Instancing->SetInstancePosition(470.0f, 48.0f, 786.0f);
+	m_Instancing->SetInstanceCount(5);
+	m_Instancing->SetInsatanceVariable(-5.0f, 0.0f, 30.0f);
+	m_Instancing->SetInstancePosition(84.0f, 11.0f, 362.0f);
 
-	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/maple_bark.png");
+	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTree.txt", L"../Dreamy/Data/bark_0021.jpg");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing2 = new InstancingClass;
 	if (!m_Instancing2) { return false; }
 
-	m_Instancing2->SetInstanceCount(3);
-	m_Instancing2->SetInstancePosition(470.0f, 48.0f, 786.0f);
+	m_Instancing2->SetInstanceCount(5);
+	m_Instancing2->SetInsatanceVariable(-5.0f, 0.0f, 30.0f);
+	m_Instancing2->SetInstancePosition(84.0f, 11.0f, 362.0f);
 
 	result = m_Instancing2->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
@@ -272,7 +283,7 @@ void GraphicsClass::Shutdown()
 	SAFE_SHUTDOWN(m_UI);
 	SAFE_SHUTDOWN(m_Minimap);
 	SAFE_DELETE(m_horse);
-	SAFE_DELETE(m_tiger);
+	SAFE_DELETE(m_npc);
 	SAFE_SHUTDOWN(m_Tree);
 	SAFE_DELETE(m_Light);
 	SAFE_SHUTDOWN(m_TerrainShader);
@@ -314,7 +325,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	// Model들 Frame처리
 	//--------------------------------------------------------------------------------------
 	m_horse->Update(); //말1
-	m_tiger->Update(); //말2
+	m_npc->Update(); //말2
 
 	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f); //구름
 	m_Particle->Frame(frameTime); // 파티클
@@ -480,7 +491,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	// FBXANIMATIONModel들
 	//-------------------------------------------------------------------------------------
 	m_horse->Render();
-	m_tiger->Render();
+	m_npc->Render();
 
 	// OBJ모델
 	//-------------------------------------------------------------------------------------

@@ -117,7 +117,7 @@ private:
 
 private:
 	ModelScene* m_horse= nullptr;
-	ModelScene* m_tiger = nullptr;
+	ModelScene* m_npc = nullptr;
 
 private:
 	ImageClass* m_Start= nullptr;

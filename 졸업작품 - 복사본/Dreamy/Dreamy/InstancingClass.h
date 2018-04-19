@@ -56,10 +56,12 @@ public:
 	int GetInstanceCount();
 	void SetInstanceCount(int);
 
+
 	void Shutdown();
 
 	void Render();
 	void SetInstancePosition(float, float, float);
+	void SetInsatanceVariable(float, float, float);
 
 	ID3D11ShaderResourceView* GetTexture();
 
@@ -91,5 +93,8 @@ private:
 	int m_instanceCount;
 
 	D3DXVECTOR3* InstancePosition;
+
+private:
+	float _x, _y, _z;
 };
 

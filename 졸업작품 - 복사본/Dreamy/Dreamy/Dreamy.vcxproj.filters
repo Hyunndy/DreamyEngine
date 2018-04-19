@@ -23,9 +23,6 @@
     <Filter Include="2DTexture">
       <UniqueIdentifier>{5bf8d4e8-0e19-4252-a62d-b8cca6aa73f2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FBX">
-      <UniqueIdentifier>{c45746ca-d880-4c34-8463-4345d2235600}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphicsclass.cpp" />
@@ -153,9 +150,6 @@
     <ClCompile Include="FontShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="InstancingClass.cpp">
-      <Filter>2DTexture</Filter>
-    </ClCompile>
     <ClCompile Include="InstancingShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
@@ -171,9 +165,7 @@
     <ClCompile Include="ParticleShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
-    <ClCompile Include="FBXModel.cpp">
-      <Filter>FBX</Filter>
-    </ClCompile>
+    <ClCompile Include="InstancingClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h" />
@@ -321,9 +313,6 @@
     <ClInclude Include="FontShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="InstancingClass.h">
-      <Filter>2DTexture</Filter>
-    </ClInclude>
     <ClInclude Include="InstancingShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
@@ -339,8 +328,6 @@
     <ClInclude Include="ParticleShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
-    <ClInclude Include="FBXModel.h">
-      <Filter>FBX</Filter>
-    </ClInclude>
+    <ClInclude Include="InstancingClass.h" />
   </ItemGroup>
 </Project>

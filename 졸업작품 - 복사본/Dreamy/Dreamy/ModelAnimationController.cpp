@@ -117,7 +117,7 @@ void ModelAnimationController::Update()
 		return;
 
 
-	frameTimer += Frames::TimeElapsed();
+	frameTimer += (Frames::TimeElapsed())*0.5f;
 
 	float invFrameRate = 1.0f / currentAnimation->GetFrameRate();
 	while (frameTimer > invFrameRate)

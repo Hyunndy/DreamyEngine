@@ -180,16 +180,21 @@ void InstancingClass::SetInstanceCount(int InstanceCount)
 	m_instanceCount = InstanceCount;
 }
 
+void InstancingClass::SetInsatanceVariable(float x, float y, float z)
+{
+	_x = x; 
+	_y = y;
+	_z = z;
+}
+
 void InstancingClass::SetInstancePosition(float x, float y, float z)
 {
 	InstancePosition = new D3DXVECTOR3[m_instanceCount];
 	
 	for (int i = 0; i < m_instanceCount; i++)
 	{
-		InstancePosition[i] = { x+(i*40.0f), y, z  };
+		InstancePosition[i] = { x+(i*_x), y+(i*_y), z+(i*_z)};
 	}
-	
-	InstancePosition[2].y - 10.0f;
 	
 }
 

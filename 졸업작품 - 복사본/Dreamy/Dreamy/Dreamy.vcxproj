@@ -162,7 +162,6 @@
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="FBXAnimationModel.cpp" />
     <ClCompile Include="FBXCamera.cpp" />
-    <ClCompile Include="FBXModel.cpp" />
     <ClCompile Include="FBXShader.cpp" />
     <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="FontShaderClass.cpp" />
@@ -221,7 +220,6 @@
     <ClInclude Include="FBXAnimationModel.h" />
     <ClInclude Include="FBXCamera.h" />
     <ClInclude Include="FBXCameraBuffer.h" />
-    <ClInclude Include="FBXModel.h" />
     <ClInclude Include="FBXShader.h" />
     <ClInclude Include="FBXShaderBuffer.h" />
     <ClInclude Include="FBXSunBuffer.h" />
