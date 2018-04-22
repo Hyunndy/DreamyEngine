@@ -41,6 +41,8 @@
 #include "InstancingClass.h"
 #include "MinimapClass.h"
 #include "ParticleSystem.h"
+#include "WaterClass.h"
+#include "RTTTextureClass.h"
 
 
 
@@ -97,7 +99,7 @@ private:
 	float CalculateBillboarding(D3DXVECTOR3,D3DXVECTOR3);
 
 private:
-	bool sibal = true;
+	bool sibal = false;
 
 
 
@@ -109,11 +111,16 @@ private:
 private:
 	TerrainClass* m_Terrain= nullptr;
 	TerrainShaderClass* m_TerrainShader= nullptr;
+	TerrainClass* m_WaterTerrain = nullptr;
+	TerrainShaderClass* m_WaterTerrainShader = nullptr;
+	WaterClass* m_Water;
+	RTTTextureClass* m_RefractionTexture;
 	SkyClass* m_Sky= nullptr;
 
 private:
 	ModelClass* m_cube= nullptr;
 	ModelClass* m_Tree = nullptr;
+	ModelClass* m_House = nullptr;
 
 private:
 	ModelScene* m_horse= nullptr;
@@ -131,8 +138,21 @@ private:
 	ImageClass* m_UI =nullptr;
 
 private:
+	//집에 있는 나무
 	InstancingClass* m_Instancing = nullptr;
 	InstancingClass* m_Instancing2 = nullptr;
+	InstancingClass* m_Instancing3 = nullptr;
+	InstancingClass* m_Instancing4 = nullptr;
+	InstancingClass* m_Instancing5 = nullptr;
+	InstancingClass* m_Instancing6 = nullptr;
+
+	//강가에 있는 나무
+	InstancingClass* m_Instancing7 = nullptr;
+	InstancingClass* m_Instancing8 = nullptr;
+	InstancingClass* m_Instancing9 = nullptr;
+	InstancingClass* m_Instancing10 = nullptr;
+
+
 	MinimapClass* m_Minimap = nullptr;
 
 private:
@@ -149,6 +169,7 @@ private:
 private:
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXMATRIX ImageViewMatrix;
+	D3DXMATRIX cupViewMatrix;
 
 private:
 	D3DXVECTOR3 CameraPos;

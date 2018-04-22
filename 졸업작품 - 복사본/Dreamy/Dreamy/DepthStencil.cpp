@@ -146,3 +146,4 @@ void DepthStencil::CreateView()
 
 	D3D::GetDeviceContext()->OMSetRenderTargets(1, &renderView, depthView);
 }
+

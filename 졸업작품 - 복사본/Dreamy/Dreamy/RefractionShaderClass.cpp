@@ -20,11 +20,11 @@ RefractionShaderClass::~RefractionShaderClass()
 {
 }
 
-bool RefractionShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool RefractionShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/Data/refraction.vs", L"../Dreamy/Data/refraction.ps");
+	result = InitializeShader( hwnd, L"../Dreamy/shader/refraction.vs", L"../Dreamy/shader/refraction.ps");
 	if (!result) { return false; }
 
 	return true;
@@ -36,7 +36,7 @@ void RefractionShaderClass::ShutDown()
 	return;
 }
 
-bool RefractionShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
+bool RefractionShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix,
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture,
 	D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,
 	D3DXVECTOR4 clipPlane)
@@ -45,7 +45,7 @@ bool RefractionShaderClass::Render(ID3D11DeviceContext* deviceContext, int index
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor,
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor,
 		diffuseColor, clipPlane);
 	if (!result)
 	{
@@ -53,12 +53,12 @@ bool RefractionShaderClass::Render(ID3D11DeviceContext* deviceContext, int index
 	}
 
 	// Now render the prepared buffers with the shader.
-	RenderShader(deviceContext, indexCount);
+	RenderShader(indexCount);
 
 	return true;
 }
 
-bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool RefractionShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -115,7 +115,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL,
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL,
 		&m_vertexShader);
 	if (FAILED(result))
 	{
@@ -123,7 +123,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL,
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL,
 		&m_pixelShader);
 	if (FAILED(result))
 	{
@@ -160,7 +160,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
 	{
@@ -190,7 +190,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -205,7 +205,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the matrix constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -221,7 +221,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	lightBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -235,7 +235,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	clipPlaneBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&clipPlaneBufferDesc, NULL, &m_clipPlaneBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&clipPlaneBufferDesc, NULL, &m_clipPlaneBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -297,7 +297,7 @@ void RefractionShaderClass::ShutdownShader()
 
 	return;
 }
-bool RefractionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool RefractionShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture,
 	D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,
 	D3DXVECTOR4 clipPlane)
@@ -311,10 +311,10 @@ bool RefractionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
 
 	// Lock the matrix constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -334,16 +334,16 @@ bool RefractionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the matrix constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the matrix constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Now set the matrix constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Lock the light constant buffer so it can be written to.
-	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -358,17 +358,17 @@ bool RefractionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 	dataPtr2->lightDirection = lightDirection;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_lightBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_lightBuffer, 0);
 
 	// Set the position of the light constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
 
 
 		// Lock the clip plane constant buffer so it can be written to.
-		result = deviceContext->Map(m_clipPlaneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		result = D3D::GetDeviceContext()->Map(m_clipPlaneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -381,13 +381,13 @@ bool RefractionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceConte
 	dataPtr3->clipPlane = clipPlane;
 
 	// Unlock the buffer.
-	deviceContext->Unmap(m_clipPlaneBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_clipPlaneBuffer, 0);
 
 	// Set the position of the clip plane constant buffer in the vertex shader.
 	bufferNumber = 1;
 
 	// Now set the clip plane constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_clipPlaneBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_clipPlaneBuffer);
 
 	return true;
 }

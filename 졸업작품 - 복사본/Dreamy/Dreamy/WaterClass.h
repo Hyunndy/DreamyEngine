@@ -1,7 +1,6 @@
 #pragma once
 
-#include <d3d11.h>
-#include <D3DX10math.h>
+#include "D3D.h"
 
 #include "TextureClass.h"
 /*
@@ -25,11 +24,11 @@ public:
 	~WaterClass();
 
 
-	bool Initialize(ID3D11Device*, WCHAR*, float, float);
+	bool Initialize( WCHAR*, float, float);
 	//bool Initialize(ID3D11Device*, WCHAR*, float);
 	void Shutdown();
 	void Frame(int);
-	void Render(ID3D11DeviceContext*);
+	void Render();
 
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
@@ -42,11 +41,11 @@ public:
 	float GetSpecularShininess();
 
 private:
-	bool InitializeBuffers(ID3D11Device*, float);
+	bool InitializeBuffers( float);
 	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers();
 
-	bool LoadTexture(ID3D11Device*, WCHAR*);
+	bool LoadTexture( WCHAR*);
 	void ReleaseTexture();
 
 private:

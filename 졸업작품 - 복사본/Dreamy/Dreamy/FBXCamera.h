@@ -37,7 +37,10 @@ public:
 
 	void SetPosition(D3DXVECTOR3 pos);
 
-
+	//물 평면 반사를 위한 함수
+	void RenderWaterReflection(float);
+	void GetWaterReflectionViewMatrix(D3DXMATRIX&);
+	D3DXMATRIX GetReflectionViewMatrix();
 
 	void GetView(D3DXMATRIX* view)
 	{
@@ -55,6 +58,7 @@ public:
 	}
 
 	void GetRay(D3DXVECTOR3* origin, D3DXVECTOR3* direction);
+	void ResetViewPort();
 
 private:
 	static Camera* instance;
@@ -81,4 +85,5 @@ private:
 
 	D3DXMATRIX projection;
 	D3DXMATRIX ortho;
+	D3DXMATRIX m_reflectionViewMatrix;
 };

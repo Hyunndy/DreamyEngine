@@ -21,11 +21,11 @@ WaterShaderClass::~WaterShaderClass()
 {
 }
 
-bool WaterShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool WaterShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/Data/water.vs", L"../Dreamy/Data/water.ps");
+	result = InitializeShader( hwnd, L"../Dreamy/shader/water.vs", L"../Dreamy/shader/water.ps");
 	if (!result) { return false; }
 
 	return true;
@@ -38,7 +38,7 @@ void WaterShaderClass::Shutdown()
 	return;
 }
 
-bool WaterShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool WaterShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, D3DXMATRIX reflectionMatrix, ID3D11ShaderResourceView* refractionTexture,
 	/*ID3D11ShaderResourceView* reflectionTexture,*/ ID3D11ShaderResourceView* normalTexture, D3DXVECTOR3 cameraPosition,
 	D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale, D3DXVECTOR4 refractionTint,
@@ -46,20 +46,20 @@ bool WaterShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 {
 	bool result; 
 	
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture,/* reflectionTexture,*/
+	result = SetShaderParameters(worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix, refractionTexture,/* reflectionTexture,*/
 		normalTexture, cameraPosition, normalMapTiling, waterTranslation, reflectRefractScale, refractionTint, lightDirection,
 		specularShininess);
 	if(!result) { return false; }
 
 	
-	RenderShader(deviceContext, indexCount);
+	RenderShader(indexCount);
 	
 	return true;
 
 
 }
 
-bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
+bool WaterShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
 	D3DXMATRIX reflectionMatrix, ID3D11ShaderResourceView* refractionTexture,
 	/*ID3D11ShaderResourceView* reflectionTexture,*/ID3D11ShaderResourceView* normalTexture,
 	D3DXVECTOR3 cameraPosition, D3DXVECTOR2 normalMapTiling, float waterTranslation, float reflectRefractScale,
@@ -81,7 +81,7 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	D3DXMatrixTranspose(&reflectionMatrix, &reflectionMatrix);
 
 	// water.vs에 행렬 버퍼를 설정한다.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
 	// cbuffer에 접근할 포인터를 얻어온다.
@@ -94,15 +94,15 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr->reflection = reflectionMatrix;
 
 
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	bufferNumber = 0;
 
 	// water.vs의 cbuffer에 matrixBuffer을 넣어주었다.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// water.vs의 cbuffer에 있는 camnormBuffer에 접근한다.
-	result = deviceContext->Map(m_camNormBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_camNormBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -118,19 +118,19 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr2->padding2 = D3DXVECTOR2(0.0f, 0.0f);
 
 
-	deviceContext->Unmap(m_camNormBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_camNormBuffer, 0);
 
 	bufferNumber = 1;
 
 	// water.vs의 cbuffer에 m_camNormBuffer을 넣어주었다.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_camNormBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_camNormBuffer);
 
 	// water.ps의 맨 위에 써있는 Texture들에 실제 텍스처들을 넣어준다.
-	deviceContext->PSSetShaderResources(0, 1, &refractionTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &refractionTexture);
 	//deviceContext->PSSetShaderResources(1, 1, &reflectionTexture);
-	deviceContext->PSSetShaderResources(1, 1, &normalTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(1, 1, &normalTexture);
 
-	result = deviceContext->Map(m_waterBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_waterBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
 	// cbuffer에 접근할 포인터를 얻어온다.
@@ -145,12 +145,12 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr3->padding = D3DXVECTOR2(0.0f, 0.0f);
 
 
-	deviceContext->Unmap(m_waterBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_waterBuffer, 0);
 
 	bufferNumber = 0;
 
 	// water.ps의 cbuffer인 WaterBuffer에 m_waterBuffer을 넣어준다.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_waterBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_waterBuffer);
 
 	return true;
 }
@@ -173,7 +173,7 @@ bool WaterShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 //	return;
 //}
 
-bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool WaterShaderClass::InitializeShader(HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -204,11 +204,11 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 
 	// ShaderClass에서 만들어준 VertexShader m_vertexShader에 water.vs에서 만든 VertexShader을 넣는다.
 	// 정점셰이더 : 정점 하나를 출력하는 함수
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result)) { return false; }
 
 	// ShaderClass에서 만들어준 PixelShader m_pixerlShader에 water.ps에서 만든 PixelShader을 넣는다.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result)) { return false; }
 
 
@@ -233,7 +233,7 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	//ShaderClass에서 만들어준ID3D11InputLayout  m_layout에 VERTEXINPUT의 Layout을 넣어준다.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result)) { return false; }
 
 	//다 사용했으니 해제해준다.
@@ -259,7 +259,7 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	
 	// ShaderClass에서 만들어준 ID3D11SamplerState* m_sampleState에 saplerDesc를 넣어준다.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if(FAILED(result)) { return false; }
 
 	// water.vs와 ShaderClass에서 만들어준 cbuffer인 MatrixBuffer의 Desc를 작성해준다.
@@ -271,7 +271,7 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// ID3D11Buffer* m_matrixBuffer에 Desc를 넣어서 최종적으로 버퍼를 생성해준다.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result)) { return false; }
 
 	// Setup the description of the camera and normal tiling dynamic constant buffer that is in the vertex shader.
@@ -283,7 +283,7 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	camNormBufferDesc.StructureByteStride = 0;;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&camNormBufferDesc, NULL, &m_camNormBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&camNormBufferDesc, NULL, &m_camNormBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -298,7 +298,7 @@ bool WaterShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	waterBufferDesc.StructureByteStride = 0;
 
 	// ID3D11Buffer* m_waterBuffer에 Desc를 넣어서 최종적으로 버퍼를 생성해준다.
-	result = device->CreateBuffer(&waterBufferDesc, NULL, &m_waterBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&waterBufferDesc, NULL, &m_waterBuffer);
 	if (FAILED(result)) { return false; }
 
 	return true;

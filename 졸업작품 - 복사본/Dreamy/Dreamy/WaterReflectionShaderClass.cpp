@@ -22,10 +22,10 @@ WaterReflectionShaderClass::~WaterReflectionShaderClass()
 {
 }
 
-bool WaterReflectionShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool WaterReflectionShaderClass::Initialize( HWND hwnd)
 {
 	//정점 셰이더, 픽셀 셰이더 초기화
-	return InitializeShader(device, hwnd, L"../Dreamy/Data/waterreflection.vs", L"../Dreamy/Data/waterreflection.ps");
+	return InitializeShader( hwnd, L"../Dreamy/shader/waterreflection.vs", L"../Dreamy/shader/waterreflection.ps");
 
 
 }
@@ -45,7 +45,7 @@ bool WaterReflectionShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 - 함수의 지역변수 matrixBufferDesc, lightBufferDesc을 이용해 m_matrixBuffer, m_lightBuffer에 desc를 설정한다.
 -----------------------------------------------------------------------------------------------*/
-bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool WaterReflectionShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -103,14 +103,14 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result))
 	{
 		return false;
@@ -169,7 +169,7 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
 		&m_layout);
 	if (FAILED(result))
 	{
@@ -199,7 +199,7 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -214,7 +214,7 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -229,7 +229,7 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 	clipPlaneBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&clipPlaneBufferDesc, NULL, &m_clipPlaneBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&clipPlaneBufferDesc, NULL, &m_clipPlaneBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -244,7 +244,7 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 	lightBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -260,7 +260,7 @@ bool WaterReflectionShaderClass::InitializeShader(ID3D11Device* device, HWND hwn
 - Render할 때 실질적으로 들어가는 셰이더 안의 요소들을 설정한다.
 - 픽셀 셰이더에 텍스처를 설정한다.
 -----------------------------------------------------------------------------------------------*/
-bool WaterReflectionShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool WaterReflectionShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* colorTexture,
 	ID3D11ShaderResourceView* normalTexture, D3DXVECTOR4 lightDiffuseColor, D3DXVECTOR3 lightDirection,
 	float colorTextureBrightness, D3DXVECTOR4 clipPlane)
@@ -281,7 +281,7 @@ bool WaterReflectionShaderClass::SetShaderParameters(ID3D11DeviceContext* device
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	// Lock the constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -296,16 +296,16 @@ bool WaterReflectionShaderClass::SetShaderParameters(ID3D11DeviceContext* device
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Finanly set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Lock the clip plane constant buffer so it can be written to.
-	result = deviceContext->Map(m_clipPlaneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_clipPlaneBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -318,16 +318,16 @@ bool WaterReflectionShaderClass::SetShaderParameters(ID3D11DeviceContext* device
 	dataPtr1->clipPlane = clipPlane;
 
 	// Unlock the buffer.
-	deviceContext->Unmap(m_clipPlaneBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_clipPlaneBuffer, 0);
 
 	// Set the position of the clip plane constant buffer in the vertex shader.
 	bufferNumber = 1;
 
 	// Now set the clip plane constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_clipPlaneBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_clipPlaneBuffer);
 
 	// Lock the light constant buffer so it can be written to.
-	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -342,32 +342,32 @@ bool WaterReflectionShaderClass::SetShaderParameters(ID3D11DeviceContext* device
 	dataPtr2->colorTextureBrightness = colorTextureBrightness;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_lightBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_lightBuffer, 0);
 
 	// Set the position of the light constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
 
 	// Set the texture resources in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &colorTexture);
-	deviceContext->PSSetShaderResources(1, 1, &normalTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &colorTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(1, 1, &normalTexture);
 
 	return true;
 }
 
-bool WaterReflectionShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool WaterReflectionShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* colorTexture, ID3D11ShaderResourceView* normalTexture,
 	D3DXVECTOR4 lightDiffuseColor, D3DXVECTOR3 lightDirection, float colorTextureBrightness, D3DXVECTOR4 clipPlane)
 {
 	bool result;
 	// 렌더링에 사용할 셰이더 매개 변수를 설정합니다.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, colorTexture, normalTexture, lightDiffuseColor,
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, colorTexture, normalTexture, lightDiffuseColor,
 		lightDirection, colorTextureBrightness, clipPlane);
 
 	// 설정된 버퍼를 셰이더로 렌더링한다.
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }

@@ -46,6 +46,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//-------------------------------------------------------------------------------------
 	Camera::Get()->SetPosition(D3DXVECTOR3(0.0f, 0.0f, -1.0f));
 	Camera::Get()->GetView(&ImageViewMatrix);
+	Camera::Get()->SetPosition(D3DXVECTOR3(0.0f, 3.0f, -10.0f));
+	Camera::Get()->GetView(&cupViewMatrix);
 	Camera::Delete();
 	//-------------------------------------------------------------------------------------
 
@@ -135,7 +137,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	D3DXMatrixIdentity(&NpcRotationMatrix);
 	D3DXMatrixIdentity(&NpcTranslationMatrix);
 	D3DXMatrixRotationY(&NpcRotationMatrix, -35.0f);
-	D3DXMatrixTranslation(&NpcTranslationMatrix, 545.0f, 10.0f, 341.0f);
+	D3DXMatrixTranslation(&NpcTranslationMatrix, 545.0f, 10.0f, 345.0f);
 	D3DXMatrixMultiply(&NpcWorldMatrix, &NpcRotationMatrix, &NpcTranslationMatrix);
 
 	
@@ -151,11 +153,13 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_cube->InitializeSpecMap("../Dreamy/Data/cube.txt", L"../Dreamy/Data/stone02.dds", L"../Dreamy/Data/bump02.dds", L"../Dreamy/Data/spec02.dds");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
-	m_Tree = new ModelClass;
 
-	result = m_Tree->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/tree.png");
+
+	m_House = new ModelClass;
+
+	result = m_House->Initialize("../Dreamy/Data/BakerHouse.txt", L"../Dreamy/Data/BakerHouse.png");
+	//result = m_House->Initialize("../Dreamy/Data/House2.txt", L"../Dreamy/Data/BakerHouse.png");
 	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
-
 	//--------------------------------------------------------------------------------------
 
 	// Light
@@ -166,7 +170,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
 	//m_Light->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(-0.5f, -1.0f, -0.5f);
+	m_Light->SetDirection(0.5f, -1.0f, -0.25f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
 	//--------------------------------------------------------------------------------------
@@ -199,7 +203,42 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	result = m_Sky->InitializeCloud( L"../Dreamy/Data/cloud001.dds", L"../Dreamy/Data/cloud002.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize Cloud object", L"Error", MB_OK); return false; }
+
 	//--------------------------------------------------------------------------------------
+
+
+	// 호수
+	//-------------------------------------------------------------------------------------
+	// Create the refraction render to texture object.
+	m_RefractionTexture = new RTTTextureClass;
+	if (!m_RefractionTexture) { return false; }
+
+	// Initialize the refraction render to texture object.
+	result = m_RefractionTexture->Initialize( screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK); return false; }
+
+	// Create the water object.
+	m_Water = new WaterClass;
+	if (!m_Water) { return false; }
+
+	// Initialize the water object.
+	result = m_Water->Initialize( L"../Dreamy/Data/waternormal.dds", 11.0f, 55.0f);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK); return false; }
+
+	m_WaterTerrain = new TerrainClass;
+	if (!m_WaterTerrain) { return false; }
+
+	result = m_WaterTerrain->Initializeforwater("../Dreamy/Terrain/setup.txt", "../Dreamy/Terrain/dirt01d.tga", "../Dreamy/Terrain/dirt01n.tga");
+	if (!result) { MessageBox(hwnd, L"Could not initialize m_WaterTerrain object", L"Error", MB_OK); return false; }
+
+
+	m_WaterTerrainShader = new TerrainShaderClass;
+	if (!m_WaterTerrainShader) { return false; }
+
+	m_WaterTerrainShader->Initialize( hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize m_WaterTerrainShader object", L"Error", MB_OK); return false; }
+	//-------------------------------------------------------------------------------------
+
 	// Text
 	//--------------------------------------------------------------------------------------
 	m_Text = new TextClass;
@@ -235,22 +274,105 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing = new InstancingClass;
 	if (!m_Instancing) { return false; }
 
-	m_Instancing->SetInstanceCount(5);
-	m_Instancing->SetInsatanceVariable(-5.0f, 0.0f, 30.0f);
-	m_Instancing->SetInstancePosition(84.0f, 11.0f, 362.0f);
+	m_Instancing->SetInstanceCount(6);
+	m_Instancing->SetInsatanceVariable(-5.0f, 0.0f, 25.0f);
+	m_Instancing->SetInstancePosition(140.0f, 11.0f, 470.0f);
 
 	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTree.txt", L"../Dreamy/Data/bark_0021.jpg");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing2 = new InstancingClass;
 	if (!m_Instancing2) { return false; }
+	//124 340
+	m_Instancing2->SetInstanceCount(6);
+	m_Instancing2->SetInsatanceVariable(-5.0f, 0.0f, 25.0f);
+	m_Instancing2->SetInstancePosition(140.0f, 11.0f, 470.0f);
 
-	m_Instancing2->SetInstanceCount(5);
-	m_Instancing2->SetInsatanceVariable(-5.0f, 0.0f, 30.0f);
-	m_Instancing2->SetInstancePosition(84.0f, 11.0f, 362.0f);
-
-	result = m_Instancing2->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
+	result = m_Instancing2->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.png");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing3 = new InstancingClass;
+	if (!m_Instancing3) { return false; }
+
+	m_Instancing3->SetInstanceCount(7);
+	m_Instancing3->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
+	m_Instancing3->SetInstancePosition(285.0f, 16.0f, 350.0f);
+
+	result = m_Instancing3->Initialize("../Dreamy/Data/MapleTree.txt", L"../Dreamy/Data/bark_0021.jpg");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing4 = new InstancingClass;
+	if (!m_Instancing4) { return false; }
+	//124 340
+	m_Instancing4->SetInstanceCount(7);
+	m_Instancing4->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
+	m_Instancing4->SetInstancePosition(285.0f, 16.0f, 350.0f);
+
+	result = m_Instancing4->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.png");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing5 = new InstancingClass;
+	if (!m_Instancing5) { return false; }
+	//124 340
+	m_Instancing5->SetInstanceCount(7);
+	m_Instancing5->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
+	m_Instancing5->SetInstancePosition(285.0f, 10.0f, 600.0f);
+
+	result = m_Instancing5->Initialize("../Dreamy/Data/MapleTree.txt", L"../Dreamy/Data/bark_0021.jpg");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing6 = new InstancingClass;
+	if (!m_Instancing6) { return false; }
+	//124 340
+	m_Instancing6->SetInstanceCount(7);
+	m_Instancing6->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
+	m_Instancing6->SetInstancePosition(285.0f, 10.0f, 600.0f);
+
+	result = m_Instancing6->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.png");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	//744 51 554 x축커지게
+	m_Instancing7 = new InstancingClass;
+	if (!m_Instancing7) { return false; }
+
+	m_Instancing7->SetInstanceCount(5);
+	m_Instancing7->SetInsatanceVariable(25.0f, 0.0f, 0.0f);
+	m_Instancing7->SetInstancePosition(735.0f, 13.0f, 530.0f);
+
+	result = m_Instancing7->Initialize("../Dreamy/Data/MapleTree.txt", L"../Dreamy/Data/bark_0021.jpg");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing8 = new InstancingClass;
+	if (!m_Instancing8) { return false; }
+
+	m_Instancing8->SetInstanceCount(5);
+	m_Instancing8->SetInsatanceVariable(25.0f, 0.0f, 0.0f);
+	m_Instancing8->SetInstancePosition(735.0f, 13.0f, 530.0f);
+
+	result = m_Instancing8->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+	m_Instancing9 = new InstancingClass;
+	if (!m_Instancing9) { return false; }
+
+	m_Instancing9->SetInstanceCount(9);
+	m_Instancing9->SetInsatanceVariable(20.0f, 0.0f, 0.0f);
+	m_Instancing9->SetInstancePosition(722.0f, 13.0f, 548.0f);
+
+	result = m_Instancing9->Initialize("../Dreamy/Data/MapleTree.txt", L"../Dreamy/Data/bark_0021.jpg");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
+
+	m_Instancing10 = new InstancingClass;
+	if (!m_Instancing10) { return false; }
+
+	m_Instancing10->SetInstanceCount(9);
+	m_Instancing10->SetInsatanceVariable(20.0f, 0.0f, 0.0f);
+	m_Instancing10->SetInstancePosition(722.0f, 13.0f, 548.0f);
+
+	result = m_Instancing10->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
+	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+
 	//--------------------------------------------------------------------------------------
 
 	// 미니맵
@@ -269,6 +391,12 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	result = m_Particle->Initialize( L"../Dreamy/Data/star.dds");
 	if (!result) { MessageBox(hwnd, L"Could not particle TitleText", L"Error", MB_OK); return false; }
+
+	m_Tree = new ModelClass;
+
+	result = m_Tree->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/Billboard.png");
+	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
+
 	//--------------------------------------------------------------------------------------
 
 	return true;
@@ -287,9 +415,22 @@ void GraphicsClass::Shutdown()
 	SAFE_SHUTDOWN(m_Tree);
 	SAFE_DELETE(m_Light);
 	SAFE_SHUTDOWN(m_TerrainShader);
+	SAFE_SHUTDOWN(m_Water);
+	SAFE_SHUTDOWN(m_WaterTerrain);
+	SAFE_SHUTDOWN(m_WaterTerrainShader);
+	SAFE_SHUTDOWN(m_RefractionTexture);
 	SAFE_SHUTDOWN(m_Instancing);
 	SAFE_SHUTDOWN(m_Instancing2);
+	SAFE_SHUTDOWN(m_Instancing3);
+	SAFE_SHUTDOWN(m_Instancing4);
+	SAFE_SHUTDOWN(m_Instancing5);
+	SAFE_SHUTDOWN(m_Instancing6);
+	SAFE_SHUTDOWN(m_Instancing7);
+	SAFE_SHUTDOWN(m_Instancing8);
+	SAFE_SHUTDOWN(m_Instancing9);
+	SAFE_SHUTDOWN(m_Instancing10);
 	SAFE_SHUTDOWN(m_Terrain);
+	SAFE_SHUTDOWN(m_House);
 	SAFE_SHUTDOWN(m_Sky);
 	SAFE_SHUTDOWN(m_cube);
 	SAFE_SHUTDOWN(m_Loading);
@@ -324,12 +465,13 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 
 	// Model들 Frame처리
 	//--------------------------------------------------------------------------------------
-	m_horse->Update(); //말1
+	//m_horse->Update(); //말1
 	m_npc->Update(); //말2
 
 	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f); //구름
 	m_Particle->Frame(frameTime); // 파티클
 	m_Minimap->PositionUpdate(CameraPos.x, CameraPos.z); //미니맵
+	m_Water->Frame(frameTime);
 	//--------------------------------------------------------------------------------------
 	
 	// Camera Frame처리
@@ -340,7 +482,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	
 	foundHeight = m_Terrain->GetHeightAtPosition(CameraPos.x, CameraPos.z, CameraY);
 	if (foundHeight)
-		CameraPos.y = CameraY + 30.0f;
+		CameraPos.y = CameraY + 40.0f;
 
 	Camera::Get()->SetPosition(CameraPos);
 	Camera::Get()->Update();
@@ -375,7 +517,8 @@ bool GraphicsClass::Render( bool Pressed, int frametime)
 {
 	bool result;
 
-
+	result = RenderRefractionToTexture(Pressed);
+	if (!result) { return false; }
 	//-------------------------------------------------------------------------------------
 	result = RenderRunningScene(Pressed);
 	if (!result) { return false; }
@@ -412,14 +555,14 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	float fogColor, fogStart, fogEnd;
 	fogColor = 0.0f;
-	fogStart = 250.0f;
+	fogStart = 400.0f;
 	fogEnd = 550.0f;
 	//-------------------------------------------------------------------------------------
 
 	//기본행렬
 	//-------------------------------------------------------------------------------------
 	D3DXMatrixIdentity(&worldMatrix);
-    Camera::Get()->GetView(&viewMatrix);
+	Camera::Get()->GetView(&viewMatrix);
 	Camera::Get()->GetProjection(&projectionMatrix);
 	Camera::Get()->GetOrtho(&orthoMatrix);
 
@@ -446,7 +589,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	DepthStencil::Get()->SetOffState();
 
 	m_Sky->RenderSky();
-	m_Shader->RenderSkydomeShader( m_Sky->GetIndexCount(), SkyworldMatrix, viewMatrix, projectionMatrix,
+	m_Shader->RenderSkydomeShader(m_Sky->GetIndexCount(), SkyworldMatrix, viewMatrix, projectionMatrix,
 		m_Sky->GetApexColor(), m_Sky->GetCenterColor());
 
 	//컬링모드켜기
@@ -457,7 +600,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	m_Sky->RenderCloud();
 
-	m_Shader->RenderCloudShader( m_Sky->GetCloudIndexCount(), SkyworldMatrix, viewMatrix, projectionMatrix,
+	m_Shader->RenderCloudShader(m_Sky->GetCloudIndexCount(), SkyworldMatrix, viewMatrix, projectionMatrix,
 		m_Sky->GetCloudTexture1(), m_Sky->GetCloudTexture2(), m_Sky->GetTranslation(0), m_Sky->GetTranslation(1),
 		m_Sky->GetTranslation(2), m_Sky->GetTranslation(3), m_Sky->GetBrightness());
 
@@ -473,11 +616,11 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	for (int i = 0; i < m_Terrain->GetCellCount(); i++)
 	{
 		// Put the terrain cell buffers on the pipeline.
-		result = m_Terrain->RenderCell( i, m_Frustum);
+		result = m_Terrain->RenderCell(i, m_Frustum);
 		if (result)
 		{
 
-			result = m_TerrainShader->Render( m_Terrain->GetCellIndexCount(i), worldMatrix, viewMatrix,
+			result = m_TerrainShader->Render(m_Terrain->GetCellIndexCount(i), worldMatrix, viewMatrix,
 				projectionMatrix, m_Terrain->GetColorTexture(), m_Terrain->GetNormalMapTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor(), fogStart, fogEnd);
 			if (!result) { return false; }
 
@@ -488,9 +631,27 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	}
 	//-------------------------------------------------------------------------------------
 
+	// 호수  512.5f, 30.0f, 310.0f
+	//-------------------------------------------------------------------------------------
+	D3DXMATRIX WaterWorldMatrix, WaterRotationMatrix, WaterreflectionViewMatrix;
+	Camera::Get()->RenderWaterReflection(m_Water->GetWaterHeight());
+	WaterreflectionViewMatrix = Camera::Get()->GetReflectionViewMatrix();
+
+	D3DXMatrixTranslation(&WaterWorldMatrix, 766.0f, m_Water->GetWaterHeight(), 470.0f);
+	D3DXMatrixRotationY(&WaterRotationMatrix, 70.0f);
+	D3DXMatrixMultiply(&WaterWorldMatrix, &WaterRotationMatrix, &WaterWorldMatrix);
+	m_Water->Render();
+
+	result = m_Shader->RenderWaterShader(m_Water->GetIndexCount(), WaterWorldMatrix, viewMatrix, projectionMatrix, WaterreflectionViewMatrix,
+		m_RefractionTexture->GetShaderResourceView(), m_Water->GetTexture(),
+		CameraPos, m_Water->GetNormalMapTiling(), m_Water->GetWaterTranslation(), m_Water->GetReflectRefractScale(),
+		m_Water->GetRefractionTint(), m_Light->GetDirection(), m_Water->GetSpecularShininess());
+	if (!result) { return false; }
+	//-------------------------------------------------------------------------------------
+
 	// FBXANIMATIONModel들
 	//-------------------------------------------------------------------------------------
-	m_horse->Render();
+	//m_horse->Render();
 	m_npc->Render();
 
 	// OBJ모델
@@ -501,25 +662,67 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	static float textureTranslation = 0.0f;
 	textureTranslation += 0.003f;
 	if (textureTranslation > 1.0f) { textureTranslation -= 1.0f; }
-	
+
 	D3DXMATRIX Cube3WorldMatrix;
 	D3DXMatrixIdentity(&Cube3WorldMatrix);
 
-	m_cube->Translation(767.0f, 26.0f, 389.0f);
-	m_cube->RotationY(-40.0f);
-	m_cube->Scale(7.0f, 7.0f, 7.0f);
-	m_cube->Multiply(m_cube->GetRotationYMatrix(), m_cube->GetTranslationMatrix());
-	m_cube->Multiply(m_cube->GetScailingMatrix(), m_cube->GetFinalMatrix());
-	D3DXMatrixMultiply(&Cube3WorldMatrix, &m_cube->GetFinalMatrix(), &Cube3WorldMatrix);
-	
+	if (sibal == false)
+	{
+		m_cube->Translation(767.0f, 26.0f, 389.0f);
+		m_cube->RotationY(-40.0f);
+		m_cube->Scale(7.0f, 7.0f, 7.0f);
+		m_cube->Multiply(m_cube->GetRotationYMatrix(), m_cube->GetTranslationMatrix());
+		m_cube->Multiply(m_cube->GetScailingMatrix(), m_cube->GetFinalMatrix());
+		D3DXMatrixMultiply(&Cube3WorldMatrix, &m_cube->GetFinalMatrix(), &Cube3WorldMatrix);
+	}
+	else
+	{
+		D3DXMatrixIdentity(&Cube3WorldMatrix);
+		//m_cube->Translation(CameraPos.x, CameraPos.y - 10.0f, CameraPos.z + 20.0f);
+		//m_cube->RotationX(CalculateBillboarding(CameraPos, D3DXVECTOR3(CameraPos.x, CameraPos.y - 10.0f, CameraPos.z + 20.0f)));
+	}
+
+
+
 	m_cube->Render();
 
-	result = m_Shader->RenderTranslateShader(m_cube->GetIndexCount(), Cube3WorldMatrix, viewMatrix, projectionMatrix
-		, m_cube->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),CameraPos
-		, m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
+	if (sibal == false)
+	{
+		result = m_Shader->RenderTranslateShader(m_cube->GetIndexCount(), Cube3WorldMatrix, viewMatrix, projectionMatrix
+			, m_cube->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), CameraPos
+			, m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
+	}
+	else
+		result = m_Shader->RenderTranslateShader(m_cube->GetIndexCount(), Cube3WorldMatrix, cupViewMatrix, projectionMatrix
+			, m_cube->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), CameraPos
+			, m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
+
 	if (!result) { return false; }
 
+	// 집
+	//-----------------------------
+	D3DXMATRIX HouseWorldMatrix;
+	D3DXMatrixIdentity(&HouseWorldMatrix);
 
+	//D3DXMATRIX Rotation, Scale, Translation;
+	//D3DXMatrixRotationY(&Rotation, -30.0f);
+	//D3DXMatrixTranslation(&Translation, 70.0f, 10.0f, 700.0f);
+	//D3DXMatrixScaling(&Scale, 0.7f, 0.7f, 0.7f);
+
+	m_House->Translation(70.0f, 8.0f, 730.0f);
+	m_House->RotationY(-30.0f);
+	//m_House->Scale(0.7f, 0.7f, 0.7f);
+	//m_House->GetRotationYMatrix());
+	m_House->Multiply(m_House->GetRotationYMatrix(), m_House->GetTranslationMatrix());
+
+	//D3DXMatrixMultiply(&HouseWorldMatrix, &HouseWorldMatrix, &Scale);
+	//3DXMatrixMultiply(&HouseWorldMatrix, &HouseWorldMatrix, &Rotation);
+	D3DXMatrixMultiply(&HouseWorldMatrix, &HouseWorldMatrix, &m_House->GetFinalMatrix());
+
+	m_House->Render();
+
+	result = m_Shader->RenderTextureShader(m_House->GetIndexCount(), HouseWorldMatrix, viewMatrix, projectionMatrix, m_House->GetTexture());
+	if (!result) { return false; }
 
 	//-------------------------------------------------------------------------------------
 
@@ -554,32 +757,75 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	Blender::Get()->SetLinear();
 
 	m_Instancing->Render();
-
+	
 	result = m_Shader->RenderInstancingShader(m_Instancing->GetVertexCount(), m_Instancing->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing->GetTexture());
 	if (!result) { return false; }
-
+	
 	m_Instancing2->Render();
-
+	
 	result = m_Shader->RenderInstancingShader(m_Instancing2->GetVertexCount(), m_Instancing2->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing2->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing3->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing3->GetVertexCount(), m_Instancing3->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing3->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing4->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing4->GetVertexCount(), m_Instancing4->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing4->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing5->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing5->GetVertexCount(), m_Instancing5->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing5->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing6->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing6->GetVertexCount(), m_Instancing6->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing6->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing7->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing7->GetVertexCount(), m_Instancing7->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing7->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing8->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing8->GetVertexCount(), m_Instancing8->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing8->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing9->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing9->GetVertexCount(), m_Instancing9->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing9->GetTexture());
+	if (!result) { return false; }
+
+	m_Instancing10->Render();
+
+	result = m_Shader->RenderInstancingShader(m_Instancing10->GetVertexCount(), m_Instancing10->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing10->GetTexture());
 	if (!result) { return false; }
 
 	Rasterizer::Get()->SetOnCullMode();
 
 
 
+
 	// 나무 빌보딩
 	//-----------------------------
 	D3DXVECTOR3 TreePosition;
-	TreePosition = { 740.0f, 35.0f, 612.0f };
+	TreePosition = { 480.0f, 105.0f, 537.0f };
 
 	D3DXMATRIX TreeWorldMatrix;
 	D3DXMatrixIdentity(&TreeWorldMatrix);
 
-	m_Tree->Translation(740.0f, 35.0f, 612.0f);
+	m_Tree->Translation(480.0f, 105.0f, 537.0f);
 	m_Tree->RotationY(CalculateBillboarding(CameraPos, TreePosition));
+	m_Tree->Scale(1.5f, 1.5f, 1.5f);
 
-	m_Tree->Multiply(m_Tree->GetRotationYMatrix(), m_Tree->GetTranslationMatrix());
-	D3DXMatrixMultiply(&TreeWorldMatrix, &m_Tree->GetFinalMatrix(), &TreeWorldMatrix);
+	m_Tree->Multiply(m_Tree->GetScailingMatrix(), m_Tree->GetRotationYMatrix());
+	m_Tree->Multiply(m_Tree->GetFinalMatrix(), m_Tree->GetTranslationMatrix());
+	D3DXMatrixMultiply(&TreeWorldMatrix,  &TreeWorldMatrix, &m_Tree->GetFinalMatrix());
 
 	m_Tree->Render();
 	result = m_Shader->RenderTextureShader(m_Tree->GetIndexCount(), TreeWorldMatrix, viewMatrix, projectionMatrix, m_Tree->GetTexture());
@@ -595,7 +841,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	// Text
 	//------------------------------------------------
 	result = m_Text->SetMousePosition(MousePosX, MousePosY);
-	result = m_Text->SetPosition(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	result = m_Text->SetPosition(CameraPos.x, CameraPos.y, CameraPos.z);
 	result = m_Text->Render(worldMatrix, orthoMatrix);
 
 	// 이미지들
@@ -637,6 +883,42 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	
 
 
+
+	return true;
+}
+
+//-------------------------------------------------------------------------------------
+//이름: RenderRefractionToTexture()
+//용도: 호수 내부의 모습을 RTT로 굴절(Refraction)한다.
+//-------------------------------------------------------------------------------------
+bool GraphicsClass::RenderRefractionToTexture(bool Pressed)
+{
+	D3DXVECTOR4 clipPlane;
+
+	bool result;
+
+	// Setup a clipping plane based on the height of the water to clip everything above it to create a refraction.
+	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_Water->GetWaterHeight() + 0.1f);
+
+	// Set the render target to be the refraction render to texture.
+	m_RefractionTexture->SetRenderTarget();
+
+	// Clear the refraction render to texture.
+	m_RefractionTexture->ClearRenderTarget( 0.0f, 0.0f, 0.0f, 1.0f);
+
+
+	m_WaterTerrain->Renderforwater();
+
+	result = m_Shader->RenderWaterReflectionShader( m_WaterTerrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
+		m_Light->GetDirection(), 2.0f, clipPlane);
+	if (!result) { return false; }
+
+	// Reset the render target back to the original back buffer and not the render to texture anymore.
+	DepthStencil::Get()->SetDefaultRenderView();
+
+	// Reset the viewport back to the original.
+	Camera::Get()->ResetViewPort();
 
 	return true;
 }
@@ -702,6 +984,7 @@ void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth,
 
 		if (m_cube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
 		{
+			sibal = true;
 			m_Particle->active = true;
 			m_UI->active = true;
 		}

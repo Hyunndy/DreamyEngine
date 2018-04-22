@@ -15,11 +15,10 @@
 #include "TranslateShaderClass.h"
 //#include "TransparentShaderClass.h"
 //#include "ColorShaderClass.h"
-
-//#include "RefractionShaderClass.h"
+#include "RefractionShaderClass.h"
 //#include "ReflectionShaderClass.h"
-//#include "WaterShaderClass.h"
-//#include "WaterReflectionShaderClass.h"
+#include "WaterShaderClass.h"
+#include "WaterReflectionShaderClass.h"
 //#include "FireShaderClass.h"
 
 #include "ParticleShaderClass.h"
@@ -58,13 +57,13 @@ public:
 
 	//bool RenderReflectionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXMATRIX);
 
-	//bool RenderRefractionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR4);
+	bool RenderRefractionShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR4);
 
-	//bool RenderWaterShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
-	//	/*ID3D11ShaderResourceView*,*/ D3DXVECTOR3, D3DXVECTOR2, float, float, D3DXVECTOR4, D3DXVECTOR3, float);
+	bool RenderWaterShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
+		/*ID3D11ShaderResourceView*,*/ D3DXVECTOR3, D3DXVECTOR2, float, float, D3DXVECTOR4, D3DXVECTOR3, float);
 
-	//bool RenderWaterReflectionShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR4,
-	//	D3DXVECTOR3, float, D3DXVECTOR4);
+	bool RenderWaterReflectionShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, D3DXVECTOR4,
+		D3DXVECTOR3, float, D3DXVECTOR4);
 
 	bool RenderSkydomeShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR4, D3DXVECTOR4);
 
@@ -92,9 +91,9 @@ private:
 	SkyDomeShaderClass* m_SkydomeShader = nullptr;
 	SkyPlaneShaderClass* m_CloudShader = nullptr;
 	//ReflectionShaderClass* m_ReflectionShader = nullptr;
-	//RefractionShaderClass* m_RefractionShader = nullptr;
-	//WaterShaderClass* m_WaterShader = nullptr;
-	//WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
+	RefractionShaderClass* m_RefractionShader = nullptr;
+	WaterShaderClass* m_WaterShader = nullptr;
+	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
 	//FireShaderClass* m_FireShader = nullptr;
 	InstancingShaderClass* m_InstancingShader = nullptr;
 	ParticleShaderClass* m_particleShader = nullptr;

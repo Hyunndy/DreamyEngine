@@ -23,6 +23,9 @@
     <Filter Include="2DTexture">
       <UniqueIdentifier>{5bf8d4e8-0e19-4252-a62d-b8cca6aa73f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="water">
+      <UniqueIdentifier>{7118f52d-e988-4541-b56a-9974b26071df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphicsclass.cpp" />
@@ -166,6 +169,21 @@
       <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="InstancingClass.cpp" />
+    <ClCompile Include="WaterClass.cpp">
+      <Filter>water</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterReflectionShaderClass.cpp">
+      <Filter>water</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterShaderClass.cpp">
+      <Filter>water</Filter>
+    </ClCompile>
+    <ClCompile Include="RTTTextureClass.cpp">
+      <Filter>water</Filter>
+    </ClCompile>
+    <ClCompile Include="RefractionShaderClass.cpp">
+      <Filter>water</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h" />
@@ -329,5 +347,20 @@
       <Filter>Shader</Filter>
     </ClInclude>
     <ClInclude Include="InstancingClass.h" />
+    <ClInclude Include="WaterClass.h">
+      <Filter>water</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterReflectionShaderClass.h">
+      <Filter>water</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterShaderClass.h">
+      <Filter>water</Filter>
+    </ClInclude>
+    <ClInclude Include="RTTTextureClass.h">
+      <Filter>water</Filter>
+    </ClInclude>
+    <ClInclude Include="RefractionShaderClass.h">
+      <Filter>water</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

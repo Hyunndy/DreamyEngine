@@ -191,6 +191,8 @@
     <ClCompile Include="ParticleShaderClass.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="RefractionShaderClass.cpp" />
+    <ClCompile Include="RTTTextureClass.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="ShaderManagerClass.cpp" />
@@ -209,6 +211,9 @@
     <ClCompile Include="TimerClass.cpp" />
     <ClCompile Include="TranslateShaderClass.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
+    <ClCompile Include="WaterClass.cpp" />
+    <ClCompile Include="WaterReflectionShaderClass.cpp" />
+    <ClCompile Include="WaterShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationFrames.h" />
@@ -253,6 +258,8 @@
     <ClInclude Include="ParticleShaderClass.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="RefractionShaderClass.h" />
+    <ClInclude Include="RTTTextureClass.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="ShaderManagerClass.h" />
@@ -272,6 +279,9 @@
     <ClInclude Include="TimerClass.h" />
     <ClInclude Include="TranslateShaderClass.h" />
     <ClInclude Include="VertexLayout.h" />
+    <ClInclude Include="WaterClass.h" />
+    <ClInclude Include="WaterReflectionShaderClass.h" />
+    <ClInclude Include="WaterShaderClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

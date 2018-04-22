@@ -160,9 +160,65 @@ void Camera::RotateRight()
 {
 	Rotate(D3DXVECTOR2(0, -1));
 }
+void Camera::ResetViewPort()
+{
+	// Set the viewport.
+	D3D::GetDeviceContext()->RSSetViewports(1, &viewport);
+
+	return;
+}
+/*------------------------------------------------------------------------------------------------------
+이름: RenderWaterReflection()
+용도:
+- *****호수용*******
+- 호수에 사용될 반사 뷰 행렬을 만드는데 사용된다.
+- regular view matrix와 차이점은 이것은 plane의 높이를 베이스로 Y축을 반전시킨다. pitch(X축)도 반전시킨다.
+
+- 뷰행렬을 생성하는데 필요한 것: 카메라의 위치+카메라가 보는 방향+카메라의 up벡터
+- 카메라가 보는 방향, up은 모두 벡터이며 카메라의 위치로 rotationMatrix로 변환되어야한다.
+------------------------------------------------------------------------------------------------------*/
+void Camera::RenderWaterReflection(float height)
+{
+	D3DXVECTOR3 w_up, w_position, w_lookAt;
+
+	D3DXMATRIX w_rotation;
+	//카메라의 좌표축
+	w_up.x = 0.0f;
+	w_up.y = 1.0f;
+	w_up.z = 0.0f;
+
+	w_position.x = position.x;
+	w_position.y = -position.y + (height * 2.0f); // planer한 반사를 위해 카메라의 y축을 뒤집어준다.(하늘에서 쏴야하니까 height)
+	w_position.z = position.z;
 
 
 
+	D3DXMATRIX x, y;
+	D3DXMatrixRotationX(&x, -rotate.x);
+	D3DXMatrixRotationY(&y, rotate.y);
+
+	w_rotation = x * y;
+
+	D3DXVec3TransformCoord(&w_lookAt , &D3DXVECTOR3(0, 0, 1), &rotation);
+	D3DXVec3TransformCoord(&w_up, &D3DXVECTOR3(0, 1, 0), &rotation);
+
+
+
+	//보는 사람의 위치에 맞게 카메라의 위치를 이동시킨다.
+	//벡터는 방향을 포함한다.
+	w_lookAt = w_position + w_lookAt;
+
+	//카메라의 위치, 카메라가 보는 방향, 카메라의 up벡터를 혼합해서 뷰행렬을 만든다.
+	D3DXMatrixLookAtLH(&m_reflectionViewMatrix, &w_position, &w_lookAt, &w_up);
+
+	return;
+}
+
+D3DXMATRIX Camera::GetReflectionViewMatrix()
+{
+	return m_reflectionViewMatrix;
+
+}
 //void Camera::GetRay(D3DXVECTOR3 * origin, D3DXVECTOR3 * direction)
 //{
 //	D3DXVECTOR3 mouse = Mouse::Get()->GetPosition();

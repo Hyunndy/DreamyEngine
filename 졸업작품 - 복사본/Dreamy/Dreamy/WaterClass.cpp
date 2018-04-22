@@ -29,18 +29,18 @@ WaterClass::~WaterClass()
 - 셰이더 관련 설정을 세팅한다.
 **셰이더 관련 설정: 노말맵을 얼마나 타일링할지, 노말맵의 크기, 물 이동속도, 굴절세기, 정반사광세기
 ---------------------------------------------------------------------------------------*/
-bool WaterClass::Initialize(ID3D11Device* device, WCHAR* textureFilename, float waterHeight, float waterRadius)
+bool WaterClass::Initialize( WCHAR* textureFilename, float waterHeight, float waterRadius)
 {
 	bool result;
 
 	m_waterHeight = waterHeight;
 
 	//호수 면적의 vertex, index버퍼를 만든다.
-	result = InitializeBuffers(device, waterRadius);
+	result = InitializeBuffers(waterRadius);
 	if (!result) { return false; }
 
 	//호수의 텍스처를 로드한다.
-	result = LoadTexture(device, textureFilename);
+	result = LoadTexture( textureFilename);
 	if (!result) { return false; }
 
 	//노말맵을 얼마나 깔것인지.
@@ -53,7 +53,7 @@ bool WaterClass::Initialize(ID3D11Device* device, WCHAR* textureFilename, float 
 	m_reflectRefractScale = 0.03f;
 
 	//굴절의 청명함(tint)정도를 세팅한다.
-	m_refractionTint = D3DXVECTOR4(0.0f, 0.8f, 1.0f, 0.0f);
+	m_refractionTint = D3DXVECTOR4(0.0f, 1.0f, 1.0f, 1.0f);
 
 	// specular(정반사광) 세기를 세팅한다.
 	m_specularShininess = 100.0f;
@@ -78,7 +78,7 @@ bool WaterClass::Initialize(ID3D11Device* device, WCHAR* textureFilename, float 
 이름: InitializeBuffers()
 용도: 호수의 실제 물리 쿼드를 생성한다. (버텍스, 인덱스 버퍼를 사용해서)
 ---------------------------------------------------------------------------------------*/
-bool WaterClass::InitializeBuffers(ID3D11Device* device, float waterRadius)
+bool WaterClass::InitializeBuffers(float waterRadius)
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -140,7 +140,7 @@ bool WaterClass::InitializeBuffers(ID3D11Device* device, float waterRadius)
 	vertexData.SysMemSlicePitch = 0;
 
 	// Now finally create the vertex buffer.
-	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -160,7 +160,7 @@ bool WaterClass::InitializeBuffers(ID3D11Device* device, float waterRadius)
 	indexData.SysMemSlicePitch = 0;
 
 	// Create the index buffer.
-	result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -180,7 +180,7 @@ bool WaterClass::InitializeBuffers(ID3D11Device* device, float waterRadius)
 이름: LoadTexture()
 용도: 노말맵을 받아온당.
 ---------------------------------------------------------------------------------------*/
-bool WaterClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+bool WaterClass::LoadTexture(WCHAR* filename)
 {
 	bool result;
 
@@ -193,7 +193,7 @@ bool WaterClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 	}
 
 	// Initialize the texture object.
-	result = m_Texture->Initialize(device, filename);
+	result = m_Texture->Initialize( filename);
 	if (!result)
 	{
 		return false;
@@ -219,15 +219,15 @@ void WaterClass::Frame(int frametime)
 	return;
 }
 
-void WaterClass::Render(ID3D11DeviceContext* deviceContext)
+void WaterClass::Render()
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(deviceContext);
+	RenderBuffers();
 
 	return;
 }
 
-void WaterClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void WaterClass::RenderBuffers()
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -238,13 +238,13 @@ void WaterClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
+	D3D::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	D3D::GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }

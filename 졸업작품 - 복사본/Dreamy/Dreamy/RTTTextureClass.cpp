@@ -24,7 +24,7 @@ RTTTextureClass::~RTTTextureClass()
 }
 
 
-bool RTTTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
+bool RTTTextureClass::Initialize( int textureWidth, int textureHeight, float screenDepth, float screenNear)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
@@ -50,7 +50,7 @@ bool RTTTextureClass::Initialize(ID3D11Device* device, int textureWidth, int tex
 	textureDesc.MiscFlags = 0;
 
 	// Create the render target texture.
-	result = device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTexture);
+	result = D3D::GetDevice()->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTexture);
 	if (FAILED(result))
 	{
 		return false;
@@ -62,7 +62,7 @@ bool RTTTextureClass::Initialize(ID3D11Device* device, int textureWidth, int tex
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the render target view.
-	result = device->CreateRenderTargetView(m_renderTargetTexture, &renderTargetViewDesc, &m_renderTargetView);
+	result = D3D::GetDevice()->CreateRenderTargetView(m_renderTargetTexture, &renderTargetViewDesc, &m_renderTargetView);
 	if (FAILED(result))
 	{
 		return false;
@@ -75,7 +75,7 @@ bool RTTTextureClass::Initialize(ID3D11Device* device, int textureWidth, int tex
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	// Create the shader resource view.
-	result = device->CreateShaderResourceView(m_renderTargetTexture, &shaderResourceViewDesc, &m_shaderResourceView);
+	result = D3D::GetDevice()->CreateShaderResourceView(m_renderTargetTexture, &shaderResourceViewDesc, &m_shaderResourceView);
 	if (FAILED(result))
 	{
 		return false;
@@ -98,7 +98,7 @@ bool RTTTextureClass::Initialize(ID3D11Device* device, int textureWidth, int tex
 	depthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	result = device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
+	result = D3D::GetDevice()->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -113,7 +113,7 @@ bool RTTTextureClass::Initialize(ID3D11Device* device, int textureWidth, int tex
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the depth stencil view.
-	result = device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
+	result = D3D::GetDevice()->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 	if (FAILED(result))
 	{
 		return false;
@@ -173,19 +173,19 @@ void RTTTextureClass::Shutdown()
 }
 
 
-void RTTTextureClass::SetRenderTarget(ID3D11DeviceContext* deviceContext)
+void RTTTextureClass::SetRenderTarget()
 {
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
-	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+	D3D::GetDeviceContext()->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 
 	// Set the viewport.
-	deviceContext->RSSetViewports(1, &m_viewport);
+	D3D::GetDeviceContext()->RSSetViewports(1, &m_viewport);
 
 	return;
 }
 
 
-void RTTTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext, float red, float green, float blue, float alpha)
+void RTTTextureClass::ClearRenderTarget( float red, float green, float blue, float alpha)
 {
 	float color[4];
 
@@ -197,10 +197,10 @@ void RTTTextureClass::ClearRenderTarget(ID3D11DeviceContext* deviceContext, floa
 	color[3] = alpha;
 
 	// Clear the back buffer.
-	deviceContext->ClearRenderTargetView(m_renderTargetView, color);
+	D3D::GetDeviceContext()->ClearRenderTargetView(m_renderTargetView, color);
 
 	// Clear the depth buffer.
-	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	D3D::GetDeviceContext()->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;
 }

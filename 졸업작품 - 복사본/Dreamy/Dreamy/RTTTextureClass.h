@@ -6,8 +6,7 @@
 //////////////
 // INCLUDES //
 //////////////
-#include <d3d11.h>
-#include <d3dx10math.h>
+#include "D3D.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,11 +19,11 @@ public:
 	RTTTextureClass(const RTTTextureClass&);
 	~RTTTextureClass();
 
-	bool Initialize(ID3D11Device*, int, int, float, float);
+	bool Initialize( int, int, float, float);
 	void Shutdown();
 
-	void SetRenderTarget(ID3D11DeviceContext*);
-	void ClearRenderTarget(ID3D11DeviceContext*, float, float, float, float);
+	void SetRenderTarget();
+	void ClearRenderTarget( float, float, float, float);
 	ID3D11ShaderResourceView* GetShaderResourceView();
 	void GetProjectionMatrix(D3DXMATRIX&);
 	void GetOrthoMatrix(D3DXMATRIX&);

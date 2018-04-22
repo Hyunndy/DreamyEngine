@@ -13,6 +13,7 @@ public:
 
 	void SetDefaultRenderView();
 
+
 	ID3D11DepthStencilView* GetDepthView()
 	{
 		return depthView;
