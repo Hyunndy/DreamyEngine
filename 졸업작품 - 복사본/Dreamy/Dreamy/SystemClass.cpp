@@ -336,7 +336,7 @@ bool SystemClass::Frame()
 	if (!result){ return false; }
 	
 	//result = m_Graphics->Render(F1pressed);
-	result = m_Graphics->Render(F1pressed, m_FPS->GetFps());
+	result = m_Graphics->Render(F1pressed);
 	if (!result) { return false; }
 
 	result = m_Input->IsLeftMouseButtonDown();
@@ -445,7 +445,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	info.appName = m_applicationName;
 	info.instance = m_hinstance;
 	info.isFullScreen = FULL_SCREEN;
-	info.isVsync = true;
+	info.isVsync = VSYNC_ENABLED;
 	info.mainHandle = m_hwnd;
 	info.screenWidth = screenWidth;
 	info.screenHeight = screenHeight;

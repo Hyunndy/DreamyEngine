@@ -29,11 +29,11 @@ FireShaderClass::~FireShaderClass()
 }
 
 // 셰이더의 초기화를 수행하는 함수를 호출한다.
-bool FireShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool FireShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/Data/fire.vs", L"../Dreamy/Data/fire.ps");
+	result = InitializeShader( hwnd, L"../Dreamy/shader/fire.vs", L"../Dreamy/shader/fire.ps");
 	if (!result) { return false; }
 
 
@@ -41,24 +41,24 @@ bool FireShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 }
 
 
-bool FireShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, 
+bool FireShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, 
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* fireTexture, ID3D11ShaderResourceView* noiseTexture, 
 	ID3D11ShaderResourceView* alphaTexture, float frameTime, D3DXVECTOR3 scrollSpeeds, D3DXVECTOR3 scales, D3DXVECTOR2 distortion1, 
 	D3DXVECTOR2 distortion2, D3DXVECTOR2 distortion3, float distortionScale, float distortionBias)
 {
 	bool result;
 
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 	if (!result) { return false; }
 
 
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }
 
 
-bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool FireShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 
 	HRESULT result;
@@ -122,7 +122,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL,
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL,
 		&m_vertexShader);
 	if (FAILED(result))
 	{
@@ -130,7 +130,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL,
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL,
 		&m_pixelShader);
 	if (FAILED(result))
 	{
@@ -159,7 +159,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(),
 		vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
 	{
@@ -182,7 +182,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// Create the matrix buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -197,7 +197,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	noiseBufferDesc.StructureByteStride = 0;
 
 	// Create the noise buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&noiseBufferDesc, NULL, &m_noiseBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&noiseBufferDesc, NULL, &m_noiseBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -219,7 +219,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result))
 	{
 		return false;
@@ -241,7 +241,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	samplerDesc2.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc2, &m_sampleState2);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc2, &m_sampleState2);
 	if (FAILED(result))
 	{
 		return false;
@@ -256,7 +256,7 @@ bool FireShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* v
 	distortionBufferDesc.StructureByteStride = 0;
 
 	// Create the distortion buffer pointer so we can access the pixel shader constant buffer from within this class.
-	result = device->CreateBuffer(&distortionBufferDesc, NULL, &m_distortionBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&distortionBufferDesc, NULL, &m_distortionBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -335,7 +335,7 @@ void FireShaderClass::ShutdownShader()
 // 이 함수에 사용된 행렬들은 GraphicsClass에서 만들어졌다.
 // 이제 텍스처 자원의 포인터를 인자로 받고 그것을 셰이더에 등록한다.
 // ***텍스처는 반드시 버퍼에 렌더링이 일어나기 전에 설정되어 있어야 한다***
-bool FireShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool FireShaderClass::SetShaderParameters(D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* fireTexture,
 	ID3D11ShaderResourceView* noiseTexture, ID3D11ShaderResourceView* alphaTexture,
 	float frameTime, D3DXVECTOR3 scrollSpeeds, D3DXVECTOR3 scales, D3DXVECTOR2 distortion1,
@@ -357,7 +357,7 @@ bool FireShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 
 
 	// Lock the matrix constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -372,17 +372,17 @@ bool FireShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the matrix constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the matrix constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Now set the matrix constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 
 	// Lock the noise constant buffer so it can be written to.
-	result = deviceContext->Map(m_noiseBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_noiseBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -398,23 +398,23 @@ bool FireShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	dataPtr2->padding = 0.0f;
 
 	// Unlock the noise constant buffer.
-	deviceContext->Unmap(m_noiseBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_noiseBuffer, 0);
 
 	// Set the position of the noise constant buffer in the vertex shader.
 	bufferNumber = 1;
 
 	// Now set the noise constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_noiseBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_noiseBuffer);
 
 
 	// Set the three shader texture resources in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &fireTexture);
-	deviceContext->PSSetShaderResources(1, 1, &noiseTexture);
-	deviceContext->PSSetShaderResources(2, 1, &alphaTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &fireTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(1, 1, &noiseTexture);
+	D3D::GetDeviceContext()->PSSetShaderResources(2, 1, &alphaTexture);
 
 
 	// Lock the distortion constant buffer so it can be written to.
-	result = deviceContext->Map(m_distortionBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_distortionBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -431,13 +431,13 @@ bool FireShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 	dataPtr3->distortionBias = distortionBias;
 
 	// Unlock the distortion constant buffer.
-	deviceContext->Unmap(m_distortionBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_distortionBuffer, 0);
 
 	// Set the position of the distortion constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Now set the distortion constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_distortionBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_distortionBuffer);
 
 	return true;
 }

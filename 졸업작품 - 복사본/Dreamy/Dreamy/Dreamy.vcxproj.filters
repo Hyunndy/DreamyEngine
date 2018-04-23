@@ -184,6 +184,12 @@
     <ClCompile Include="RefractionShaderClass.cpp">
       <Filter>water</Filter>
     </ClCompile>
+    <ClCompile Include="FireShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaMapShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h" />
@@ -361,6 +367,12 @@
     </ClInclude>
     <ClInclude Include="RefractionShaderClass.h">
       <Filter>water</Filter>
+    </ClInclude>
+    <ClInclude Include="FireShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="AlphaMapShaderClass.h">
+      <Filter>Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AlphaMapShaderClass.cpp" />
     <ClCompile Include="AnimationFrames.cpp" />
     <ClCompile Include="Blender.cpp" />
     <ClCompile Include="CameraClass.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="FBXAnimationModel.cpp" />
     <ClCompile Include="FBXCamera.cpp" />
     <ClCompile Include="FBXShader.cpp" />
+    <ClCompile Include="FireShaderClass.cpp" />
     <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="FontShaderClass.cpp" />
     <ClCompile Include="FpsClass.cpp" />
@@ -216,6 +218,7 @@
     <ClCompile Include="WaterShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AlphaMapShaderClass.h" />
     <ClInclude Include="AnimationFrames.h" />
     <ClInclude Include="Blender.h" />
     <ClInclude Include="CameraClass.h" />
@@ -229,6 +232,7 @@
     <ClInclude Include="FBXShaderBuffer.h" />
     <ClInclude Include="FBXSunBuffer.h" />
     <ClInclude Include="FBXWorldBuffer.h" />
+    <ClInclude Include="FireShaderClass.h" />
     <ClInclude Include="FontClass.h" />
     <ClInclude Include="FontShaderClass.h" />
     <ClInclude Include="FpsClass.h" />

@@ -153,8 +153,6 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_cube->InitializeSpecMap("../Dreamy/Data/cube.txt", L"../Dreamy/Data/stone02.dds", L"../Dreamy/Data/bump02.dds", L"../Dreamy/Data/spec02.dds");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
-
-
 	m_House = new ModelClass;
 
 	result = m_House->Initialize("../Dreamy/Data/BakerHouse.txt", L"../Dreamy/Data/BakerHouse.png");
@@ -171,8 +169,8 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//m_Light->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.5f, -1.0f, -0.25f);
-	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
+	//m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
 	//--------------------------------------------------------------------------------------
 
 	// Frustum
@@ -201,7 +199,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Sky->InitializeSky();
 	if (!result) { MessageBox(hwnd, L"Could not initialize Sky object", L"Error", MB_OK); return false; }
 
-	result = m_Sky->InitializeCloud( L"../Dreamy/Data/cloud001.dds", L"../Dreamy/Data/cloud002.dds");
+	result = m_Sky->InitializeCloud( L"../Dreamy/Data/cloud002.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize Cloud object", L"Error", MB_OK); return false; }
 
 	//--------------------------------------------------------------------------------------
@@ -225,18 +223,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Water->Initialize( L"../Dreamy/Data/waternormal.dds", 11.0f, 55.0f);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK); return false; }
 
-	m_WaterTerrain = new TerrainClass;
-	if (!m_WaterTerrain) { return false; }
 
-	result = m_WaterTerrain->Initializeforwater("../Dreamy/Terrain/setup.txt", "../Dreamy/Terrain/dirt01d.tga", "../Dreamy/Terrain/dirt01n.tga");
-	if (!result) { MessageBox(hwnd, L"Could not initialize m_WaterTerrain object", L"Error", MB_OK); return false; }
-
-
-	m_WaterTerrainShader = new TerrainShaderClass;
-	if (!m_WaterTerrainShader) { return false; }
-
-	m_WaterTerrainShader->Initialize( hwnd);
-	if (!result) { MessageBox(hwnd, L"Could not initialize m_WaterTerrainShader object", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
 
 	// Text
@@ -397,6 +384,10 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Tree->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/Billboard.png");
 	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
 
+	m_Fire = new ModelClass;
+
+	result = m_Fire->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire01.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	if (!result) { MessageBox(hwnd, L"Could not initialize fire effect object", L"Error", MB_OK); return false; }
 	//--------------------------------------------------------------------------------------
 
 	return true;
@@ -414,10 +405,10 @@ void GraphicsClass::Shutdown()
 	SAFE_DELETE(m_npc);
 	SAFE_SHUTDOWN(m_Tree);
 	SAFE_DELETE(m_Light);
+	SAFE_SHUTDOWN(m_Fire);
 	SAFE_SHUTDOWN(m_TerrainShader);
 	SAFE_SHUTDOWN(m_Water);
-	SAFE_SHUTDOWN(m_WaterTerrain);
-	SAFE_SHUTDOWN(m_WaterTerrainShader);
+
 	SAFE_SHUTDOWN(m_RefractionTexture);
 	SAFE_SHUTDOWN(m_Instancing);
 	SAFE_SHUTDOWN(m_Instancing2);
@@ -466,8 +457,9 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 	// Model들 Frame처리
 	//--------------------------------------------------------------------------------------
 	//m_horse->Update(); //말1
-	m_npc->Update(); //말2
-
+	if(renderNpc==true)
+		m_npc->Update(); //말2
+	SetEffectVariable(frameTime*0.0005f);
 	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f); //구름
 	m_Particle->Frame(frameTime); // 파티클
 	m_Minimap->PositionUpdate(CameraPos.x, CameraPos.z); //미니맵
@@ -513,12 +505,22 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime, D3DXVECTOR3 pos, D3
 용도 : 러닝씬과 RTT씬을 그린다.
 - 반사를 할 때는 우선 RTT를 먼저하고 러닝씬을 로드해야 혼합된다.
 ------------------------------------------------------------------------------------------*/
-bool GraphicsClass::Render( bool Pressed, int frametime)
+bool GraphicsClass::Render(bool Pressed)
 {
+	//기본행렬
+	//-------------------------------------------------------------------------------------
+	D3DXMatrixIdentity(&worldMatrix);
+	Camera::Get()->GetView(&viewMatrix);
+	Camera::Get()->GetProjection(&projectionMatrix);
+	Camera::Get()->GetOrtho(&orthoMatrix);
+
 	bool result;
 
-	result = RenderRefractionToTexture(Pressed);
-	if (!result) { return false; }
+	if (renderWater == true)
+	{
+		result = RenderRefractionToTexture(Pressed);
+		if (!result) { return false; }
+	}
 	//-------------------------------------------------------------------------------------
 	result = RenderRunningScene(Pressed);
 	if (!result) { return false; }
@@ -548,7 +550,7 @@ bool GraphicsClass::Render( bool Pressed, int frametime)
 bool GraphicsClass::RenderRunningScene(bool Pressed)
 {
 	bool result;
-
+	bool renderModel;
 
 	//안개 객체 초기화
 	//fogEnd가 멀어질수록 밝아짐
@@ -559,12 +561,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	fogEnd = 550.0f;
 	//-------------------------------------------------------------------------------------
 
-	//기본행렬
-	//-------------------------------------------------------------------------------------
-	D3DXMatrixIdentity(&worldMatrix);
-	Camera::Get()->GetView(&viewMatrix);
-	Camera::Get()->GetProjection(&projectionMatrix);
-	Camera::Get()->GetOrtho(&orthoMatrix);
+
 
 	//시작
 	//-------------------------------------------------------------------------------------
@@ -601,7 +598,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_Sky->RenderCloud();
 
 	m_Shader->RenderCloudShader(m_Sky->GetCloudIndexCount(), SkyworldMatrix, viewMatrix, projectionMatrix,
-		m_Sky->GetCloudTexture1(), m_Sky->GetCloudTexture2(), m_Sky->GetTranslation(0), m_Sky->GetTranslation(1),
+		m_Sky->GetCloudTexture1(), m_Sky->GetTranslation(0), m_Sky->GetTranslation(1),
 		m_Sky->GetTranslation(2), m_Sky->GetTranslation(3), m_Sky->GetBrightness());
 
 	//알파블렌딩 원래대로
@@ -640,20 +637,29 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixTranslation(&WaterWorldMatrix, 766.0f, m_Water->GetWaterHeight(), 470.0f);
 	D3DXMatrixRotationY(&WaterRotationMatrix, 70.0f);
 	D3DXMatrixMultiply(&WaterWorldMatrix, &WaterRotationMatrix, &WaterWorldMatrix);
-	m_Water->Render();
 
-	result = m_Shader->RenderWaterShader(m_Water->GetIndexCount(), WaterWorldMatrix, viewMatrix, projectionMatrix, WaterreflectionViewMatrix,
-		m_RefractionTexture->GetShaderResourceView(), m_Water->GetTexture(),
-		CameraPos, m_Water->GetNormalMapTiling(), m_Water->GetWaterTranslation(), m_Water->GetReflectRefractScale(),
-		m_Water->GetRefractionTint(), m_Light->GetDirection(), m_Water->GetSpecularShininess());
-	if (!result) { return false; }
+	renderWater = m_Frustum->CheckSphere(766.0f, m_Water->GetWaterHeight(), 470.0f, 10.0f);
+	if (renderWater)
+	{
+		m_Water->Render();
+
+		result = m_Shader->RenderWaterShader(m_Water->GetIndexCount(), WaterWorldMatrix, viewMatrix, projectionMatrix, WaterreflectionViewMatrix,
+			m_RefractionTexture->GetShaderResourceView(), m_Water->GetTexture(),
+			CameraPos, m_Water->GetNormalMapTiling(), m_Water->GetWaterTranslation(), m_Water->GetReflectRefractScale(),
+			m_Water->GetRefractionTint(), m_Light->GetDirection(), m_Water->GetSpecularShininess());
+		if (!result) { return false; }
+	}
 	//-------------------------------------------------------------------------------------
 
 	// FBXANIMATIONModel들
 	//-------------------------------------------------------------------------------------
 	//m_horse->Render();
-	m_npc->Render();
-
+	//545.0f, 10.0f, 345.0f
+	renderNpc = m_Frustum->CheckSphere(545.0f, 10.0f, 345.0f, 5.0f);
+	if (renderNpc == true)
+	{
+		m_npc->Render();
+	}
 	// OBJ모델
 	//-------------------------------------------------------------------------------------
 
@@ -721,7 +727,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	m_House->Render();
 
-	result = m_Shader->RenderTextureShader(m_House->GetIndexCount(), HouseWorldMatrix, viewMatrix, projectionMatrix, m_House->GetTexture());
+	result = m_Shader->RenderDiffuseShader(m_House->GetIndexCount(), HouseWorldMatrix, viewMatrix, projectionMatrix, m_House->GetTexture(),D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
 	if (!result) { return false; }
 
 	//-------------------------------------------------------------------------------------
@@ -832,6 +838,33 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	if (!result) { return false; }
 	//-----------------------------
 
+	// 불 빌보딩
+	//-----------------------------
+
+
+	D3DXVECTOR3 firePosition;
+
+	firePosition = { 157.0f, 49.0f, 429.0f };
+
+
+	D3DXMATRIX FireWorldMatrix;
+	D3DXMatrixIdentity(&FireWorldMatrix);
+	m_Fire->Translation(157.0f, 49.0f, 429.0f);
+	//m_Fire->RotationY(CalculateBillboarding(CameraPos, firePosition));
+	m_Fire->RotationY(29.7f);
+	m_Fire->Scale(50.0f, 50.0f, 50.0f);
+	m_Fire->Multiply(m_Fire->GetScailingMatrix(),m_Fire->GetRotationYMatrix());
+	m_Fire->Multiply( m_Fire->GetFinalMatrix(), m_Fire->GetTranslationMatrix());
+	D3DXMatrixMultiply(&FireWorldMatrix, &FireWorldMatrix, &m_Fire->GetFinalMatrix());
+
+	m_Fire->Render();
+
+	result = m_Shader->RenderFireShader( m_Fire->GetIndexCount(), FireWorldMatrix, viewMatrix,
+		projectionMatrix, m_Fire->GetTripleTexture1(), m_Fire->GetTripleTexture2(), m_Fire->GetTripleTexture3(),
+		fire_frametime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+	if (!result) { return false; }
+
+
 	// 2D
 	//-------------------------------------------------------------------------------------
 	DepthStencil::Get()->SetOffState();
@@ -840,7 +873,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// Text
 	//------------------------------------------------
-	result = m_Text->SetMousePosition(MousePosX, MousePosY);
+	result = m_Text->SetMousePosition(renderNpc, MousePosY);
 	result = m_Text->SetPosition(CameraPos.x, CameraPos.y, CameraPos.z);
 	result = m_Text->Render(worldMatrix, orthoMatrix);
 
@@ -906,13 +939,30 @@ bool GraphicsClass::RenderRefractionToTexture(bool Pressed)
 	// Clear the refraction render to texture.
 	m_RefractionTexture->ClearRenderTarget( 0.0f, 0.0f, 0.0f, 1.0f);
 
+	m_Frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 
-	m_WaterTerrain->Renderforwater();
+	for (int i = 0; i < m_Terrain->GetCellCount(); i++)
+	{
+		// Put the terrain cell buffers on the pipeline.
+		result = m_Terrain->RenderCell(i, m_Frustum);
+		if (result)
+		{
 
-	result = m_Shader->RenderWaterReflectionShader( m_WaterTerrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
-		m_Light->GetDirection(), 2.0f, clipPlane);
-	if (!result) { return false; }
+			result = m_Shader->RenderWaterReflectionShader(m_Terrain->GetCellIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
+				m_Terrain->GetColorTexture(), m_Terrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
+				m_Light->GetDirection(), 2.0f, clipPlane);
+
+			if (!result) { return false; }
+		}
+	}
+
+	//m_WaterTerrain->Renderforwater();
+	//
+	//result = m_Shader->RenderWaterReflectionShader( m_WaterTerrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+	//	m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
+	//	m_Light->GetDirection(), 2.0f, clipPlane);
+	//
+	//if (!result) { return false; }
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	DepthStencil::Get()->SetDefaultRenderView();
@@ -1004,4 +1054,28 @@ float GraphicsClass::CalculateBillboarding(D3DXVECTOR3 cameraPosition, D3DXVECTO
 	rotation = (float)angle * 0.0174532925f;
 
 	return rotation;
+}
+
+void GraphicsClass::SetEffectVariable(float frametime)
+{
+	// 불꽃 이펙트
+	//-------------------------------------------------------------------------------------
+	fire_frametime += frametime;
+	if (fire_frametime > 1000.0f) { fire_frametime = 0.0f; }
+
+	// 세 노이즈 텍스쳐의 스크롤 속도를 설정합니다.
+	scrollSpeeds = D3DXVECTOR3(1.3f, 2.1f, 2.3f);
+
+	// 세 크기값을 사용하여 세 가지의 다른 노이즈 옥타브 텍스쳐를 만듭니다.
+	scales = D3DXVECTOR3(1.0f, 2.0f, 3.0f);
+
+	// 세 노이즈 텍스쳐의 서로 다른 세 개의 x, y 왜곡 인자를 설정합니다.
+	distortion1 = D3DXVECTOR2(0.1f, 0.2f);
+	distortion2 = D3DXVECTOR2(0.1f, 0.3f);
+	distortion3 = D3DXVECTOR2(0.1f, 0.1f);
+
+	// 텍스쳐 샘플링 좌표의 교란을 위한 크기 및 바이어스 값입니다.
+	distortionScale = 0.8f;
+	distortionBias = 0.5f;
+
 }

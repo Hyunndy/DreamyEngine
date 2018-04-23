@@ -51,7 +51,7 @@
 /////////////
 const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
-const bool VSYNC_ENABLED = true;
+const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
@@ -71,7 +71,7 @@ public:
 
 	void Shutdown();
 	bool Frame(int, int, float, D3DXVECTOR3, D3DXVECTOR3, int, int);// + 카메라 회전
-	bool Render(bool, int);
+	bool Render(bool);
 	void CheckIntersection(int, int, int, int);
 
 	bool RenderMainScene();
@@ -95,7 +95,7 @@ private:
 	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
 	bool RenderReflectionToTexture(); // 호수 반사 텍스처
 	
-	void SetEffectVariable(); //이펙트 관련 변수 세팅
+	void SetEffectVariable(float frametime); //이펙트 관련 변수 세팅
 	float CalculateBillboarding(D3DXVECTOR3,D3DXVECTOR3);
 
 private:
@@ -111,8 +111,9 @@ private:
 private:
 	TerrainClass* m_Terrain= nullptr;
 	TerrainShaderClass* m_TerrainShader= nullptr;
-	TerrainClass* m_WaterTerrain = nullptr;
-	TerrainShaderClass* m_WaterTerrainShader = nullptr;
+
+	
+	bool renderWater = false;
 	WaterClass* m_Water;
 	RTTTextureClass* m_RefractionTexture;
 	SkyClass* m_Sky= nullptr;
@@ -121,10 +122,20 @@ private:
 	ModelClass* m_cube= nullptr;
 	ModelClass* m_Tree = nullptr;
 	ModelClass* m_House = nullptr;
+private:
+	float fire_frametime, distortionScale, distortionBias;
+	D3DXVECTOR3 scrollSpeeds;
+	D3DXVECTOR3 scales;
+	D3DXVECTOR2 distortion1;
+	D3DXVECTOR2 distortion2;
+	D3DXVECTOR2 distortion3;
+	
+	ModelClass* m_Fire = nullptr;
 
 private:
 	ModelScene* m_horse= nullptr;
 	ModelScene* m_npc = nullptr;
+	bool renderNpc = false;
 
 private:
 	ImageClass* m_Start= nullptr;

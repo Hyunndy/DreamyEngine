@@ -33,14 +33,14 @@ bool SkyPlaneShaderClass::Initialize( HWND hwnd)
 
 
 bool SkyPlaneShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
 	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ, float brightness)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, texture, texture2, firstTranslationX, firstTranslationZ,
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, texture,firstTranslationX, firstTranslationZ,
 		secondTranslationX, secondTranslationZ, brightness);
 	if (!result)
 	{
@@ -270,7 +270,7 @@ void SkyPlaneShaderClass::ShutdownShader()
 
 
 bool SkyPlaneShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
-	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture,
 	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ,
 	float brightness)
 {
@@ -341,7 +341,7 @@ bool SkyPlaneShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRI
 
 	// Set the shader texture resource in the pixel shader.
 	D3D::GetDeviceContext()->PSSetShaderResources(0, 1, &texture);
-	D3D::GetDeviceContext()->PSSetShaderResources(1, 1, &texture2);
+
 
 	return true;
 }

@@ -72,13 +72,13 @@ public:
 
 
 	//skyplane(구름)
-	bool InitializeCloud( WCHAR*, WCHAR*);
+	bool InitializeCloud( WCHAR*);
 	void RenderCloud();
 	void Frame(float, float, float, float);
 
 	int GetCloudIndexCount();
 	ID3D11ShaderResourceView* GetCloudTexture1();
-	ID3D11ShaderResourceView* GetCloudTexture2();
+
 
 	float GetBrightness();
 	float GetTranslation(int);
@@ -103,7 +103,7 @@ private:
 
 
 
-	bool LoadTextures( WCHAR*, WCHAR*);
+	bool LoadTextures( WCHAR*);
 	void ReleaseTextures();
 
 
@@ -119,7 +119,7 @@ private:
 	SkyPlaneType* m_skyPlane;
 	int m_SkyPlanevertexCount, m_SkyPlaneindexCount;
 	ID3D11Buffer *m_SkyPlanevertexBuffer, *m_SkyPlaneindexBuffer;
-	TextureClass *m_CloudTexture1, *m_CloudTexture2;
+	TextureClass *m_CloudTexture1;
 	float m_brightness;
 	float m_translationSpeed[4]; // 구름 이동 방향
 	float m_textureTranslation[4]; // 구름 위치

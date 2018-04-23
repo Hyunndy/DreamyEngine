@@ -113,9 +113,9 @@ public:
 	bool Initialize( char*, CHAR*, CHAR*);
 	void Shutdown();
 	//호수용Render
-	bool Initializeforwater(char*, CHAR*, CHAR*);
-	bool Renderforwater();
-	void Shutdownforwater();
+	//bool Initializeforwater(char*, CHAR*, CHAR*);
+	//bool Renderforwater();
+	//void Shutdownforwater();
 
 	int GetVertexCount();
 	int GetIndexCount();
@@ -167,9 +167,9 @@ private:
 	bool LoadColorMap();
 
 	//호수용
-	bool InitializeBufferforwater();
-	void RenderBuffersforwater();
-	void ShutdownBufferforwater();
+	//bool InitializeBufferforwater();
+	//void RenderBuffersforwater();
+	//void ShutdownBufferforwater();
 
 
 	//Terrain Cell

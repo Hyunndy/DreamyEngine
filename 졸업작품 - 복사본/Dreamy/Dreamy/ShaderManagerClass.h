@@ -7,7 +7,7 @@
 #include "InstancingShaderClass.h"
 //#include "LightShaderClass.h"
 //#include "MultiTextureShaderClass.h"
-//#include "AlphaMapShaderClass.h"
+#include "AlphaMapShaderClass.h"
 //#include "BumpMapShaderClass.h"
 //#include "SpecMapShaderClass.h"
 //#include "ShaderManagerClass.h"
@@ -19,7 +19,7 @@
 //#include "ReflectionShaderClass.h"
 #include "WaterShaderClass.h"
 #include "WaterReflectionShaderClass.h"
-//#include "FireShaderClass.h"
+#include "FireShaderClass.h"
 
 #include "ParticleShaderClass.h"
 
@@ -43,7 +43,7 @@ public:
 
 	//bool RenderMultiTextureShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**);
 
-	//bool RenderAlphaMapShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**);
+	bool RenderDiffuseShader(int , D3DXMATRIX , D3DXMATRIX , D3DXMATRIX , ID3D11ShaderResourceView* , D3DXVECTOR3 , D3DXVECTOR4 );
 
 	//bool RenderBumpMapShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3, D3DXVECTOR4);
 
@@ -67,10 +67,10 @@ public:
 
 	bool RenderSkydomeShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR4, D3DXVECTOR4);
 
-	bool RenderCloudShader(int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, float, float, float, float, float);
+	bool RenderCloudShader(int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,float, float, float, float, float);
 
-	//bool RenderFireShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
-	//	float, D3DXVECTOR3, D3DXVECTOR3, D3DXVECTOR2, D3DXVECTOR2, D3DXVECTOR2, float, float);
+	bool RenderFireShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*,
+		float, D3DXVECTOR3, D3DXVECTOR3, D3DXVECTOR2, D3DXVECTOR2, D3DXVECTOR2, float, float);
 
 	bool RenderInstancingShader( int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
@@ -82,7 +82,7 @@ private:
 	//ColorShaderClass* m_ColorShader = nullptr;
 	//LightShaderClass* m_LightShader = nullptr;
 	//MultiTextureShaderClass* m_MultiTextureShader = nullptr;
-	//AlphaMapShaderClass* m_AlphaMapShader = nullptr;
+	DiffuseShaderClass* m_DiffuseShader = nullptr;
 	//BumpMapShaderClass* m_BumpMapShader = nullptr;
 	//SpecMapShaderClass* m_SpecMapShader = nullptr;
 	//FogShaderClass* m_FogShader = nullptr;
@@ -94,7 +94,7 @@ private:
 	RefractionShaderClass* m_RefractionShader = nullptr;
 	WaterShaderClass* m_WaterShader = nullptr;
 	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;
-	//FireShaderClass* m_FireShader = nullptr;
+	FireShaderClass* m_FireShader = nullptr;
 	InstancingShaderClass* m_InstancingShader = nullptr;
 	ParticleShaderClass* m_particleShader = nullptr;
 

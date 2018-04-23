@@ -57,12 +57,12 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	//if(!result)
 	//{ MessageBox(hwnd, L"Could not initialize the multitextureshader object.", L"Error", MB_OK); return false; }
 
-	//m_AlphaMapShader = new AlphaMapShaderClass;
-	//if (!m_AlphaMapShader) { return false; }
-	//
-	//result = m_AlphaMapShader->Initialize(device, hwnd);
-	//if(!result)
-	//{ MessageBox(hwnd, L"Could not initialize the alphamapshader object.", L"Error", MB_OK); return false; }
+	m_DiffuseShader = new DiffuseShaderClass;
+	if (!m_DiffuseShader) { return false; }
+	
+	result = m_DiffuseShader->Initialize( hwnd);
+	if(!result)
+	{ MessageBox(hwnd, L"Could not initialize the alphamapshader object.", L"Error", MB_OK); return false; }
 
 	//m_BumpMapShader = new BumpMapShaderClass;
 	//if (!m_BumpMapShader) { return false; }
@@ -132,11 +132,11 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	m_CloudShader->Initialize( hwnd);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the Skydomeshader object.", L"Error", MB_OK); return false; }
 
-	//m_FireShader = new FireShaderClass;
-	//if (!m_FireShader) { return false; }
+	m_FireShader = new FireShaderClass;
+	if (!m_FireShader) { return false; }
 
-	//m_FireShader->Initialize(device, hwnd);
-	//if(!result){ MessageBox(hwnd, L"Could not initialize the FireShader object.", L"Error", MB_OK); return false; }
+	m_FireShader->Initialize( hwnd);
+	if(!result){ MessageBox(hwnd, L"Could not initialize the FireShader object.", L"Error", MB_OK); return false; }
 
 	m_InstancingShader = new InstancingShaderClass;
 	if (!m_InstancingShader) { return false; }
@@ -159,12 +159,13 @@ void ShaderManagerClass::Shutdown()
 	SAFE_SHUTDOWN(m_TextureShader);
 	SAFE_SHUTDOWN(m_InstancingShader);
 	//if (m_ColorShader) { m_ColorShader->Shutdown(); delete m_ColorShader; m_ColorShader = 0; }
-	//if (m_FireShader) { m_FireShader->Shutdown(); delete m_FireShader; m_FireShader = 0; }
+	SAFE_SHUTDOWN(m_FireShader);
 	//// 라이트 쉐이더 객체를 해제합니다.
 	//if (m_LightShader) {m_LightShader->Shutdown();delete m_LightShader;m_LightShader = 0;}
 	SAFE_SHUTDOWN(m_RefractionShader);
 	SAFE_SHUTDOWN(m_WaterReflectionShader);
 	SAFE_SHUTDOWN(m_WaterShader);
+	SAFE_SHUTDOWN(m_DiffuseShader);
 	//// 텍스처 쉐이더 객체를 해제한다.
 	//if (m_TextureShader) {m_TextureShader->Shutdown();delete m_TextureShader;m_TextureShader = 0;}
 	//if (m_ReflectionShader) { m_ReflectionShader->Shutdown(); delete m_ReflectionShader; m_ReflectionShader = 0; }
@@ -209,6 +210,11 @@ bool ShaderManagerClass::RenderTextureShader(int indexCount, D3DXMATRIX worldMat
 //	return m_MultiTextureShader->Render(device, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
 //}
 //
+bool ShaderManagerClass::RenderDiffuseShader(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+{
+	return m_DiffuseShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, diffuseColor);
+}
 //bool ShaderManagerClass::RenderAlphaMapShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
 //	ID3D11ShaderResourceView** texture)
 //{
@@ -260,10 +266,10 @@ bool ShaderManagerClass::RenderSkydomeShader( int indexCount, D3DXMATRIX worldMa
 	return m_SkydomeShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, apexColor, centerColor);
 }
 
-bool ShaderManagerClass::RenderCloudShader(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* texture2,
+bool ShaderManagerClass::RenderCloudShader(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, 
 	float firstTranslationX, float firstTranslationZ, float secondTranslationX, float secondTranslationZ, float brightness)
 {
-	return m_CloudShader->Render( indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, texture2, firstTranslationX, firstTranslationZ, secondTranslationX, secondTranslationZ, brightness);
+	return m_CloudShader->Render( indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, firstTranslationX, firstTranslationZ, secondTranslationX, secondTranslationZ, brightness);
 }
 
 bool ShaderManagerClass::RenderRefractionShader( int indexCount, D3DXMATRIX worldMatrix,
@@ -293,14 +299,14 @@ bool ShaderManagerClass::RenderWaterReflectionShader(int indexCount, D3DXMATRIX 
 	return m_WaterReflectionShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, colorTexture, normalTexture, lightDiffuseColor, lightDirection, colorTextureBrightness, clipPlane);
 }
 
-//bool ShaderManagerClass::RenderFireShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
-//	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* fireTexture, ID3D11ShaderResourceView* noiseTexture,
-//	ID3D11ShaderResourceView* alphaTexture, float frameTime, D3DXVECTOR3 scrollSpeeds, D3DXVECTOR3 scales, D3DXVECTOR2 distortion1,
-//	D3DXVECTOR2 distortion2, D3DXVECTOR2 distortion3, float distortionScale, float distortionBias)
-//{
-//	return m_FireShader->Render(deviceContext,indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
-//}
-//
+bool ShaderManagerClass::RenderFireShader( int indexCount, D3DXMATRIX worldMatrix,
+	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* fireTexture, ID3D11ShaderResourceView* noiseTexture,
+	ID3D11ShaderResourceView* alphaTexture, float frameTime, D3DXVECTOR3 scrollSpeeds, D3DXVECTOR3 scales, D3DXVECTOR2 distortion1,
+	D3DXVECTOR2 distortion2, D3DXVECTOR2 distortion3, float distortionScale, float distortionBias)
+{
+	return m_FireShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+}
+
 bool ShaderManagerClass::RenderInstancingShader( int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {

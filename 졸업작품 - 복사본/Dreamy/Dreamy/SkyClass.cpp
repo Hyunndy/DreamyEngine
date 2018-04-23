@@ -15,7 +15,7 @@ SkyClass::SkyClass()
 	m_SkyPlaneindexBuffer = 0;
 	m_SkyPlanevertexBuffer = 0;
 	m_CloudTexture1 = 0;
-	m_CloudTexture2 = 0;
+
 
 }
 
@@ -59,7 +59,7 @@ bool SkyClass::InitializeSky()
 
 }
 
-bool SkyClass::InitializeCloud( WCHAR* textureFilename1, WCHAR* textureFilename2)
+bool SkyClass::InitializeCloud( WCHAR* textureFilename1)
 {
 	bool result;
 
@@ -68,10 +68,10 @@ bool SkyClass::InitializeCloud( WCHAR* textureFilename1, WCHAR* textureFilename2
 	float skyPlaneWidth, skyPlaneTop, skyPlaneBottom;
 
 	// 하늘 평면 매개 변수를 설정합니다.
-	skyPlaneResolution = 20;
+	skyPlaneResolution = 10;
 	skyPlaneWidth = 10.0f;
 	skyPlaneTop = 0.5f;
-	skyPlaneBottom = -0.5f;
+	skyPlaneBottom = 0.0f;
 	textureRepeat = 4;
 
 	// 0~255사이의 비트맵을 사용할 때 밝기를 사용하면 좋다.
@@ -80,7 +80,7 @@ bool SkyClass::InitializeCloud( WCHAR* textureFilename1, WCHAR* textureFilename2
 	m_brightness = 0.50f;
 
 
-									   //구름 위치. 
+	 //구름 위치. 
 	m_textureTranslation[0] = 0.0f;
 	m_textureTranslation[1] = 0.0f;
 	m_textureTranslation[2] = 0.0f;
@@ -95,7 +95,7 @@ bool SkyClass::InitializeCloud( WCHAR* textureFilename1, WCHAR* textureFilename2
 	if (!result) { return false; }
 
 	//skyplane 텍스처를 로드한다.
-	result = LoadTextures( textureFilename1, textureFilename2);
+	result = LoadTextures( textureFilename1);
 	if (!result) { return false; }
 }
 /*---------------------------------------------------------------------------------------------
@@ -494,7 +494,7 @@ void SkyClass::RenderCloudBuffers()
 이름: LoadTextures()
 용도: 구름 텍스처를 로드한다.
 -----------------------------------------------------------------------------------------------*/
-bool SkyClass::LoadTextures( WCHAR* textureFilename1, WCHAR* textureFilename2)
+bool SkyClass::LoadTextures( WCHAR* textureFilename1)
 {
 	bool result;
 
@@ -513,19 +513,7 @@ bool SkyClass::LoadTextures( WCHAR* textureFilename1, WCHAR* textureFilename2)
 		return false;
 	}
 
-	// Create the second cloud texture object.
-	m_CloudTexture2 = new TextureClass;
-	if (!m_CloudTexture2)
-	{
-		return false;
-	}
 
-	// Initialize the second cloud texture object.
-	result = m_CloudTexture2->Initialize(textureFilename2);
-	if (!result)
-	{
-		return false;
-	}
 
 	return true;
 }
@@ -577,10 +565,7 @@ ID3D11ShaderResourceView* SkyClass::GetCloudTexture1()
 }
 
 
-ID3D11ShaderResourceView* SkyClass::GetCloudTexture2()
-{
-	return m_CloudTexture2->GetTexture();
-}
+
 
 float SkyClass::GetBrightness()
 {
@@ -679,12 +664,7 @@ void SkyClass::ReleaseTextures()
 		m_CloudTexture1 = 0;
 	}
 
-	if (m_CloudTexture2)
-	{
-		m_CloudTexture2->Shutdown();
-		delete m_CloudTexture2;
-		m_CloudTexture2 = 0;
-	}
+
 
 	return;
 }

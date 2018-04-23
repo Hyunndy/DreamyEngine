@@ -22,6 +22,7 @@ public:
 	void Initialize();
 	void Frame();
 	int GetFps();
+	int GetFrameCount();
 
 private: 
 

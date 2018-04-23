@@ -57,3 +57,8 @@ int FpsClass::GetFps()
 {
 	return m_fps;
 }
+
+int FpsClass::GetFrameCount()
+{
+	return m_count;
+}
