@@ -10,6 +10,7 @@
 #include "ModelSkeleton.h"
 #include "ModelSkeletonBone.h"
 #include "ModelBoneWeights.h"
+#include "MatrixClass.h"
 
 
 
@@ -23,7 +24,7 @@ class ModelAnimationController;
 class ModelBoneWeights;
 
 
-class ModelScene
+class ModelScene : public MatrixClass
 {
 public:
 	ModelScene();
@@ -33,12 +34,15 @@ public:
 
 	void SetCurrentAnimation(wstring filePath);
 
-	void Update();
+	void Update(float time);
 	void Render();
 	void SetWorldTransform(D3DXMATRIX& world);
 	static wstring TexturePath;
+	bool turn = false;
 
 private:
+
+
 	void ProcessScene(bool isMaterial, bool isSkeleton, bool isMesh, bool isAnimation);
 	void ProcessMaterial();
 	void ProcessNode(FbxNode* node, FbxNodeAttribute::EType attribute);

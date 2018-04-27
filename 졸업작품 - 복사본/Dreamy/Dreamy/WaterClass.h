@@ -40,6 +40,8 @@ public:
 	D3DXVECTOR4 GetRefractionTint();
 	float GetSpecularShininess();
 
+	bool active = false;
+
 private:
 	bool InitializeBuffers( float);
 	void ShutdownBuffers();

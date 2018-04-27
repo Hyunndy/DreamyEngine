@@ -76,7 +76,7 @@ bool ParticleSystem::Frame(float frameTime)
 			active = false;
 			time = 0.0f;
 		//	InitializeParticleSystem();
-			m_particleList = new ParticleType[m_maxParticles];
+			//m_particleList = new ParticleType[m_maxParticles];
 			InitializeParticleSystem();
 		}
 	}
@@ -86,7 +86,7 @@ bool ParticleSystem::Frame(float frameTime)
 		active = false;
 		time = 0.0f;
 		//	InitializeParticleSystem();
-		m_particleList = new ParticleType[m_maxParticles];
+		//m_particleList = new ParticleType[m_maxParticles];
 		InitializeParticleSystem();
 	}
 

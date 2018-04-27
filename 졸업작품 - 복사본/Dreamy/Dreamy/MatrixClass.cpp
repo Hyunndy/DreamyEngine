@@ -20,6 +20,7 @@ void MatrixClass::Translation(float x, float y, float z)
 	D3DXMatrixTranslation(&TranslationMatrix, x, y, z);
 }
 
+
 void MatrixClass::RotationX(float xAngle)
 {
 	D3DXMatrixRotationX(&RotationXMatrix, xAngle);

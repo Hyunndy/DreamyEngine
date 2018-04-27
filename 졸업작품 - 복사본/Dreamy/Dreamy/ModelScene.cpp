@@ -51,7 +51,7 @@ ModelScene::~ModelScene()
 	manager->Destroy();
 }
 
-void ModelScene::Update()
+void ModelScene::Update(float time)
 {
 	bool isAnimated = false;
 	if (animationController != NULL)
@@ -60,7 +60,7 @@ void ModelScene::Update()
 
 		if (isAnimated == true)
 		{
-			animationController->Update();
+			animationController->Update(time);
 
 			if (skeleton != NULL)
 			{

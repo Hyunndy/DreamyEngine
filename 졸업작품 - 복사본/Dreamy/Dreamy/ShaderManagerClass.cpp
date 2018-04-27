@@ -143,6 +143,12 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 
 	m_InstancingShader->Initialize( hwnd);
 	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
+
+	m_DiffuseInstancingShader = new DiffuseInstancingShaderClass;
+	if (!m_DiffuseInstancingShader) { return false; }
+
+	m_DiffuseInstancingShader->Initialize(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the m_DiffuseInstancingShader object.", L"Error", MB_OK); return false; }
 	
 	m_particleShader = new ParticleShaderClass;
 	if (!m_particleShader) { return false; }
@@ -163,6 +169,7 @@ void ShaderManagerClass::Shutdown()
 	//// 라이트 쉐이더 객체를 해제합니다.
 	//if (m_LightShader) {m_LightShader->Shutdown();delete m_LightShader;m_LightShader = 0;}
 	SAFE_SHUTDOWN(m_RefractionShader);
+	SAFE_SHUTDOWN(m_DiffuseInstancingShader);
 	SAFE_SHUTDOWN(m_WaterReflectionShader);
 	SAFE_SHUTDOWN(m_WaterShader);
 	SAFE_SHUTDOWN(m_DiffuseShader);
@@ -317,4 +324,11 @@ bool ShaderManagerClass::RenderParticleShader( int indexCount, D3DXMATRIX worldM
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
 {
 	return m_particleShader->Render( indexCount, worldMatrix, viewMatrix, projectionMatrix, texture);
+}
+
+bool ShaderManagerClass::RenderDiffuseInstancingShader(int vertexCount, int instanceCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+{
+	return m_DiffuseInstancingShader->Render(vertexCount, instanceCount, worldMatrix, viewMatrix,
+		projectionMatrix, texture, lightDirection, diffuseColor);
 }

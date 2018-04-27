@@ -161,6 +161,7 @@
     <ClCompile Include="CpuClass.cpp" />
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DepthStencil.cpp" />
+    <ClCompile Include="DiffuseInstancingShaderClass.cpp" />
     <ClCompile Include="FBXAnimationModel.cpp" />
     <ClCompile Include="FBXCamera.cpp" />
     <ClCompile Include="FBXShader.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="CpuClass.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="DepthStencil.h" />
+    <ClInclude Include="DiffuseInstancingShaderClass.h" />
     <ClInclude Include="FBXAnimationModel.h" />
     <ClInclude Include="FBXCamera.h" />
     <ClInclude Include="FBXCameraBuffer.h" />

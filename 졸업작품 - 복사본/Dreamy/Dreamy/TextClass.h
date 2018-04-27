@@ -76,7 +76,7 @@ private:
 	SentenceType* m_sentence1= nullptr; // Title출력
 
 	SentenceType* m_sentence2=nullptr; // FPS출력
-	SentenceType* m_sentence3=nullptr; // CPU출력
+	//SentenceType* m_sentence3=nullptr; // CPU출력
 						
 	SentenceType* m_sentence4=nullptr; // PosX
 	SentenceType* m_sentence5=nullptr; // PosY

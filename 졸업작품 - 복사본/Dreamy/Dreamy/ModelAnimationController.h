@@ -42,7 +42,7 @@ public:
 	void UseQuaternionKeyFrames(bool use) { useQuaternionKeyFrames = use; }
 	bool UseQuaternionKeyFrames() { return useQuaternionKeyFrames; }
 
-	void Update();
+	void Update(float time);
 private:
 	AnimationMode animationMode;
 	ModelAnimation* currentAnimation;

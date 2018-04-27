@@ -7,8 +7,8 @@ public:
 	static Frames* Get();
 	static void Delete();
 
-	static bool IsTimerStopped() { return isTimerStopped; }
-	static float TimeElapsed() { return isTimerStopped ? 0.0f : timeElapsed; }
+
+	static float TimeElapsed() { return  timeElapsed; }
 
 	void Update();
 	void Print();
@@ -18,16 +18,19 @@ public:
 
 	float FramePerSecond() const { return framePerSecond; }
 	float RunningTime() const { return runningTime; }
-
+	float GetFrameTime();
+	
 private:
 	Frames(void);
 	~Frames(void);
 
 	static Frames* instance;///< 싱글톤 객체
 
-	static bool isTimerStopped;///< 타이머 중지
+
 	static float timeElapsed;///< 이전 프레임으로부터 경과시간
 
+	float m_ticksPerms;
+	float m_frameTime;
 
 	INT64 ticksPerSecond;///< 초당 틱카운트
 	INT64 currentTime;///< 현재 시간

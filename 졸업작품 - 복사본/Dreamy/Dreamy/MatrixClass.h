@@ -33,6 +33,7 @@ public:
 	void RotationX(float);
 	void RotationY(float);
 	void RotationZ(float);
+
 	void RotationMultiply(D3DXMATRIX&, D3DXMATRIX&);
 	void Scale(float, float, float);
 
@@ -40,6 +41,7 @@ public:
 
 	public :
 	D3DXMATRIX TranslationMatrix;
+
 
 	D3DXMATRIX RotationXMatrix;
 	D3DXMATRIX RotationYMatrix;

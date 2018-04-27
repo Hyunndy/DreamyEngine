@@ -26,10 +26,7 @@
 #include "inputclass.h"
 #include "graphicsclass.h"
 #include "SoundClass.h"
-#include "FpsClass.h"
-#include "CpuClass.h"
-#include "TimerClass.h"
-#include "MoveClass.h"
+
 /////////////////////////
 
 
@@ -97,13 +94,15 @@ private:
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	SoundClass* m_Sound;
-	FpsClass* m_FPS;
-	CpuClass* m_Cpu;
-	TimerClass* m_Timer;
-	MoveClass* m_Move;
+	//FpsClass* m_FPS;
+	//CpuClass* m_Cpu;
+	//TimerClass* m_Timer;
+	Frames* m_Frame;
 
 	int screenWidth, screenHeight;
 	int mouseX, mouseY;
+	bool Shoot = false;
+
 	D3DXVECTOR3 pos, rot;
 	
 

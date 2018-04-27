@@ -11,7 +11,7 @@ Camera::Camera()
 	: position(630.0f, 56.0f, 96.0f)
 	, forward(0, 0, 0), right(0, 0, 0), up(0, 0, 0)
 	, rotate(0, 0)
-	, translationSpeed(100.0f), rotationSpeed(2.5f)
+	, translationSpeed(100.0f), rotationSpeed(2.0f)
 {
 	D3DXMatrixIdentity(&view);
 	D3DXMatrixIdentity(&projection);
@@ -177,7 +177,7 @@ void Camera::ResetViewPort()
 - 뷰행렬을 생성하는데 필요한 것: 카메라의 위치+카메라가 보는 방향+카메라의 up벡터
 - 카메라가 보는 방향, up은 모두 벡터이며 카메라의 위치로 rotationMatrix로 변환되어야한다.
 ------------------------------------------------------------------------------------------------------*/
-void Camera::RenderWaterReflection(float height)
+D3DXMATRIX Camera::RenderWaterReflection(float height)
 {
 	D3DXVECTOR3 w_up, w_position, w_lookAt;
 
@@ -211,14 +211,10 @@ void Camera::RenderWaterReflection(float height)
 	//카메라의 위치, 카메라가 보는 방향, 카메라의 up벡터를 혼합해서 뷰행렬을 만든다.
 	D3DXMatrixLookAtLH(&m_reflectionViewMatrix, &w_position, &w_lookAt, &w_up);
 
-	return;
-}
-
-D3DXMATRIX Camera::GetReflectionViewMatrix()
-{
 	return m_reflectionViewMatrix;
-
 }
+
+
 //void Camera::GetRay(D3DXVECTOR3 * origin, D3DXVECTOR3 * direction)
 //{
 //	D3DXVECTOR3 mouse = Mouse::Get()->GetPosition();

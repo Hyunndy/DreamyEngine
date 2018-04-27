@@ -95,12 +95,6 @@
     <ClCompile Include="SkyClass.cpp">
       <Filter>LandScape</Filter>
     </ClCompile>
-    <ClCompile Include="SkyDomeShaderClass.cpp">
-      <Filter>LandScape</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyPlaneShaderClass.cpp">
-      <Filter>LandScape</Filter>
-    </ClCompile>
     <ClCompile Include="VertexLayout.cpp">
       <Filter>FBXAnimation</Filter>
     </ClCompile>
@@ -172,22 +166,31 @@
     <ClCompile Include="WaterClass.cpp">
       <Filter>water</Filter>
     </ClCompile>
-    <ClCompile Include="WaterReflectionShaderClass.cpp">
-      <Filter>water</Filter>
-    </ClCompile>
-    <ClCompile Include="WaterShaderClass.cpp">
-      <Filter>water</Filter>
-    </ClCompile>
     <ClCompile Include="RTTTextureClass.cpp">
-      <Filter>water</Filter>
-    </ClCompile>
-    <ClCompile Include="RefractionShaderClass.cpp">
       <Filter>water</Filter>
     </ClCompile>
     <ClCompile Include="FireShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="AlphaMapShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyDomeShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyPlaneShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RefractionShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterReflectionShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="DiffuseInstancingShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
   </ItemGroup>
@@ -276,12 +279,6 @@
     <ClInclude Include="SkyClass.h">
       <Filter>LandScape</Filter>
     </ClInclude>
-    <ClInclude Include="SkyDomeShaderClass.h">
-      <Filter>LandScape</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyPlaneShaderClass.h">
-      <Filter>LandScape</Filter>
-    </ClInclude>
     <ClInclude Include="TerrainShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
@@ -356,22 +353,31 @@
     <ClInclude Include="WaterClass.h">
       <Filter>water</Filter>
     </ClInclude>
-    <ClInclude Include="WaterReflectionShaderClass.h">
-      <Filter>water</Filter>
-    </ClInclude>
-    <ClInclude Include="WaterShaderClass.h">
-      <Filter>water</Filter>
-    </ClInclude>
     <ClInclude Include="RTTTextureClass.h">
-      <Filter>water</Filter>
-    </ClInclude>
-    <ClInclude Include="RefractionShaderClass.h">
       <Filter>water</Filter>
     </ClInclude>
     <ClInclude Include="FireShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
     <ClInclude Include="AlphaMapShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyDomeShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyPlaneShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RefractionShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterReflectionShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="DiffuseInstancingShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
   </ItemGroup>

@@ -38,8 +38,7 @@ public:
 	void SetPosition(D3DXVECTOR3 pos);
 
 	//물 평면 반사를 위한 함수
-	void RenderWaterReflection(float);
-	void GetWaterReflectionViewMatrix(D3DXMATRIX&);
+	D3DXMATRIX RenderWaterReflection(float);
 	D3DXMATRIX GetReflectionViewMatrix();
 
 	void GetView(D3DXMATRIX* view)

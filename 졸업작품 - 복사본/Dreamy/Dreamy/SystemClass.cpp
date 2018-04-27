@@ -9,9 +9,9 @@ SystemClass::SystemClass()
 	m_Input = 0;
 	m_Graphics = 0;
 	m_Sound = 0;
-	m_FPS = 0;
-	m_Cpu = 0;
-	m_Timer = 0;
+	//m_FPS = 0;
+	//m_Cpu = 0;
+	//m_Timer = 0;
 
 
 	//2D이미지 켜고 끄는 BOOL 변수
@@ -130,38 +130,39 @@ bool SystemClass::Loading()
 
 	//애니메이션 프레임 객체 생성
 	//-------------------------------------------------------------------------------------
-	Frames::Get()->Start();
+	//Frames::Get()->Start();
+	m_Frame = Frames::Get();
+	m_Frame->Start();
 	//-------------------------------------------------------------------------------------
-	DepthStencil::Get();
-	Sampler::Get();
+
 
 	m_Graphics->Loading(screenWidth, screenHeight, m_hwnd);
 	//-------------------------------------------------------------------------------------
 
 	// FPS 객체 생성
 	//-------------------------------------------------------------------------------------
-	m_FPS = new FpsClass;
-	if (!m_FPS) { return false; }
-
-	m_FPS->Initialize();
+//m_FPS = new FpsClass;
+//if (!m_FPS) { return false; }
+//
+//m_FPS->Initialize();
 	//-------------------------------------------------------------------------------------
 
-	// CPU 객체 생성
-	//-------------------------------------------------------------------------------------
-	m_Cpu = new CpuClass;
-	if (!m_Cpu) { return false; }
-
-	m_Cpu->Initialize();
-	//-------------------------------------------------------------------------------------
+//// CPU 객체 생성
+////-------------------------------------------------------------------------------------
+//m_Cpu = new CpuClass;
+//if (!m_Cpu) { return false; }
+//
+//m_Cpu->Initialize();
+////-------------------------------------------------------------------------------------
 
 	// Timer 객체 생성
-	//-------------------------------------------------------------------------------------
-	m_Timer = new TimerClass;
-	if (!m_Timer) { return false; }
-
-	result = m_Timer->Initialize();
-	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK); return false; }
-	//-------------------------------------------------------------------------------------
+////-------------------------------------------------------------------------------------
+//m_Timer = new TimerClass;
+//if (!m_Timer) { return false; }
+//
+//result = m_Timer->Initialize();
+//if (!result) { MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK); return false; }
+////-------------------------------------------------------------------------------------
 
 
 
@@ -174,14 +175,6 @@ bool SystemClass::Loading()
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Sound object.", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
 
-	// move객체 생성
-	//-------------------------------------------------------------------------------------
-	m_Move = new MoveClass;
-	if (!m_Move) { return false; }
-
-	m_Move->SetPosition(946.0f, 56.0f, 464.0f);
-	m_Move->SetRotation(0.0f, -50.0f, 0.0f);
-	//-------------------------------------------------------------------------------------
 
 
 	m_Input->SetMousePosition();
@@ -195,16 +188,14 @@ void SystemClass::Shutdown()
 {
 
 	
-	SAFE_DELETE(m_Timer);
-	SAFE_SHUTDOWN(m_Cpu);
-	SAFE_DELETE(m_FPS);
+	//SAFE_DELETE(m_Timer);
+	//SAFE_SHUTDOWN(m_Cpu);
+	//SAFE_DELETE(m_FPS);
 	SAFE_SHUTDOWN(m_Sound);
 
-	if (m_Move) { delete m_Move; m_Move = 0; }
 
-	Frames::Delete();
-	Sampler::Delete();
-	DepthStencil::Delete();
+	m_Frame->Delete();
+
 
 
 	SAFE_SHUTDOWN(m_Graphics);
@@ -254,12 +245,16 @@ void SystemClass::Run()
 			}
 
 
-
+			
 			// ESC키를 확인하는 함수
 			if (m_Input->IsEscapePressed() == true)
 			{
 				done = true;
 			}
+			if (m_Input->IsSpacePressed() == true)
+				Shoot = true;
+			else
+				Shoot = false;
 
 		}
 	}
@@ -271,10 +266,6 @@ bool SystemClass::HandleInput()
 {
 	bool result;
 
-
-
-	////매 프레임 마다 프레임 시간을 갱신한다.
-	//m_Move->SetFrameTime(frametime);
 
 	if(m_Input->IsUpPressed())
 		Camera::Get()->MoveForward();
@@ -289,21 +280,7 @@ bool SystemClass::HandleInput()
 	if (m_Input->IsLookUpTurned())
 		Camera::Get()->RotateUp();
 
-	//m_Move->TurnLeft(m_Input->IsLeftPressed());
-	//m_Move->TurnRight(m_Input->IsRightPressed());
-	//m_Move->TurnLeft(m_Input->IsLeftTurned());
-	//m_Move->TurnRight(m_Input->IsRightTurned());
-	//m_Move->LookUpward(m_Input->IsLookUpTurned());
-	//m_Move->LookDownward(m_Input->IsLookDownTurned());
-	//m_Move->GoForward(m_Input->IsUpPressed());
-	//m_Move->GoBackward(m_Input->IsDownPressed());
-	//m_Move->LookUpward(m_Input->IsLookUpPressed());
-	//m_Move->LookDownward(m_Input->IsLookDownPressed());
 
-	
-
-	//m_Move->GetPosition(pos);
-	//m_Move->GetRotation(rot);
 
 	
 
@@ -320,31 +297,32 @@ bool SystemClass::Frame()
 
 	m_Input->GetMouseLocation(mouseX, mouseY);
 
-	//시스템 스탯을 업데이트 한다.
-	m_Timer->Frame();
-	m_FPS->Frame();
-	m_Cpu->Frame();
-
 	result = HandleInput();
 	if (!result) { return false; }
 
 	// m_Graphics객체를 통해 화면에 그리는 작업을 수행한다.
-	Frames::Get()->Update();
+	m_Frame->Update();
 
-	result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(),pos, rot, mouseX, mouseY);
+	
+	result = m_Graphics->Frame(m_Frame->FramePerSecond(), m_Frame->GetFrameTime(),pos, rot, mouseX, mouseY, Shoot);
 	//result = m_Graphics->Frame(m_FPS->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime(), pos, rot, W);
 	if (!result){ return false; }
 	
+
 	//result = m_Graphics->Render(F1pressed);
 	result = m_Graphics->Render(F1pressed);
 	if (!result) { return false; }
 
-	result = m_Input->IsLeftMouseButtonDown();
-	if (result == true)
-	{
-		m_Graphics->CheckIntersection(mouseX, mouseY, screenWidth, screenHeight);
-	}
 
+	//왼쪽 마우스 클릭시 그래픽들 반응
+	if (m_Input->IsLeftMouseButtonDown())
+		m_Graphics->CheckIntersection(mouseX, mouseY, screenWidth, screenHeight);
+
+
+
+
+	
+	
 
 
 

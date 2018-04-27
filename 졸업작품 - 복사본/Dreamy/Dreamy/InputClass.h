@@ -48,7 +48,7 @@ public:
 	bool IsF1Pressed(); // F1버튼 눌렸는지 안눌렸는지
 	void GetMouseLocation(int&, int&);
 
-
+	bool IsSpacePressed();
 	bool IsLeftPressed();
 	bool IsRightPressed();
 	bool IsUpPressed();

@@ -51,7 +51,7 @@
 /////////////
 const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
-const bool VSYNC_ENABLED = false;
+const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
@@ -70,9 +70,10 @@ public:
 	bool Loading(int, int, HWND);
 
 	void Shutdown();
-	bool Frame(int, int, float, D3DXVECTOR3, D3DXVECTOR3, int, int);// + 카메라 회전
+	bool Frame(int, float, D3DXVECTOR3, D3DXVECTOR3, int, int, bool);// + 카메라 회전
 	bool Render(bool);
 	void CheckIntersection(int, int, int, int);
+	void Shoot(float);
 
 	bool RenderMainScene();
 	bool RenderLoadingScene();
@@ -83,8 +84,14 @@ public:
 public:
 	bool F1pressed;
 	D3DXMATRIX minimapMatrix; // 미니맵 
+	D3DXMATRIX Cube3WorldMatrix;
+	D3DXMATRIX ShootMatrix;
 
-
+	D3DXVECTOR3 Gravity = { 0.0f, -9.8f, 0.0f };
+	D3DXVECTOR3 Accell = { 0.0f, 0.0f, 0.0f };
+	D3DXVECTOR3 vPosition = { 0.0f, 0.0f, 0.0f };
+	//D3DXVECTOR3 vVelocity = { 0.0f,0.97f,0.08f };
+	D3DXVECTOR3 vVelocity = { 0.0f,1.5f,0.5f };
 private:
 
 	//RTT기능을 사용할 수 있게 두 종류의 렌더링 함수를 생성한다.
@@ -100,28 +107,37 @@ private:
 
 private:
 	bool sibal = false;
+	bool shoot = false;
+	float dy, dz;
+	int dx=0;
 
 
 
 private:
 	FrustumClass* m_Frustum =  nullptr;
+
 	ShaderManagerClass* m_Shader = nullptr;
 	LightClass* m_Light = nullptr;
+
 
 private:
 	TerrainClass* m_Terrain= nullptr;
 	TerrainShaderClass* m_TerrainShader= nullptr;
 
 	
-	bool renderWater = false;
 	WaterClass* m_Water;
 	RTTTextureClass* m_RefractionTexture;
+	D3DXMATRIX WaterWorldMatrix, WaterRotationMatrix, WaterreflectionViewMatrix;
+
 	SkyClass* m_Sky= nullptr;
 
 private:
 	ModelClass* m_cube= nullptr;
-	ModelClass* m_Tree = nullptr;
+	ModelClass* m_Billboarding = nullptr;
 	ModelClass* m_House = nullptr;
+	ModelClass* m_Tree = nullptr;
+
+
 private:
 	float fire_frametime, distortionScale, distortionBias;
 	D3DXVECTOR3 scrollSpeeds;
@@ -129,13 +145,18 @@ private:
 	D3DXVECTOR2 distortion1;
 	D3DXVECTOR2 distortion2;
 	D3DXVECTOR2 distortion3;
-	
+
 	ModelClass* m_Fire = nullptr;
+	ModelClass* m_TFire = nullptr;
+	ModelClass* m_TFire2 = nullptr;
+
 
 private:
+	D3DXVECTOR3 horsePos = { 333.0f, 0.0f, 349.0f };
 	ModelScene* m_horse= nullptr;
 	ModelScene* m_npc = nullptr;
 	bool renderNpc = false;
+	bool renderhorse = false;
 
 private:
 	ImageClass* m_Start= nullptr;
@@ -144,6 +165,7 @@ private:
 
 	float MousePosX, MousePosY;
 	ImageClass* m_MouseCursor= nullptr;
+	ImageClass* m_Balloon = nullptr;
 
 private:
 	ImageClass* m_UI =nullptr;
@@ -171,6 +193,7 @@ private:
 
 private:
 	ParticleSystem* m_Particle = nullptr;
+
 private:
 	wstring tPosePath;
 	wstring idlePath;
@@ -179,7 +202,7 @@ private:
 
 private:
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	D3DXMATRIX ImageViewMatrix;
+	D3DXMATRIX ImageViewMatrix, ImageProjectionMatrix;
 	D3DXMATRIX cupViewMatrix;
 
 private:

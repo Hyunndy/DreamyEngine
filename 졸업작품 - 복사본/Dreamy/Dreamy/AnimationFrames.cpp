@@ -3,7 +3,7 @@
 
 Frames* Frames::instance = NULL;
 
-bool Frames::isTimerStopped = true;
+
 float Frames::timeElapsed = 0.0f;
 
 Frames::Frames(void) :
@@ -13,6 +13,7 @@ Frames::Frames(void) :
 	QueryPerformanceFrequency((LARGE_INTEGER *)&ticksPerSecond);
 	fpsUpdateInterval = ticksPerSecond >> 1;
 
+	m_ticksPerms = (float)(ticksPerSecond / 1000);
 	//TwBar* bar = TweakBar::Get()->GetBar();
 	//TwAddVarRO(bar, "Frames", TW_TYPE_FLOAT, &framePerSecond, "");
 }
@@ -37,13 +38,13 @@ void Frames::Delete()
 
 void Frames::Update()
 {
-	if (isTimerStopped) return;
+
 
 	//1. 현재시간을 가져와 시간 간격 및 진행 시간을 계산한다.
 	QueryPerformanceCounter((LARGE_INTEGER *)&currentTime);
 	timeElapsed = (float)(currentTime - lastTime) / (float)ticksPerSecond;
 	runningTime += timeElapsed;
-
+	m_frameTime = (float)(currentTime - lastTime) / m_ticksPerms;
 
 	//2. FPS Update
 	frameCount++;
@@ -60,6 +61,11 @@ void Frames::Update()
 	lastTime = currentTime;
 }
 
+float Frames::GetFrameTime()
+{
+	return  m_frameTime;
+}
+
 void Frames::Print()
 {
 
@@ -71,7 +77,7 @@ void Frames::Start()
 	//assert(false);
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&lastTime);
-	isTimerStopped = false;
+
 }
 
 //void Frames::Stop()

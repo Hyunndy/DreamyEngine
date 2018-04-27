@@ -5,6 +5,7 @@
 #include "SkyDomeShaderClass.h"
 #include "SkyPlaneShaderClass.h"
 #include "InstancingShaderClass.h"
+#include "DiffuseInstancingShaderClass.h"
 //#include "LightShaderClass.h"
 //#include "MultiTextureShaderClass.h"
 #include "AlphaMapShaderClass.h"
@@ -74,6 +75,8 @@ public:
 
 	bool RenderInstancingShader( int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
+	bool RenderDiffuseInstancingShader(int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4);
+
 	bool RenderParticleShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
 	TextureShaderClass* m_TextureShader = nullptr;
@@ -91,6 +94,7 @@ private:
 	SkyDomeShaderClass* m_SkydomeShader = nullptr;
 	SkyPlaneShaderClass* m_CloudShader = nullptr;
 	//ReflectionShaderClass* m_ReflectionShader = nullptr;
+	DiffuseInstancingShaderClass* m_DiffuseInstancingShader = nullptr;
 	RefractionShaderClass* m_RefractionShader = nullptr;
 	WaterShaderClass* m_WaterShader = nullptr;
 	WaterReflectionShaderClass* m_WaterReflectionShader = nullptr;

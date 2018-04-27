@@ -257,7 +257,19 @@ bool InputClass::IsF1Pressed()
 	//  어플리케이션에서 필요한 다른 키들을 확인하는 함수를 만들 수 있다.
 
 }
+bool InputClass::IsSpacePressed()
+{
 
+	// 특정 키가 눌렸는지 확인하는 방법.
+	if (m_keyboardState[DIK_SPACE] & 0X80)
+	{
+		return true;
+	}
+
+	return false;
+	//  어플리케이션에서 필요한 다른 키들을 확인하는 함수를 만들 수 있다.
+
+}
 
 bool InputClass::IsLeftPressed()
 {

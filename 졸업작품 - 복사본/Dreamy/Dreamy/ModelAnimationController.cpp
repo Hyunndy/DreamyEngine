@@ -111,13 +111,13 @@ void ModelAnimationController::SetCurrentKeyFrame(int keyFrame)
 	keyFrameFactor = 0.0f;
 }
 
-void ModelAnimationController::Update()
+void ModelAnimationController::Update(float time)
 {
 	if (currentAnimation == NULL || animationMode != AnimationMode::Play)
 		return;
 
 
-	frameTimer += (Frames::TimeElapsed())*0.5f;
+	frameTimer += (Frames::TimeElapsed())*time;
 
 	float invFrameRate = 1.0f / currentAnimation->GetFrameRate();
 	while (frameTimer > invFrameRate)

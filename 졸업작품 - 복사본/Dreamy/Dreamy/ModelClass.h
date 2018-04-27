@@ -110,7 +110,7 @@ public:
 	bool TestIntersection(int, int, int, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR3);
 	bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
 
-
+	bool active = false; // 프러스텀 컬링을 위한 bool변수.
 
 
 protected:

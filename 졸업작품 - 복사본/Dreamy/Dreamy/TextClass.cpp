@@ -74,8 +74,8 @@ bool TextClass::Initialize( HWND hwnd, int screenWidth, int screenHeight,
 	result = InitializeSentence(&m_sentence2, 16);
 	if (!result) { return false; }
 
-	result = InitializeSentence(&m_sentence3, 16);
-	if (!result) { return false; }
+	//result = InitializeSentence(&m_sentence3, 16);
+	//if (!result) { return false; }
 
 	result = InitializeSentence(&m_sentence4, 16);
 	if (!result) { return false; }
@@ -346,7 +346,7 @@ bool TextClass::Render( D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
 	// Draw the first sentence.
 	result = RenderSentence( m_sentence1, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence2, worldMatrix, orthoMatrix);
-	result = RenderSentence( m_sentence3, worldMatrix, orthoMatrix);
+	//result = RenderSentence( m_sentence3, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence4, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence5, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence6, worldMatrix, orthoMatrix);
@@ -388,7 +388,7 @@ void TextClass::Shutdown()
 	// Release the first sentence.
 	ReleaseSentence(&m_sentence1);
 	ReleaseSentence(&m_sentence2);
-	ReleaseSentence(&m_sentence3);
+	//ReleaseSentence(&m_sentence3);
 	ReleaseSentence(&m_sentence4);
 	ReleaseSentence(&m_sentence5);
 	ReleaseSentence(&m_sentence6);
@@ -582,27 +582,27 @@ bool TextClass::SetFps(int fps)
 }
 
 
-bool TextClass::SetCpu(int cpu)
-{
-	char tempString[16];
-	char cpuString[16];
-	bool result;
-
-
-	// Convert the cpu integer to string format.
-	_itoa_s(cpu, tempString, 10);
-
-	// Setup the cpu string.
-	strcpy_s(cpuString, "Cpu: ");
-	strcat_s(cpuString, tempString);
-	strcat_s(cpuString, "%");
-
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence3, cpuString, 30, 80, 1.0f, 1.0f, 0.0f);
-	if (!result)
-	{
-		return false;
-	}
-
-	return true;
-}
+//bool TextClass::SetCpu(int cpu)
+//{
+//	char tempString[16];
+//	char cpuString[16];
+//	bool result;
+//
+//
+//	// Convert the cpu integer to string format.
+//	_itoa_s(cpu, tempString, 10);
+//
+//	// Setup the cpu string.
+//	strcpy_s(cpuString, "Cpu: ");
+//	strcat_s(cpuString, tempString);
+//	strcat_s(cpuString, "%");
+//
+//	// Update the sentence vertex buffer with the new string information.
+//	result = UpdateSentence(m_sentence3, cpuString, 30, 80, 1.0f, 1.0f, 0.0f);
+//	if (!result)
+//	{
+//		return false;
+//	}
+//
+//	return true;
+//}
