@@ -2,6 +2,7 @@
 #include "ModelScene.h"
 wstring ModelScene::TexturePath;
 
+
 ModelScene::ModelScene()
 {
 	// paladin_prop_j_nordstrom.fbx 파일은 매쉬와 스켈레톤을 가지고 있음

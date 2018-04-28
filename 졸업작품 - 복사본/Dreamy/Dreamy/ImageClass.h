@@ -38,6 +38,7 @@ public:
 	//**묶이는건 ResourceView형태로 묶인다!
 	ID3D11ShaderResourceView* GetTexture();
 
+
 private:
 	bool InitializeBuffers();
 	void ShutdownBuffers();

@@ -82,7 +82,7 @@ bool TextureClass::InitializeTriple( WCHAR* filename, WCHAR* filename2, WCHAR* f
 	return true;
 }
 
-bool TextureClass::InitializeTGA( char* filename)
+bool TextureClass::InitializeTGA(char* filename)
 {
 	bool result;
 	int height, width;

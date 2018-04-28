@@ -98,9 +98,6 @@
     <ClCompile Include="VertexLayout.cpp">
       <Filter>FBXAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="CpuClass.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
     <ClCompile Include="D3D.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -110,9 +107,6 @@
     <ClCompile Include="FpsClass.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="TimerClass.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
     <ClCompile Include="SystemClass.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -120,9 +114,6 @@
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="Rasterizer.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DClass.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="CameraClass.cpp">
@@ -191,6 +182,12 @@
       <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="DiffuseInstancingShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SpecMapShaderClass.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="LightShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
   </ItemGroup>
@@ -285,19 +282,10 @@
     <ClInclude Include="VertexLayout.h">
       <Filter>FBXAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="CpuClass.h">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D.h">
-      <Filter>System</Filter>
-    </ClInclude>
     <ClInclude Include="Blender.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="FpsClass.h">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="TimerClass.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="SystemClass.h">
@@ -307,9 +295,6 @@
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="Rasterizer.h">
-      <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="D3DClass.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="CameraClass.h">
@@ -380,5 +365,12 @@
     <ClInclude Include="DiffuseInstancingShaderClass.h">
       <Filter>Shader</Filter>
     </ClInclude>
+    <ClInclude Include="SpecMapShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="LightShaderClass.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D.h" />
   </ItemGroup>
 </Project>

@@ -4,15 +4,6 @@
 
 SpecMapShaderClass::SpecMapShaderClass()
 {
-	m_vertexShader = 0;
-	m_pixelShader = 0;
-	m_layout = 0;
-	m_sampleState = 0;
-
-	m_matrixBuffer = 0;	
-	m_lightBuffer = 0;
-	m_cameraBuffer = 0;
-	
 }
 
 SpecMapShaderClass::SpecMapShaderClass(const SpecMapShaderClass& other) { }
@@ -23,11 +14,11 @@ SpecMapShaderClass::~SpecMapShaderClass() {}
 이름: Initialize()
 용도: HLSL파일을 로드한다.
 ------------------------------------------------------------------------------------------------------------------------*/
-bool SpecMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool SpecMapShaderClass::Initialize( HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/specularmap.vs", L"../Dreamy/specularmap.ps");
+	result = InitializeShader( hwnd, L"../Dreamy/shader/specularmap.vs", L"../Dreamy/shader/specularmap.ps");
 	if (!result) { return false; }
 
 	return true;
@@ -39,16 +30,16 @@ bool SpecMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 - 이를 통해 셰이더가 혼합할 때 두 텍스처에 접근할 수 있게 한다.
 - indexCount = texturearray의 갯수
 ------------------------------------------------------------------------------------------------------------------------*/
-bool SpecMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix,
+bool SpecMapShaderClass::Render( int indexCount, D3DXMATRIX worldMatrix,
 	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor
 	, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower)
 {
 	bool result;
 
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray, lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower);
+	result = SetShaderParameters( worldMatrix, viewMatrix, projectionMatrix, textureArray, lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower);
 	if (!result) { return false; }
 
-	RenderShader(deviceContext, indexCount);
+	RenderShader( indexCount);
 
 	return true;
 }
@@ -61,7 +52,7 @@ bool SpecMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCou
 
 - vertexinputtype만 여기서 하면 pixelinput은?! 그건 정점셰이더의 함수에서 하는일! return output!
 ------------------------------------------------------------------------------------------------------------------------*/
-bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool SpecMapShaderClass::InitializeShader( HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 
@@ -116,11 +107,11 @@ bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 		return false;
 	}
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = D3D::GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result)) { return false; }
 
 	// Create the vertex shader from the buffer. 
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = D3D::GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result)) { return false; }
 
 
@@ -171,7 +162,7 @@ bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	// 정점 인풋 레이아웃을 생성한다.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
+	result = D3D::GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result)) { return false; }
 
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed. 
@@ -191,7 +182,7 @@ bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 
 
 	// Create the matrix constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result)) { return false; }
 
 	// 텍스처 샘플러 상태 생성.
@@ -210,7 +201,7 @@ bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state. 
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	result = D3D::GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState);
 	if (FAILED(result)) { return false; }
 
 	// 조명 상수 버퍼 DESC설정
@@ -221,7 +212,7 @@ bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	lightBufferDesc.MiscFlags = 0;
 	lightBufferDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
 	if (FAILED(result)) { return false; }
 
 	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -232,7 +223,7 @@ bool SpecMapShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	cameraBufferDesc.StructureByteStride = 0;
 	
 	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&cameraBufferDesc, NULL, &m_cameraBuffer);
+	result = D3D::GetDevice()->CreateBuffer(&cameraBufferDesc, NULL, &m_cameraBuffer);
 	if(FAILED(result)) { return false; }
 
 
@@ -254,7 +245,7 @@ LightBufferType = 픽셀셰이더에 있는 조명 상수 버퍼
 
 ******멀티텍스처에 텍스처가 얼마나 들어갈건지 정해준다. 이것을 활용해서...멀티텍스처 갯수를 조정해보는것도..? 좋은 생각!
 ------------------------------------------------------------------------------------------------------------------------*/
-bool SpecMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+bool SpecMapShaderClass::SetShaderParameters( D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
 	D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** textureArray, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffusecolor,
 	D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower)
 {
@@ -272,7 +263,7 @@ bool SpecMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
 	// Lock the matrix constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -287,19 +278,19 @@ bool SpecMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the matrix constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
 	// Set the position of the matrix constant buffer in the vertex shader.
 	bufferNumber = 0;
 
 	// Now set the matrix constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture array resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 3, textureArray);
+	D3D::GetDeviceContext()->PSSetShaderResources(0, 3, textureArray);
 
 	// Lock the light constant buffer so it can be written to.
-	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -316,15 +307,15 @@ bool SpecMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	dataPtr2->specularPower = specularPower;
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(m_lightBuffer, 0);
+	D3D::GetDeviceContext()->Unmap(m_lightBuffer, 0);
 
 	// Set the position of the light constant buffer in the pixel shader.
 	bufferNumber = 0;
 
 	// Finally set the light constant buffer in the pixel shader with the updated values.
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
+	D3D::GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);
 
-	result = deviceContext->Map(m_cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = D3D::GetDeviceContext()->Map(m_cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -334,11 +325,11 @@ bool SpecMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	dataPtr3->cameraPosition = cameraPosition;
 
-	deviceContext->Unmap(m_lightBuffer, 0);	
+	D3D::GetDeviceContext()->Unmap(m_lightBuffer, 0);
 
 	bufferNumber = 1;
 
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_cameraBuffer);
+	D3D::GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_cameraBuffer);
 
 	return true;
 }

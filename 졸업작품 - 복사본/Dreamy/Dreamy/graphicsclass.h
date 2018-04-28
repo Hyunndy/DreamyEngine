@@ -46,6 +46,7 @@
 
 
 
+
 /////////////
 // GLOBALS //
 /////////////
@@ -94,18 +95,16 @@ public:
 	D3DXVECTOR3 vVelocity = { 0.0f,1.5f,0.5f };
 private:
 
-	//RTT기능을 사용할 수 있게 두 종류의 렌더링 함수를 생성한다.
-	//렌더링이 두 번 일어나도록 분리했다.(첫번째는 텍스처에, 그 다음 일반 백버퍼에 그리는것)
-	bool RenderToTexture();
-	bool RenderRTTScene();
+
 	bool RenderRunningScene(bool);
 	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
-	bool RenderReflectionToTexture(); // 호수 반사 텍스처
-	
+
+
 	void SetEffectVariable(float frametime); //이펙트 관련 변수 세팅
 	float CalculateBillboarding(D3DXVECTOR3,D3DXVECTOR3);
 
 private:
+	int width, height;
 	bool sibal = false;
 	bool shoot = false;
 	float dy, dz;
@@ -115,7 +114,6 @@ private:
 
 private:
 	FrustumClass* m_Frustum =  nullptr;
-
 	ShaderManagerClass* m_Shader = nullptr;
 	LightClass* m_Light = nullptr;
 
@@ -133,6 +131,8 @@ private:
 
 private:
 	ModelClass* m_cube= nullptr;
+	ModelClass* m_wcube = nullptr;
+	ModelClass* m_circle = nullptr;
 	ModelClass* m_Billboarding = nullptr;
 	ModelClass* m_House = nullptr;
 	ModelClass* m_Tree = nullptr;
@@ -149,14 +149,20 @@ private:
 	ModelClass* m_Fire = nullptr;
 	ModelClass* m_TFire = nullptr;
 	ModelClass* m_TFire2 = nullptr;
+	bool renderTFire = false;
 
 
 private:
-	D3DXVECTOR3 horsePos = { 333.0f, 0.0f, 349.0f };
+	D3DXVECTOR3 horsePos= { 333.0f, 20.0f, 349.0f };
+	D3DXVECTOR3 horse2Pos= { 235.0f, 10.0f, 500.0f };
 	ModelScene* m_horse= nullptr;
+	ModelScene* m_horse2 = nullptr;
 	ModelScene* m_npc = nullptr;
-	bool renderNpc = false;
 	bool renderhorse = false;
+	bool renderhorse2 = false;
+	bool renderNpc = false;
+	bool starthorse = false;
+	bool starthorse2 = false;
 
 private:
 	ImageClass* m_Start= nullptr;
@@ -165,7 +171,15 @@ private:
 
 	float MousePosX, MousePosY;
 	ImageClass* m_MouseCursor= nullptr;
+
+private:
 	ImageClass* m_Balloon = nullptr;
+	bool Balloon1 = false, Balloon2 = false, Balloon3 = false;
+
+	#define Shoot0 ( Balloon1==false && Balloon2 == false && Balloon3 == false)
+	#define Shoot1 ( Balloon1==true && Balloon2==false && Balloon3 ==false)
+	#define Shoot2 ( Balloon1==true && Balloon2==true && Balloon3 ==false)
+	#define Shoot3 ( Balloon1==true && Balloon2==true && Balloon3 ==true)
 
 private:
 	ImageClass* m_UI =nullptr;
@@ -195,10 +209,7 @@ private:
 	ParticleSystem* m_Particle = nullptr;
 
 private:
-	wstring tPosePath;
-	wstring idlePath;
-	wstring runPath;
-	wstring walkPath;
+
 
 private:
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;

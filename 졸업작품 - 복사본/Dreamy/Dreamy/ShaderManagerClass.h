@@ -6,7 +6,7 @@
 #include "SkyPlaneShaderClass.h"
 #include "InstancingShaderClass.h"
 #include "DiffuseInstancingShaderClass.h"
-//#include "LightShaderClass.h"
+#include "LightShaderClass.h"
 //#include "MultiTextureShaderClass.h"
 #include "AlphaMapShaderClass.h"
 //#include "BumpMapShaderClass.h"
@@ -39,8 +39,7 @@ public:
 
 	//bool RenderTextureShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 	bool RenderTextureShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
-	//bool RenderLightShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
-	//	D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, D3DXVECTOR4, float);
+	bool RenderLightShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,	D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, D3DXVECTOR4, float);
 
 	//bool RenderMultiTextureShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**);
 
@@ -48,7 +47,7 @@ public:
 
 	//bool RenderBumpMapShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3, D3DXVECTOR4);
 
-	//bool RenderSpecMapShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, D3DXVECTOR4, float);
+	//bool RenderSpecMapShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView**, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR3, D3DXVECTOR4, float);
 
 	//bool RenderFogShader(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*, float, float);
 
@@ -83,7 +82,7 @@ public:
 
 private:
 	//ColorShaderClass* m_ColorShader = nullptr;
-	//LightShaderClass* m_LightShader = nullptr;
+	LightShaderClass* m_LightShader = nullptr;
 	//MultiTextureShaderClass* m_MultiTextureShader = nullptr;
 	DiffuseShaderClass* m_DiffuseShader = nullptr;
 	//BumpMapShaderClass* m_BumpMapShader = nullptr;

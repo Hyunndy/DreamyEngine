@@ -39,15 +39,15 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	//}
 	// 텍스처 쉐이더 객체를 생성한다.
 
-	//// 라이트 쉐이더 객체를 만듭니다.
-	//m_LightShader = new LightShaderClass;
-	//if (!m_LightShader)
-	//{	return false;}
-
-	//// 라이트 쉐이더 객체를 초기화합니다.
-	//result = m_LightShader->Initialize(device, hwnd);
-	//if (!result)
-	//{ MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK); return false; }
+	// 라이트 쉐이더 객체를 만듭니다.
+	m_LightShader = new LightShaderClass;
+	if (!m_LightShader)
+	{	return false;}
+	
+	// 라이트 쉐이더 객체를 초기화합니다.
+	result = m_LightShader->Initialize( hwnd);
+	if (!result)
+	{ MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK); return false; }
 
 	////멀티텍스쳐셰이더
 	//m_MultiTextureShader = new MultiTextureShaderClass;
@@ -71,12 +71,6 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	//if (!result)
 	//{	MessageBox(hwnd, L"Could not initialize the bumpmapshader object.", L"Error", MB_OK); return false;}
 
-	//m_SpecMapShader = new SpecMapShaderClass;
-	//if (!m_SpecMapShader) { return false; }
-
-	//result = m_SpecMapShader->Initialize(device, hwnd);
-	//if (!result)
-	//{MessageBox(hwnd, L"Could not initialize the specmapshader object.", L"Error", MB_OK); return false;}
 
 	//m_FogShader = new FogShaderClass;
 	//if (!m_FogShader) { return false; }
@@ -182,7 +176,7 @@ void ShaderManagerClass::Shutdown()
 	SAFE_SHUTDOWN(m_particleShader);
 	//if (m_AlphaMapShader) { m_AlphaMapShader->Shutdown(); delete m_AlphaMapShader; m_AlphaMapShader = 0; }
 	//if (m_BumpMapShader) { m_BumpMapShader->Shutdown(); delete m_BumpMapShader; m_BumpMapShader = 0; }
-	//if (m_SpecMapShader) { m_SpecMapShader->Shutdown(); delete m_SpecMapShader; m_SpecMapShader = 0; }
+	SAFE_SHUTDOWN(m_LightShader);
 	//if (m_FogShader) { m_FogShader->Shutdown(); delete m_FogShader; m_FogShader = 0; }
 	SAFE_SHUTDOWN(m_TranslateShader);
 	//if (m_TransparentShader) { m_TransparentShader->Shutdown(); delete m_TransparentShader; m_TransparentShader = 0; }
@@ -202,15 +196,15 @@ bool ShaderManagerClass::RenderTextureShader(int indexCount, D3DXMATRIX worldMat
 }
 
 
-//bool ShaderManagerClass::RenderLightShader(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
-//	ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambient, D3DXVECTOR4 diffuse,
-//	D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specular, float specularPower)
-//{
-//	// 라이트 쉐이더를 사용하여 모델을 렌더링합니다.
-//	return m_LightShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambient, diffuse, cameraPosition,
-//		specular, specularPower);
-//}
-//
+bool ShaderManagerClass::RenderLightShader( int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
+	ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambient, D3DXVECTOR4 diffuse,
+	D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specular, float specularPower)
+{
+	// 라이트 쉐이더를 사용하여 모델을 렌더링합니다.
+	return m_LightShader->Render( indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambient, diffuse, cameraPosition,
+		specular, specularPower);
+}
+
 //bool ShaderManagerClass::RenderMultiTextureShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
 //	ID3D11ShaderResourceView** texture)
 //{
@@ -234,13 +228,13 @@ bool ShaderManagerClass::RenderDiffuseShader(int indexCount, D3DXMATRIX worldMat
 //	return m_BumpMapShader->Render(device, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, diffusecolor);
 //}
 //
-//bool ShaderManagerClass::RenderSpecMapShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix,
+//bool ShaderManagerClass::RenderSpecMapShader( int indexCount, D3DXMATRIX worldMatrix,
 //	D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView** texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor
 //	, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower)
 //{
-//	return m_SpecMapShader->Render(device, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor,diffuseColor, cameraPosition, specularColor, specularPower);
+//	return m_SpecMapShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor,diffuseColor, cameraPosition, specularColor, specularPower);
 //}
-//
+
 //bool ShaderManagerClass::RenderFogShader(ID3D11DeviceContext* device, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix,
 //	ID3D11ShaderResourceView* texture, float FogStart, float FogEnd)
 //{

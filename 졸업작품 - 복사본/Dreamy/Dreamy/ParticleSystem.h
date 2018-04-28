@@ -78,6 +78,7 @@ private:
 	float m_particleVelocity, m_particleVelocityVariation; //속도
 	float m_particleSize, m_particlesPerSecond;
 	int m_maxParticles;
+	float deg;
 
 	// 파티클 방출의 타이밍을 위해 축적된 시간과 count를 기록한다.
 	int m_currentParticleCount;

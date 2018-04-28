@@ -158,7 +158,6 @@
     <ClCompile Include="AnimationFrames.cpp" />
     <ClCompile Include="Blender.cpp" />
     <ClCompile Include="CameraClass.cpp" />
-    <ClCompile Include="CpuClass.cpp" />
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="DiffuseInstancingShaderClass.cpp" />
@@ -169,7 +168,6 @@
     <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="FontShaderClass.cpp" />
     <ClCompile Include="FpsClass.cpp" />
-    <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="FrustumClass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="ImageClass.cpp" />
@@ -177,6 +175,7 @@
     <ClCompile Include="InstancingClass.cpp" />
     <ClCompile Include="InstancingShaderClass.cpp" />
     <ClCompile Include="LightClass.cpp" />
+    <ClCompile Include="LightShaderClass.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MatrixClass.cpp" />
     <ClCompile Include="MinimapClass.cpp" />
@@ -203,6 +202,7 @@
     <ClCompile Include="SkyDomeShaderClass.cpp" />
     <ClCompile Include="SkyPlaneShaderClass.cpp" />
     <ClCompile Include="SoundClass.cpp" />
+    <ClCompile Include="SpecMapShaderClass.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TerrainCellClass.cpp" />
@@ -211,7 +211,6 @@
     <ClCompile Include="TextClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
-    <ClCompile Include="TimerClass.cpp" />
     <ClCompile Include="TranslateShaderClass.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="WaterClass.cpp" />
@@ -223,7 +222,6 @@
     <ClInclude Include="AnimationFrames.h" />
     <ClInclude Include="Blender.h" />
     <ClInclude Include="CameraClass.h" />
-    <ClInclude Include="CpuClass.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="DiffuseInstancingShaderClass.h" />
@@ -238,7 +236,6 @@
     <ClInclude Include="FontClass.h" />
     <ClInclude Include="FontShaderClass.h" />
     <ClInclude Include="FpsClass.h" />
-    <ClInclude Include="D3DClass.h" />
     <ClInclude Include="FrustumClass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="ImageClass.h" />
@@ -246,6 +243,7 @@
     <ClInclude Include="InstancingClass.h" />
     <ClInclude Include="InstancingShaderClass.h" />
     <ClInclude Include="LightClass.h" />
+    <ClInclude Include="LightShaderClass.h" />
     <ClInclude Include="MatrixClass.h" />
     <ClInclude Include="MinimapClass.h" />
     <ClInclude Include="ModelAnimation.h" />
@@ -272,6 +270,7 @@
     <ClInclude Include="SkyClass.h" />
     <ClInclude Include="SkyDomeShaderClass.h" />
     <ClInclude Include="SkyPlaneShaderClass.h" />
+    <ClInclude Include="SpecMapShaderClass.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdafx_fbx.h" />
     <ClInclude Include="String.h" />
@@ -282,7 +281,6 @@
     <ClInclude Include="TextClass.h" />
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="TextureShaderClass.h" />
-    <ClInclude Include="TimerClass.h" />
     <ClInclude Include="TranslateShaderClass.h" />
     <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="WaterClass.h" />

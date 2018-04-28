@@ -17,7 +17,9 @@ ModelMaterial::ModelMaterial(int number, FbxSurfaceMaterial * material)
 	if (shininessProp.IsValid())
 		shininess = (float)shininessProp.Get<FbxDouble>();
 
-	SetdiffuseFile(ModelScene::TexturePath);
+
+		SetdiffuseFile(ModelScene::TexturePath);
+
 
 	CreateView(ambientFile, &ambientView);
 	CreateView(emissiveFile, &emissiveView);
@@ -78,23 +80,27 @@ D3DXCOLOR ModelMaterial::GetProperty(FbxSurfaceMaterial * material, const char *
 
 void ModelMaterial::CreateView(wstring path, ID3D11ShaderResourceView ** view)
 {
-	DWORD fileValue = GetFileAttributes(path.c_str());
 
-	if (path.length() < 1) return;
+		DWORD fileValue = GetFileAttributes(path.c_str());
 
-	if (fileValue < 0xFFFFFFFF)
-	{
-		HRESULT hr = D3DX11CreateShaderResourceViewFromFile
-		(
-			D3D::GetDevice()
-			, path.c_str()
-			, NULL
-			, NULL
-			, view
-			, NULL
-		);
-		assert(SUCCEEDED(hr));
-		return;
-	}
+		if (path.length() < 1) return;
+
+		if (fileValue < 0xFFFFFFFF)
+		{
+			HRESULT hr = D3DX11CreateShaderResourceViewFromFile
+			(
+				D3D::GetDevice()
+				, path.c_str()
+				, NULL
+				, NULL
+				, view
+				, NULL
+			);
+			assert(SUCCEEDED(hr));
+			return;
+		}
+	
 
 }
+
+

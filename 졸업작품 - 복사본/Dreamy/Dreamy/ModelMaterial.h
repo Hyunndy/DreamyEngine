@@ -5,6 +5,7 @@
 #include "assert.h"
 
 
+
 class ModelMaterial
 {
 public:
@@ -20,6 +21,8 @@ public:
 	{
 		diffuseFile = texturepath;
 	}
+
+
 
 private:
 	D3DXCOLOR GetProperty

@@ -75,8 +75,6 @@ bool ParticleSystem::Frame(float frameTime)
 		{
 			active = false;
 			time = 0.0f;
-		//	InitializeParticleSystem();
-			//m_particleList = new ParticleType[m_maxParticles];
 			InitializeParticleSystem();
 		}
 	}
@@ -85,8 +83,6 @@ bool ParticleSystem::Frame(float frameTime)
 	{
 		active = false;
 		time = 0.0f;
-		//	InitializeParticleSystem();
-		//m_particleList = new ParticleType[m_maxParticles];
 		InitializeParticleSystem();
 	}
 
@@ -104,12 +100,12 @@ bool ParticleSystem::Frame(float frameTime)
 bool ParticleSystem::InitializeParticleSystem()
 {
 	// 파티클이 방출되는 장소를 random하게 한다.
-	m_particleDeviationX = 2.0f;
-	m_particleDeviationY = 0.1f;
-	m_particleDeviationZ = 2.0f;
+	m_particleDeviationX = 3.0f;
+	m_particleDeviationY = 0.0f;
+	m_particleDeviationZ = 3.0f;
 
 	// 파티클의 속도와 속도 변화 변수를 세팅한다.
-	m_particleVelocity = 3.0f;
+	m_particleVelocity = 4.0f;
 	m_particleVelocityVariation = 0.1f;
 
 	// 파티클의 사이즈를 설정한다.
@@ -273,9 +269,11 @@ void ParticleSystem::EmitParticles(float frameTime)
 
 		velocity = m_particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * m_particleVelocityVariation;
 
-		red = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
+		//red = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 		green = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
-		blue = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
+		blue = (((float)rand() - (float)rand()) / RAND_MAX) + 1.0f;
+		red = 0.0f;
+		//green = 0.0f;
 
 
 		// 파티클은 뒤에서 부터 앞으로 렌더되야 하기 때문에 파티클 배열을 정렬 해줘야 한다.

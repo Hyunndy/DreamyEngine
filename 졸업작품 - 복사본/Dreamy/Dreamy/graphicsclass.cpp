@@ -35,6 +35,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	D3D::GetInfo(&info);
 	D3D::Get();
 
+	width = info.screenWidth;
+	height = info.screenHeight;
 	// Shader객체 생성
 	//-------------------------------------------------------------------------------------
 	m_Shader = new ShaderManagerClass;
@@ -97,63 +99,101 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	
 	wstring filePath = L"../Dreamy/Contents/Models/Sword and Shield Pack/";
 	
-	//model = new ModelScene(L"./Contents/Models/Box.fbx");
-	//model = new ModelScene(L"./Contents/Models/Rock_01.fbx");
-	
-	tPosePath = filePath + L"Horse.fbx";
-	m_horse->TexturePath = filePath + L"Horse_D.png";
-	//idlePath = filePath + L"Horse_Idle.fbx";
-	runPath = filePath + L"Horse_Run.fbx";
-	//walkPath = filePath + L"Horse_Walk.fbx";
-	
+	wstring tPosePath = filePath + L"Horse.fbx";
+	wstring idlePath = filePath + L"Horse_Idle.fbx";
+	wstring runPath = filePath + L"Horse_Run.fbx";
+	//wstring walkPath = filePath + L"Horse_Walk.fbx";
+	//horsePos = { 333.0f, 10.0f, 349.0f };
+	//horse2Pos = { 235.0f, 10.0f, 500.0f };
+
+	//말1
 	m_horse = new ModelScene();
-	
+
+	m_horse->TexturePath = filePath + L"Horse_D.png";	
 	m_horse->LoadScene(tPosePath, true, true, true, false);
 	m_horse->LoadScene(runPath, false, false, false, true);
 	
 	// Default Animation 설정
 	m_horse->SetCurrentAnimation(runPath);
 
-	m_horse->Scale(1.7f, 1.7f, 1.7f);
-	//m_horse->RotationY(5.0f);
-	//m_horse->Multiply(m_horse->GetScailingMatrix(), m_horse->GetRotationYMatrix());
+
+	m_horse->Scale(1.8f, 1.8f, 1.8f);
 
 
-	//m_npc = new ModelScene();
-	//
-	//wstring tPosePath2 = filePath + L"Elf.fbx";
-	//m_npc->TexturePath = filePath + L"Elf_D.png";
-	//wstring idlePath2 = filePath + L"Elf_Idle.fbx";
-	//
-	//m_npc->LoadScene(tPosePath2, true, true, true, false);
-	//m_npc->LoadScene(idlePath2, false, false, false, true);
-	//
-	//// Default Animation 설정
-	//m_npc->SetCurrentAnimation(idlePath2);
-	//
-	//D3DXMATRIX NpcWorldMatrix;
-	//D3DXMATRIX NpcTranslationMatrix;
-	//D3DXMATRIX NpcRotationMatrix;
-	//
-	//D3DXMatrixIdentity(&NpcWorldMatrix);
-	//D3DXMatrixIdentity(&NpcRotationMatrix);
-	//D3DXMatrixIdentity(&NpcTranslationMatrix);
-	//D3DXMatrixRotationY(&NpcRotationMatrix, -35.0f);
-	//D3DXMatrixTranslation(&NpcTranslationMatrix, 545.0f, 10.0f, 345.0f);
-	//D3DXMatrixMultiply(&NpcWorldMatrix, &NpcRotationMatrix, &NpcTranslationMatrix);
-	//m_npc->SetWorldTransform(NpcWorldMatrix);
+	//말2
+	m_horse2 = new ModelScene();
+
+	m_horse2->TexturePath = m_horse->TexturePath;
+	m_horse2->LoadScene(tPosePath, true, true, true, false);
+	m_horse2->LoadScene(runPath, false, false, false, true);
+
+	m_horse2->SetCurrentAnimation(runPath);
+
+	m_horse2->Scale(1.8f, 1.8f, 1.8f);
+
+	//npc
+	m_npc = new ModelScene();
+	
+
+	wstring tPosePath2 = filePath + L"Elf.fbx";
+	m_npc->TexturePath = filePath + L"Elf_D.png";
+
+	wstring idlePath2 = filePath + L"Elf_Idle.fbx";
+	
+	m_npc->LoadScene(tPosePath2, true, true, true, false);
+	m_npc->LoadScene(idlePath2, false, false, false, true);
+	
+	// Default Animation 설정
+	m_npc->SetCurrentAnimation(idlePath2);
+	
+	D3DXMATRIX NpcWorldMatrix;
+	D3DXMATRIX NpcTranslationMatrix;
+	D3DXMATRIX NpcRotationMatrix;
+	
+	D3DXMatrixIdentity(&NpcWorldMatrix);
+	D3DXMatrixIdentity(&NpcRotationMatrix);
+	D3DXMatrixIdentity(&NpcTranslationMatrix);
+	D3DXMatrixRotationY(&NpcRotationMatrix, -35.0f);
+	D3DXMatrixTranslation(&NpcTranslationMatrix, 545.0f, 10.0f, 345.0f);
+	D3DXMatrixMultiply(&NpcWorldMatrix, &NpcRotationMatrix, &NpcTranslationMatrix);
+	m_npc->SetWorldTransform(NpcWorldMatrix);
+
+
+
 
 	//--------------------------------------------------------------------------------------
 
 	// OBJ모델
 	//--------------------------------------------------------------------------------------
+	
+	//큐브(현재 npc에게 붙어있음)
 	m_cube = new ModelClass;
 	if (!m_cube) { return false; }
 	
-	result = m_cube->InitializeSpecMap("../Dreamy/Data/cube.txt", L"../Dreamy/Data/stone02.dds", L"../Dreamy/Data/bump02.dds", L"../Dreamy/Data/spec02.dds");
+	result = m_cube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/water.png");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
+	m_wcube = new ModelClass;
+	if (!m_wcube) { return false; }
+
+	result = m_wcube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/water.png");
+	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
+
+	
+	//물풍선
+	m_circle = new ModelClass;
+	if (!m_circle) { return false; }
+
+	result = m_circle->Initialize("../Dreamy/Data/sphere.txt", L"../Dreamy/Data/water.png");
+	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
+
+	m_circle->Translation(660.0f, 48.0f, 383.0f);
+	m_circle->Scale(3.0f, 3.0f, 3.0f);
+	m_circle->Multiply(m_circle->GetScailingMatrix(), m_circle->GetTranslationMatrix());
+	
 	D3DXMatrixIdentity(&Cube3WorldMatrix);
+
+	//집
 	m_House = new ModelClass;
 
 	result = m_House->Initialize("../Dreamy/Data/BakerHouse.txt", L"../Dreamy/Data/BakerHouse.png");
@@ -177,8 +217,8 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//m_Light->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.5f, -1.0f, -0.25f);
-	//m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	//m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
 	//--------------------------------------------------------------------------------------
 
 	// Frustum
@@ -268,7 +308,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_Balloon = new ImageClass;
 
-	result = m_Balloon->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/Balloon.png", 90, 90);
+	result = m_Balloon->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/Balloon.png", 88, 85);
 	if (!result) { MessageBox(hwnd, L"ballon error", L"Error", MB_OK); return false; }
 	//--------------------------------------------------------------------------------------
 
@@ -422,6 +462,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_TFire->Translation(130.0f, 53.0f, 521.0f);
 	m_TFire->Scale(20.0f, 20.0f, 20.0f);
+	m_TFire->active = true;
 
 	//나무3에 난 불
 	m_TFire2 = new ModelClass;
@@ -441,16 +482,18 @@ void GraphicsClass::Shutdown()
 {
 
 	FBXShader::DeleteBuffer();
-
+	
 	SAFE_SHUTDOWN(m_UI);
 	SAFE_SHUTDOWN(m_Minimap);
 	SAFE_DELETE(m_horse);
+	SAFE_DELETE(m_horse2);
 	SAFE_DELETE(m_npc);
 	SAFE_SHUTDOWN(m_Billboarding);
 	SAFE_DELETE(m_Light);
 	SAFE_SHUTDOWN(m_Fire);
 	SAFE_SHUTDOWN(m_TFire);
 	SAFE_SHUTDOWN(m_TFire2);
+	SAFE_SHUTDOWN(m_circle);
 	SAFE_SHUTDOWN(m_TerrainShader);
 	SAFE_SHUTDOWN(m_Water);
 	SAFE_SHUTDOWN(m_Balloon);
@@ -469,10 +512,10 @@ void GraphicsClass::Shutdown()
 	SAFE_SHUTDOWN(m_House);
 	SAFE_SHUTDOWN(m_Sky);
 	SAFE_SHUTDOWN(m_cube);
+	SAFE_SHUTDOWN(m_wcube);
 	SAFE_SHUTDOWN(m_Loading);
 	SAFE_SHUTDOWN(m_CrossHair);
 	SAFE_DELETE(m_Frustum);
-
 	SAFE_SHUTDOWN(m_MouseCursor);
 	SAFE_SHUTDOWN(m_Text);
 	SAFE_SHUTDOWN(m_Particle);
@@ -516,28 +559,67 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	if (m_Particle->active == true)
 		m_Particle->Frame(frameTime); // 파티클
 
-	if (renderhorse == true)
+
+
+	//말1
+	if (starthorse == true)
 	{
-		
-
-		if (m_horse->turn == false)
-			horsePos.x = horsePos.x + frameTime*0.05f;
-		else
-			horsePos.x = horsePos.x - frameTime*0.05f;
-
-		if (horsePos.x >= 800.0f)
-			m_horse->turn = true;
-		if (horsePos.x <= 330.0f)
-			m_horse->turn = false;
-
 		float horseY;
 		if (m_Terrain->GetHeightAtPosition(horsePos.x, horsePos.z, horseY))
 			horsePos.y = horseY + 2.0f;
 
+		m_horse->Update(1.0f);
 		//800
-		m_horse->Update(1.0f); //말1
-		//m_npc->Update(); //말2
+
+		if (m_horse->turn == false)
+		{
+			horsePos.x = horsePos.x + frameTime*0.05f;
+
+		}
+		else
+		{
+			horsePos.x = horsePos.x - frameTime*0.05f;
+
+		}
+
+		if (horsePos.x >= 700.0f)
+			m_horse->turn = true;
+
+		if (horsePos.x <= 330.0f)
+			m_horse->turn = false;
 	}
+
+	//609 120
+	//말2
+	if (starthorse2 == true)
+	{
+		float horse2Y;
+		if (m_Terrain->GetHeightAtPosition(horse2Pos.x, horse2Pos.z, horse2Y))
+			horse2Pos.y = horse2Y + 2.0f;
+
+		//800
+		m_horse2->Update(1.0f);
+		
+		if (m_horse2->turn == false)
+		{
+			horse2Pos.x = horse2Pos.x + frameTime*0.04f;
+			horse2Pos.z = horse2Pos.z - frameTime*0.04f;
+		}
+		else
+		{
+			horse2Pos.x = horse2Pos.x - frameTime*0.04f;
+			horse2Pos.z = horse2Pos.z + frameTime*0.04f;
+		}
+
+		if (horse2Pos.x >= 605 && horse2Pos.z <= 125)
+			m_horse2->turn = true;
+		if (horse2Pos.x <= 233 && horse2Pos.z >= 502)
+			m_horse2->turn = false;
+	}
+
+	//npc
+	if(renderNpc==true)
+		m_npc->Update(0.5f); 
 	//--------------------------------------------------------------------------------------
 	
 	// Camera Frame처리
@@ -563,8 +645,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	// 텍스트 Frame처리
 	//--------------------------------------------------------------------------------------
 	// fps세팅
-
-	result = m_Text->SetFps(renderhorse);
+	result = m_Text->SetFps(m_Particle->active);
 	if (!result) { return false; }
 
 	//// cpu세팅
@@ -572,22 +653,32 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	//if (!result) { return false; }
 	//--------------------------------------------------------------------------------------
 
-	//물풍선
+	// 물풍선
 	//--------------------------------------------------------------------------------------
 	if (space == true)
 		shoot = true;
 
-	if (shoot == true)
+	if (shoot == true && m_circle->active == true && (Balloon1 == true || Balloon2 == true || Balloon3 == true))
 		Shoot(frameTime);
 	//--------------------------------------------------------------------------------------
+
+	// 물풍선 처리 130.0f, 53.0f, 521.0f
+	//--------------------------------------------------------------------------------------
+	if (shoot == true && m_circle->active == true && m_TFire->active == true && CameraPos.x <= 160.0f)
+	{
+		if (dx == 129)
+		{
+			m_Particle->active = true;
+			m_TFire->active = false;
+		}
+	}
 
 	return true;
 }
 
 void GraphicsClass::Shoot(float frametime)
 {
-	if (m_cube->active == true)
-	{
+
 		//dy += frameTime*0.00009f;
 		//dz += frameTime*0.0005f;
 
@@ -608,8 +699,9 @@ void GraphicsClass::Shoot(float frametime)
 
 		dx++;
 
-		if (dx == 150)
+		if (dx == 130)
 		{
+			shoot = false;
 			dx = 0;
 			dy = 0.0f;
 			dz = 0.0f;
@@ -618,9 +710,16 @@ void GraphicsClass::Shoot(float frametime)
 			vVelocity = { 0.0f,1.5f,0.5f };
 			D3DXMatrixTranslation(&ShootMatrix, 0.0f, dy, dz);
 			D3DXMatrixIdentity(&Cube3WorldMatrix);
-			shoot = false;
+
+			if (Shoot3)
+				Balloon3 = false;
+			else if (Shoot2)
+				Balloon2 = false;
+			else if (Shoot1)
+				Balloon1 = false;
+			
 		}
-	}
+	
 }
 
 
@@ -766,71 +865,112 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// FBXANIMATIONModel들
 	//-------------------------------------------------------------------------------------
-	//m_horse->Render();
-	//545.0f, 10.0f, 345.0f
-	renderNpc = m_Frustum->CheckSphere(545.0f, 10.0f, 345.0f, 5.0f);
 
-	renderhorse = m_Frustum->CheckSphere(horsePos.x, horsePos.y, horsePos.z, 3.0f);
-	if (renderhorse == true)
+	//npc
+	renderNpc = m_Frustum->CheckSphere(545.0f, 10.0f, 345.0f, 5.0f);
+	if (renderNpc == true)
+	{
+		m_npc->Render();
+	}
+
+	//말1
+	if (renderhorse = m_Frustum->CheckSphere(horsePos.x, horsePos.y, horsePos.z, 3.0f))
+		starthorse = true;
+
+	
+	if (starthorse == true)
 	{
 		D3DXMATRIX ROT;
+
 		if(m_horse->turn==false)
 			D3DXMatrixRotationAxis(&ROT, &D3DXVECTOR3(0, 1, 0), 1.2f);
 		else
 			D3DXMatrixRotationAxis(&ROT, &D3DXVECTOR3(0, 1, 0), 5.0f);
 
 		m_horse->Translation(horsePos.x, horsePos.y, horsePos.z);
+
 		m_horse->Multiply(m_horse->GetScailingMatrix(), ROT);
+		//m_horse->Multiply(m_horse->GetScailingMatrix(), m_horse->GetTranslationMatrix());
 		m_horse->Multiply(m_horse->GetFinalMatrix(), m_horse->GetTranslationMatrix());
-
+		
 		m_horse->SetWorldTransform(m_horse->GetFinalMatrix());
-
 		m_horse->Render();
+
+	}
+
+	//말2
+	renderhorse2 = m_Frustum->CheckSphere(horse2Pos.x, horse2Pos.y, horse2Pos.z, 3.0f);
+	if (renderhorse2) { starthorse2 = true; }
+
+	if (starthorse2 == true)
+	{
+	D3DXMATRIX ROT2;
+	if(m_horse2->turn==false)
+		D3DXMatrixRotationAxis(&ROT2, &D3DXVECTOR3(0, 1, 0), 2.5f);
+	else
+		D3DXMatrixRotationAxis(&ROT2, &D3DXVECTOR3(0, 1, 0), 5.5f);
+
+	m_horse2->Translation(horse2Pos.x, horse2Pos.y, horse2Pos.z);
+	m_horse2->Multiply(m_horse2->GetScailingMatrix(), ROT2);
+	m_horse2->Multiply(m_horse2->GetFinalMatrix(), m_horse2->GetTranslationMatrix());
+		   
+	m_horse2->SetWorldTransform(m_horse2->GetFinalMatrix());
+		   
+	m_horse2->Render();
 	}
 
 	// OBJ모델
 	//-------------------------------------------------------------------------------------
 
-	// 스페큘러맵 박스
+	// 물풍선 766 450
 	//-----------------------------
-	static float textureTranslation = 0.0f;
-	textureTranslation += 0.003f;
-	if (textureTranslation > 1.0f) { textureTranslation -= 1.0f; }
+	//m_circle->active = m_Frustum->CheckSphere(660.0f, 48.0f, 383.0f, 3.0f);
+
+	m_circle->Render();
+	if (m_circle->active == false)
+	{
+		//셰이더 렌더링
+		result = m_Shader->RenderLightShader(m_circle->GetIndexCount(), m_circle->GetFinalMatrix(), viewMatrix, projectionMatrix
+			, m_circle->GetTexture(),D3DXVECTOR3(0.2,-1,1), D3DXVECTOR4(0.9f, 0.9f, 0.9f, 1.0f), m_Light->GetDiffuseColor()
+			, CameraPos, m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result) { return false; }
+	}
+	else
+		result = m_Shader->RenderLightShader(m_circle->GetIndexCount(), Cube3WorldMatrix, cupViewMatrix, projectionMatrix
+			, m_circle->GetTexture(), D3DXVECTOR3(0.2, -1, 1), D3DXVECTOR4(0.9f, 0.9f, 0.9f, 1.0f), m_Light->GetDiffuseColor(), CameraPos
+			, m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
+
 	
 
-	//D3DXMatrixIdentity(&Cube3WorldMatrix);
+	// npc 충돌 박스
+	//-----------------------------
+	m_cube->active = m_Frustum->CheckSphere(545.0f, 30.0f, 345.0f, 3.0f);
 	
-	if (m_cube->active== false)
+	if (m_cube->active== true)
 	{
-		m_cube->Translation(767.0f, 26.0f, 389.0f);
+		m_cube->Translation(545.0f, 30.0f, 345.0f);
 		m_cube->RotationY(-40.0f);
 		m_cube->Scale(7.0f, 7.0f, 7.0f);
 
 		m_cube->Multiply(m_cube->GetScailingMatrix(),m_cube->GetRotationYMatrix());
-		m_cube->Multiply( m_cube->GetFinalMatrix(), m_cube->GetTranslationMatrix());
+		m_cube->Multiply(m_cube->GetFinalMatrix(), m_cube->GetTranslationMatrix());
+		m_cube->Render();
 	}
-	else
+
+	// 물 충돌 박스
+	//-----------------------------
+	if (m_Water->active)
 	{
-		//D3DXMatrixIdentity(&m_cube->GetFinalMatrix());
-		//D3DXMatrixIdentity(&Cube3WorldMatrix);
-		//m_cube->Translation(CameraPos.x, CameraPos.y - 10.0f, CameraPos.z + 20.0f);
-		//m_cube->RotationX(CalculateBillboarding(CameraPos, D3DXVECTOR3(CameraPos.x, CameraPos.y - 10.0f, CameraPos.z + 20.0f)));
+		m_wcube->Translation(766.0f, m_Water->GetWaterHeight(), 470.0f);
+		m_wcube->Scale(7.0f, 7.0f, 7.0f);
+
+		m_wcube->Multiply(m_wcube->GetScailingMatrix(), m_wcube->GetTranslationMatrix());
+		m_wcube->Render();
 	}
 	
-	
-	m_cube->Render();
-	
-	if (m_cube->active == false)
-	{
-		result = m_Shader->RenderTranslateShader(m_cube->GetIndexCount(), m_cube->GetFinalMatrix(), viewMatrix, projectionMatrix
-			, m_cube->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), CameraPos
-			, m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
-	}
-	else
-		result = m_Shader->RenderTranslateShader(m_cube->GetIndexCount(), Cube3WorldMatrix, cupViewMatrix, projectionMatrix
-			, m_cube->GetTripleTextureArray(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), CameraPos
-			, m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), textureTranslation);
-	
+	// 집
+	//-----------------------------
 	m_House->active = m_Frustum->CheckSphere(137.0f, 49.0f, 425.0f, 25.0f);
 
 	if (m_House->active == true)
@@ -844,9 +984,10 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 파티클
 	//-------------------------------------------------------------------------------------
+
 	if (m_Particle->active == true)
 	{
-		D3DXVECTOR3 ParticlePosition = { 767.0f, 30.0f, 389.0f };
+		D3DXVECTOR3 ParticlePosition = { 135.0f, 43.0f, 521.0f };
 		m_Particle->Translation(ParticlePosition.x, ParticlePosition.y, ParticlePosition.z);
 		m_Particle->RotationY(CalculateBillboarding(CameraPos, ParticlePosition));
 		m_Particle->Multiply(m_Particle->GetRotationYMatrix(), m_Particle->GetTranslationMatrix());
@@ -961,7 +1102,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 불 빌보딩
 	//-----------------------------
-
 	m_Fire->active = m_Frustum->CheckSphere(157.0f, 49.0f, 429.0f, 10.0f);
 
 	if (m_Fire->active == true)
@@ -974,9 +1114,9 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (!result) { return false; }
 	}
 
-	m_TFire->active = m_Frustum->CheckSphere(130.0f, 53.0f, 521.0f, 5.0f);
+	renderTFire = m_Frustum->CheckPoint(130.0f, 53.0f, 521.0f);
 
-	if (m_TFire->active == true)
+	if (renderTFire==true && m_TFire->active == true)
 	{
 		D3DXVECTOR3 TFirePosition = { 130.0f, 53.0f, 521.0f };
 		m_TFire->RotationY(CalculateBillboarding(CameraPos, TFirePosition));
@@ -1047,10 +1187,29 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (!result) { return false; }
 	}
 
-	m_Balloon->Render(800.0f, 400.0f);
-	m_Shader->RenderTextureShader(m_Balloon->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_Balloon->GetTexture());
-	if (!result) { return false; }
+	if (m_Balloon->active == true)
+	{
+		if (Balloon1 == true)
+		{
+			m_Balloon->Render((width / 2) - 200.0f, 25.0f);
+			m_Shader->RenderTextureShader(m_Balloon->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_Balloon->GetTexture());
+			if (!result) { return false; }
+		}
 
+		if (Balloon2 == true)
+		{
+			m_Balloon->Render((width / 2) - 100.0f, 25.0f);
+			m_Shader->RenderTextureShader(m_Balloon->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_Balloon->GetTexture());
+			if (!result) { return false; }
+		}
+
+		if (Balloon3 == true)
+		{
+			m_Balloon->Render((width / 2), 25.0f);
+			m_Shader->RenderTextureShader(m_Balloon->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_Balloon->GetTexture());
+			if (!result) { return false; }
+		}
+	}
 
 
 	Blender::Get()->SetOff();
@@ -1062,12 +1221,45 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	//버퍼에 그려진 씬을 화면에 표시한다.
 	D3D::Get()->EndScene();
 	
-
-
-
 	return true;
 }
+//-------------------------------------------------------------------------------------
+//이름: CheckIntersection()
+//용도: 마우스 피킹 이벤트.
+//-------------------------------------------------------------------------------------
+void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
+{
 
+	if (m_cube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
+	{
+		//m_Particle->active = true;
+		m_UI->active = true;
+	}
+	else
+		m_UI->active = false;
+	
+
+	if (m_circle->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
+	{
+		m_circle->active = true;
+		m_Balloon->active = true;
+	}
+
+	if (m_wcube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos)==true && m_Balloon->active==true)
+	{
+		if(Shoot0)
+			Balloon1 = true;
+		
+		else if(Shoot1)
+			Balloon2 = true;
+		
+		else if (Shoot2)
+			Balloon3 = true;
+	}
+
+	
+
+}
 //-------------------------------------------------------------------------------------
 //이름: RenderRefractionToTexture()
 //용도: 호수 내부의 모습을 RTT로 굴절(Refraction)한다.
@@ -1104,13 +1296,7 @@ bool GraphicsClass::RenderRefractionToTexture(bool Pressed)
 		}
 	}
 
-	//m_WaterTerrain->Renderforwater();
-	//
-	//result = m_Shader->RenderWaterReflectionShader( m_WaterTerrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-	//	m_WaterTerrain->GetColorTexture(), m_WaterTerrain->GetNormalMapTexture(), m_Light->GetDiffuseColor(),
-	//	m_Light->GetDirection(), 2.0f, clipPlane);
-	//
-	//if (!result) { return false; }
+
 
 	// Reset the render target back to the original back buffer and not the render to texture anymore.
 	DepthStencil::Get()->SetDefaultRenderView();
@@ -1170,23 +1356,7 @@ bool GraphicsClass::RenderMainScene()
 	return true;
 }
 
-void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
-{
 
-
-	if (m_cube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
-	{
-		m_cube->active = true;
-		m_Particle->active = true;
-		m_UI->active = true;
-	}
-	
-	else
-	{
-		m_UI->active = false;
-	}
-
-}
 
 float GraphicsClass::CalculateBillboarding(D3DXVECTOR3 cameraPosition, D3DXVECTOR3 BillboardPosition)
 {
