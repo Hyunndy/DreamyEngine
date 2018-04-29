@@ -190,6 +190,7 @@
     <ClCompile Include="LightShaderClass.cpp">
       <Filter>Shader</Filter>
     </ClCompile>
+    <ClCompile Include="UIManagerClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsclass.h" />
@@ -372,5 +373,6 @@
       <Filter>Shader</Filter>
     </ClInclude>
     <ClInclude Include="D3D.h" />
+    <ClInclude Include="UIManagerClass.h" />
   </ItemGroup>
 </Project>

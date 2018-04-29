@@ -100,22 +100,22 @@ bool ParticleSystem::Frame(float frameTime)
 bool ParticleSystem::InitializeParticleSystem()
 {
 	// 파티클이 방출되는 장소를 random하게 한다.
-	m_particleDeviationX = 3.0f;
+	m_particleDeviationX = 12.0f;
 	m_particleDeviationY = 0.0f;
 	m_particleDeviationZ = 3.0f;
 
 	// 파티클의 속도와 속도 변화 변수를 세팅한다.
-	m_particleVelocity = 4.0f;
+	m_particleVelocity = 15.0f;
 	m_particleVelocityVariation = 0.1f;
 
 	// 파티클의 사이즈를 설정한다.
-	m_particleSize = 0.4f;
+	m_particleSize = 1.3f;
 
 	// 초당 방출되는 파티클을 설정한다.
-	m_particlesPerSecond = 500.0f;
+	m_particlesPerSecond = 1000.0f;
 
 	// 파티클 시스템에서 맥스 파티클을 정한다.
-	m_maxParticles = 1000;
+	m_maxParticles = 5000;
 
 	// 맥스 파티클 파티클타입리스트를 정의한다.
 	m_particleList = new ParticleType[m_maxParticles];
@@ -357,7 +357,7 @@ void ParticleSystem::KillParticles()
 	// Kill all the particles that have gone below a certain height range.
 	for (i = 0; i<m_maxParticles; i++)
 	{
-		if ((m_particleList[i].active == true) && (m_particleList[i].posY > 6.0f))
+		if ((m_particleList[i].active == true) && (m_particleList[i].posY > 50.0f))
 		{
 			m_particleList[i].active = false;
 			m_currentParticleCount--;

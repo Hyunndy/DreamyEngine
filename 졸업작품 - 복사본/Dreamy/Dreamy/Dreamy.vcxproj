@@ -212,6 +212,7 @@
     <ClCompile Include="TextureClass.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="TranslateShaderClass.cpp" />
+    <ClCompile Include="UIManagerClass.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="WaterClass.cpp" />
     <ClCompile Include="WaterReflectionShaderClass.cpp" />
@@ -282,6 +283,7 @@
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="TranslateShaderClass.h" />
+    <ClInclude Include="UIManagerClass.h" />
     <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="WaterClass.h" />
     <ClInclude Include="WaterReflectionShaderClass.h" />

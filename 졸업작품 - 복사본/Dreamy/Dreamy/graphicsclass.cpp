@@ -133,8 +133,6 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	//npc
 	m_npc = new ModelScene();
-	
-	m_npc = new ModelScene();
 
 	m_npc->TexturePath = m_horse->TexturePath;
 	m_npc->LoadScene(tPosePath, true, true, true, false);
@@ -188,9 +186,9 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_cube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/water.png");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
-	m_cube->Translation(515.0f, 22.0f, 415.0f);
-
-	m_cube->Scale(2.0f, 2.0f, 2.0f);
+	m_cube->Translation(513.0f, 30.0f, 410.0f);
+	//(513.0f, 55.0f, 405.0f
+	m_cube->Scale(1.5f, 1.5f, 1.5f);
 
 	m_cube->Multiply(m_cube->GetScailingMatrix(), m_cube->GetTranslationMatrix());
 
@@ -201,7 +199,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
 	m_wcube->Translation(766.0f, 11.0f, 470.0f);
-	m_wcube->Scale(7.0f, 7.0f, 7.0f);
+	m_wcube->Scale(10.0f, 1.0f, 10.0f);
 
 	m_wcube->Multiply(m_wcube->GetScailingMatrix(), m_wcube->GetTranslationMatrix());
 	
@@ -212,7 +210,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_circle->Initialize("../Dreamy/Data/sphere.txt", L"../Dreamy/Data/water.png");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
-	m_circle->Translation(685.0f, 45.0f, 415.0f);
+	m_circle->Translation(685.0f, 20.0f, 415.0f);
 	m_circle->Scale(3.0f,3.0f, 3.0f);
 	m_circle->Multiply(m_circle->GetScailingMatrix(), m_circle->GetTranslationMatrix());
 	
@@ -326,10 +324,14 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_MouseCursor->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/mouse.dds", 32, 32);
 	if (!result) { MessageBox(hwnd, L"m_MouseCursor error", L"Error", MB_OK); return false; }
 
-	m_UI = new ImageClass;
-	
-	result = m_UI->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/UI4.png", screenWidth, screenHeight);
-	if (!result) { MessageBox(hwnd, L"UI error", L"Error", MB_OK); return false; }
+	//m_UI = new ImageClass;
+	//
+	//result = m_UI->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/UI4.png", screenWidth, screenHeight);
+	//if (!result) { MessageBox(hwnd, L"UI error", L"Error", MB_OK); return false; }
+
+	m_UIManager = new UIManagerClass;
+
+	m_UIManager->Initialize(screenWidth, screenHeight);
 
 	m_Balloon = new ImageClass;
 
@@ -522,6 +524,7 @@ void GraphicsClass::PreShutdown()
 {
 	FBXShader::DeleteBuffer();
 	SAFE_SHUTDOWN(m_UI);
+	SAFE_SHUTDOWN(m_UIManager);
 	SAFE_SHUTDOWN(m_Minimap);
 	SAFE_DELETE(m_horse);
 	SAFE_DELETE(m_horse2);
@@ -557,14 +560,15 @@ void GraphicsClass::PreShutdown()
 	SAFE_SHUTDOWN(m_MouseCursor);
 	SAFE_SHUTDOWN(m_Text);
 	SAFE_SHUTDOWN(m_Particle);
-	Rasterizer::Delete();
-	Blender::Delete();
-	DepthStencil::Delete();
+
 }
 
 void GraphicsClass::Shutdown()
 {
 	SAFE_SHUTDOWN(m_Loading);
+	Rasterizer::Delete();
+	Blender::Delete();
+	DepthStencil::Delete();
 	Camera::Delete();
 	D3D::Delete();
 }
@@ -585,84 +589,8 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	bool result;
 	bool foundHeight;
 
-	// Model들 Frame처리
-	// 프레임 처리 메모리에 직접타격있으니까 제발 액티브에서만하자!!!!!
-	//--------------------------------------------------------------------------------------
-	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f); //구름
-	m_Minimap->PositionUpdate(CameraPos.x, CameraPos.z); //미니맵
-
-	if(m_Fire->active==true || m_TFire->active==true || m_TFire2->active ==true)
-		SetEffectVariable(frameTime*0.0005f);
-
-
-	if (m_Water->active ==true)
-		m_Water->Frame(frameTime);
-	
-	if (m_Particle->active == true)
-		m_Particle->Frame(frameTime); // 파티클
-
-
-
-	//말1
-	if (starthorse == true)
-	{
-		float horseY;
-		if (m_Terrain->GetHeightAtPosition(horsePos.x, horsePos.z, horseY))
-			horsePos.y = horseY + 2.0f;
-
-		m_horse->Update(1.0f);
-		//800
-
-		if (m_horse->turn == false)
-		{
-			horsePos.x = horsePos.x + frameTime*0.05f;
-
-		}
-		else
-		{
-			horsePos.x = horsePos.x - frameTime*0.05f;
-
-		}
-
-		if (horsePos.x >= 700.0f)
-			m_horse->turn = true;
-
-		if (horsePos.x <= 330.0f)
-			m_horse->turn = false;
-	}
-
-	//609 120
-	//말2
-	if (starthorse2 == true)
-	{
-		float horse2Y;
-		if (m_Terrain->GetHeightAtPosition(horse2Pos.x, horse2Pos.z, horse2Y))
-			horse2Pos.y = horse2Y + 2.0f;
-
-		//800
-		m_horse2->Update(1.0f);
-		
-		if (m_horse2->turn == false)
-		{
-			horse2Pos.x = horse2Pos.x + frameTime*0.04f;
-			horse2Pos.z = horse2Pos.z - frameTime*0.04f;
-		}
-		else
-		{
-			horse2Pos.x = horse2Pos.x - frameTime*0.04f;
-			horse2Pos.z = horse2Pos.z + frameTime*0.04f;
-		}
-
-		if (horse2Pos.x >= 605 && horse2Pos.z <= 125)
-			m_horse2->turn = true;
-		if (horse2Pos.x <= 233 && horse2Pos.z >= 502)
-			m_horse2->turn = false;
-	}
-
-	//npc
-	if(renderNpc==true)
-		m_npc->Update(0.5f); 
-	//--------------------------------------------------------------------------------------
+	if (click == false)
+		cibal = 0;
 	
 	// Camera Frame처리
 	//--------------------------------------------------------------------------------------
@@ -711,16 +639,19 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 		if (dx == 129)
 		{
 			m_Particle->active = true;
+			TFparticle = true;
 			m_TFire->active = false;
 			OffTFire = true;
 		}
 	}
 
-	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f)
+	//230 280
+	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f && CameraPos.x >=230.0f && CameraPos.x <=280.0f)
 	{
 		if (dx == 129)
 		{
 			m_Particle->active = true;
+			TF2particle = true;
 			m_TFire2->active = false;
 			OffTFire2 = true;
 
@@ -733,6 +664,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 		if (dx == 129)
 		{
 			m_Particle->active = true;
+			Fparticle = true;
 			m_Fire->active = false;
 			OffFire = true;
 
@@ -742,6 +674,87 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	//--------------------------------------------------------------------------------------
 
 
+	 // Model들 Frame처리
+	 // 프레임 처리 메모리에 직접타격있으니까 제발 액티브에서만하자!!!!!
+	 //--------------------------------------------------------------------------------------
+	m_Sky->Frame(frameTime*0.00001f, 0.0f, frameTime*0.00002f, 0.0f); //구름
+	m_Minimap->PositionUpdate(CameraPos.x, CameraPos.z); //미니맵
+
+	if (m_Fire->active == true || m_TFire->active == true || m_TFire2->active == true)
+		SetEffectVariable(frameTime*0.0005f);
+
+
+	if (m_Water->active == true)
+		m_Water->Frame(frameTime);
+
+	// 파티클
+	if (m_Particle->active == true)
+		m_Particle->Frame(frameTime);
+
+	else
+		Fparticle = TFparticle = TF2particle = false;
+
+
+	//말1
+	if (starthorse == true)
+	{
+		float horseY;
+		if (m_Terrain->GetHeightAtPosition(horsePos.x, horsePos.z, horseY))
+			horsePos.y = horseY + 2.0f;
+
+		m_horse->Update(1.0f);
+		//800
+
+		if (m_horse->turn == false)
+		{
+			horsePos.x = horsePos.x + frameTime*0.05f;
+
+		}
+		else
+		{
+			horsePos.x = horsePos.x - frameTime*0.05f;
+
+		}
+
+		if (horsePos.x >= 700.0f)
+			m_horse->turn = true;
+
+		if (horsePos.x <= 330.0f)
+			m_horse->turn = false;
+	}
+
+	//609 120
+	//말2
+	if (starthorse2 == true)
+	{
+		float horse2Y;
+		if (m_Terrain->GetHeightAtPosition(horse2Pos.x, horse2Pos.z, horse2Y))
+			horse2Pos.y = horse2Y + 2.0f;
+
+		//800
+		m_horse2->Update(1.0f);
+
+		if (m_horse2->turn == false)
+		{
+			horse2Pos.x = horse2Pos.x + frameTime*0.04f;
+			horse2Pos.z = horse2Pos.z - frameTime*0.04f;
+		}
+		else
+		{
+			horse2Pos.x = horse2Pos.x - frameTime*0.04f;
+			horse2Pos.z = horse2Pos.z + frameTime*0.04f;
+		}
+
+		if (horse2Pos.x >= 605 && horse2Pos.z <= 125)
+			m_horse2->turn = true;
+		if (horse2Pos.x <= 233 && horse2Pos.z >= 502)
+			m_horse2->turn = false;
+	}
+
+	//npc
+	if (renderNpc == true)
+		m_npc->Update(0.5f);
+	//--------------------------------------------------------------------------------------
 
 	return true;
 }
@@ -1015,7 +1028,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// npc 충돌 박스
 	//-----------------------------
-	m_cube->active = m_Frustum->CheckSphere(515.0f, 30.0f, 415.0f, 3.0f);
+	m_cube->active = m_Frustum->CheckPoint(515.0f, 30.0f, 415.0f);
 	
 	if (m_cube->active== true)
 	{
@@ -1050,27 +1063,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	}
 	//-------------------------------------------------------------------------------------
 
-	// 파티클
-	//-------------------------------------------------------------------------------------
 
-	if (m_Particle->active == true)
-	{
-		D3DXVECTOR3 ParticlePosition = { 135.0f, 43.0f, 521.0f };
-		m_Particle->Translation(ParticlePosition.x, ParticlePosition.y, ParticlePosition.z);
-		m_Particle->RotationY(CalculateBillboarding(CameraPos, ParticlePosition));
-		m_Particle->Multiply(m_Particle->GetRotationYMatrix(), m_Particle->GetTranslationMatrix());
-
-		Blender::Get()->SetAdd();
-
-		m_Particle->Render();
-
-		result = m_Shader->RenderParticleShader( m_Particle->GetIndexCount(), m_Particle->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Particle->GetTexture());
-		if (!result) { return false; }
-
-		Blender::Get()->SetOff();
-
-	}
-	//-------------------------------------------------------------------------------------
 
 	// 인스턴싱, 빌보딩객체
 	//-------------------------------------------------------------------------------------
@@ -1122,22 +1115,22 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		Blender::Get()->SetOff();
 	}
 
+	Blender::Get()->SetLinear();
+
 	m_Instancing5->Render();
 
-	result = m_Shader->RenderDiffuseInstancingShader(m_Instancing5->GetVertexCount(), m_Instancing5->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing5->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
-	if (!result) { return false; }
-	//result = m_Shader->RenderInstancingShader(m_Instancing5->GetVertexCount(), m_Instancing5->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing5->GetTexture());
+	//result = m_Shader->RenderDiffuseInstancingShader(m_Instancing5->GetVertexCount(), m_Instancing5->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing5->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
 	//if (!result) { return false; }
+	result = m_Shader->RenderInstancingShader(m_Instancing5->GetVertexCount(), m_Instancing5->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing5->GetTexture());
+	if (!result) { return false; }
 
 	m_Instancing6->Render();
 	//215 46 510
-	result = m_Shader->RenderDiffuseInstancingShader(m_Instancing6->GetVertexCount(), m_Instancing6->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing6->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
-	if (!result) { return false; }
-	//result = m_Shader->RenderInstancingShader(m_Instancing6->GetVertexCount(), m_Instancing6->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing6->GetTexture());
+	//result = m_Shader->RenderDiffuseInstancingShader(m_Instancing6->GetVertexCount(), m_Instancing6->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing6->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
 	//if (!result) { return false; }
+	result = m_Shader->RenderInstancingShader(m_Instancing6->GetVertexCount(), m_Instancing6->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing6->GetTexture());
+	if (!result) { return false; }
 
-	Blender::Get()->SetLinear();
-	
 	m_Instancing7->Render();
 
 	result = m_Shader->RenderInstancingShader(m_Instancing7->GetVertexCount(), m_Instancing7->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing7->GetTexture());
@@ -1274,13 +1267,15 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	m_Shader->RenderTextureShader(m_MouseCursor->GetIndexCount(), m_MouseCursor->FinalMatrix, ImageViewMatrix, orthoMatrix, m_MouseCursor->GetTexture());
 
 
-	if (m_UI->active == true)
-	{
-		m_UI->Render(0, 0);
-		if (!result) { return false; }
-		m_Shader->RenderTextureShader(m_UI->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_UI->GetTexture());
-		if (!result) { return false; }
-	}
+	//if (m_UI->active == true)
+	//{
+	//	m_UI->Render(0, 0);
+	//	if (!result) { return false; }
+	//	m_Shader->RenderTextureShader(m_UI->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_UI->GetTexture());
+	//	if (!result) { return false; }
+	//}
+
+	m_UIManager->renderUI(m_Shader->m_TextureShader, worldMatrix, ImageViewMatrix, orthoMatrix);
 
 	if (m_Balloon->active == true)
 	{
@@ -1311,6 +1306,37 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	DepthStencil::Get()->SetOnState();
 	//-------------------------------------------------------------------------------------
 
+	// 파티클
+	//-------------------------------------------------------------------------------------
+
+	if (m_Particle->active == true)
+	{
+		D3DXVECTOR3 ParticlePosition;
+
+		if (Fparticle == true)
+			ParticlePosition = { 157.0f, 22.0f, 429.0f };
+
+		if (TFparticle == true)
+			ParticlePosition = { 135.0f, 22.0f, 519.0f };
+
+		if (TF2particle == true)
+			ParticlePosition = { 260.0f, 22.0f, 350.0f };
+
+		m_Particle->Translation(ParticlePosition.x, ParticlePosition.y, ParticlePosition.z);
+		m_Particle->RotationY(CalculateBillboarding(CameraPos, ParticlePosition));
+		m_Particle->Multiply(m_Particle->GetRotationYMatrix(), m_Particle->GetTranslationMatrix());
+
+		Blender::Get()->SetAdd();
+
+		m_Particle->Render();
+
+		result = m_Shader->RenderParticleShader(m_Particle->GetIndexCount(), m_Particle->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Particle->GetTexture());
+		if (!result) { return false; }
+
+		Blender::Get()->SetOff();
+
+	}
+	//-------------------------------------------------------------------------------------
 
 
 	//버퍼에 그려진 씬을 화면에 표시한다.
@@ -1324,34 +1350,41 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 //-------------------------------------------------------------------------------------
 void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
 {
+	cibal++;
 
-	if (m_cube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
+	if (cibal ==1)
 	{
-		//m_Particle->active = true;
-		m_UI->active = true;
-	}
-	else
-		m_UI->active = false;
-	
+		if (m_cube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
+		{
+			m_UIManager->active();
+			//m_Particle->active = true;
+			//m_UI->active = true;
+		}
+		else 
+			m_UIManager->unactive();
 
-	if (m_circle->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
-	{
-		m_circle->active = true;
-		m_Balloon->active = true;
-	}
+		//m_UI->active = false;
 
-	if (m_wcube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos)==true && m_Balloon->active==true)
-	{
-		if(Shoot0)
-			Balloon1 = true;
-		
-		else if(Shoot1)
-			Balloon2 = true;
-		
-		else if (Shoot2)
-			Balloon3 = true;
-	}
 
+		if (m_circle->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
+		{
+			m_circle->active = true;
+			m_Balloon->active = true;
+		}
+
+
+		if (m_wcube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos) == true && m_Balloon->active == true)
+		{
+			if (Shoot0)
+				Balloon1 = true;
+
+			else if (Shoot1)
+				Balloon2 = true;
+
+			else if (Shoot2)
+				Balloon3 = true;
+		}
+	}
 	
 
 }
@@ -1510,10 +1543,10 @@ bool GraphicsClass::RenderEndScene()
 
 bool GraphicsClass::End()
 {
-	if (OffFire == true && OffTFire == true && OffTFire2 == true)
+	if (OffFire == true && OffTFire == true && OffTFire2 == true && m_UIManager->m_UI[0]->active==true)
 	{
-		m_end = true;
 		PreShutdown();
+		m_end = true;
 	}
 
 	return m_end;

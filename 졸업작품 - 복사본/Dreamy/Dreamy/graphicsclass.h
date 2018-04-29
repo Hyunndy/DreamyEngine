@@ -43,6 +43,7 @@
 #include "ParticleSystem.h"
 #include "WaterClass.h"
 #include "RTTTextureClass.h"
+#include "UIManagerClass.h"
 
 
 
@@ -88,14 +89,10 @@ public:
 public:
 	bool F1pressed;
 	D3DXMATRIX minimapMatrix; // 미니맵 
-	D3DXMATRIX Cube3WorldMatrix;
-	D3DXMATRIX ShootMatrix;
+	bool click = false;
+	bool sibal = false;
+	int cibal = 0;
 
-	D3DXVECTOR3 Gravity = { 0.0f, -9.8f, 0.0f };
-	D3DXVECTOR3 Accell = { 0.0f, 0.0f, 0.0f };
-	D3DXVECTOR3 vPosition = { 0.0f, 0.0f, 0.0f };
-	//D3DXVECTOR3 vVelocity = { 0.0f,0.97f,0.08f };
-	D3DXVECTOR3 vVelocity = { 0.0f,1.5f,0.5f };
 private:
 	void PreShutdown();
 	bool RenderRunningScene(bool);
@@ -108,8 +105,16 @@ private:
 private:
 	bool m_end = false; //게임 클리어인지 아닌지.
 private:
+	//물풍선 관련.
+	D3DXMATRIX Cube3WorldMatrix;
+	D3DXMATRIX ShootMatrix;
+
+	D3DXVECTOR3 Gravity = { 0.0f, -9.8f, 0.0f };
+	D3DXVECTOR3 Accell = { 0.0f, 0.0f, 0.0f };
+	D3DXVECTOR3 vPosition = { 0.0f, 0.0f, 0.0f };
+	//D3DXVECTOR3 vVelocity = { 0.0f,0.97f,0.08f };
+	D3DXVECTOR3 vVelocity = { 0.0f,1.5f,0.5f };
 	int width, height;
-	bool sibal = false;
 	bool shoot = false;
 	float dy, dz;
 	int dx=0;
@@ -118,7 +123,6 @@ private:
 	FrustumClass* m_Frustum =  nullptr;
 	ShaderManagerClass* m_Shader = nullptr;
 	LightClass* m_Light = nullptr;
-
 
 private:
 	TerrainClass* m_Terrain= nullptr;
@@ -189,6 +193,8 @@ private:
 
 private:
 	ImageClass* m_UI =nullptr;
+	UIManagerClass* m_UIManager = nullptr;
+
 
 private:
 	//집에 있는 나무
@@ -218,6 +224,9 @@ private:
 
 private:
 	ParticleSystem* m_Particle = nullptr;
+	bool Fparticle = false;
+	bool TFparticle = false;
+	bool TF2particle = false;
 
 private:
 

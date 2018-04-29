@@ -48,7 +48,8 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 	int GetIndexCount();
 
-	bool active;
+public:
+	bool active = false;
 
 private:
 

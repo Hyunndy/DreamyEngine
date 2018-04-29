@@ -103,7 +103,9 @@ private:
 
 	int screenWidth, screenHeight;
 	int mouseX, mouseY;
+
 	bool Shoot = false;
+
 
 	D3DXVECTOR3 pos, rot;
 	

@@ -228,9 +228,6 @@ void SystemClass::Run()
 		else
 		{
 
-			if (m_Graphics->End() == true)
-				m_state = STATE::END;
-
 			if (m_state == STATE::RUNNING)
 			{
 				// Otherwise do the frame processing.
@@ -312,20 +309,29 @@ bool SystemClass::Frame()
 	else
 		Shoot = false;
 
+
 	//왼쪽 마우스 클릭시 그래픽들 반응
 	if (m_Input->IsLeftMouseButtonDown())
+	{
+		m_Graphics->click = true;
 		m_Graphics->CheckIntersection(mouseX, mouseY, screenWidth, screenHeight);
+	}
+	else
+		m_Graphics->click = false;
 
-
+	if (m_Graphics->End() == true)
+		m_state = STATE::END;
 
 	return true;
 }
 
 void SystemClass::End()
-{
-	m_Input->Frame();
+{	
 	SAFE_SHUTDOWN(m_Sound);
+	m_Input->Frame();
 	m_Graphics->RenderEndScene();
+
+
 }
 // 윈도우의 시스템 메세지가 전달되는 곳.
 // 현재 단지 키가 눌려있는지, 뗴어지는지를 알 수 있고 이 정보를 m_Input객체에 전달한다.
