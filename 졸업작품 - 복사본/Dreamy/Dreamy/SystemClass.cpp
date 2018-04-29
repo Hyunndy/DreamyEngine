@@ -187,17 +187,8 @@ bool SystemClass::Loading()
 void SystemClass::Shutdown()
 {
 
-	
-	//SAFE_DELETE(m_Timer);
-	//SAFE_SHUTDOWN(m_Cpu);
-	//SAFE_DELETE(m_FPS);
-	SAFE_SHUTDOWN(m_Sound);
-
-
+	//SAFE_SHUTDOWN(m_Sound);
 	m_Frame->Delete();
-
-
-
 	SAFE_SHUTDOWN(m_Graphics);
 	SAFE_SHUTDOWN(m_Input);
 
@@ -236,25 +227,31 @@ void SystemClass::Run()
 		}
 		else
 		{
-			// Otherwise do the frame processing.
-			result = Frame();
 
-			if (!result)
+			if (m_Graphics->End() == true)
+				m_state = STATE::END;
+
+			if (m_state == STATE::RUNNING)
 			{
-				done = true;
+				// Otherwise do the frame processing.
+				result = Frame();
+
+				if (!result)
+				{
+					done = true;
+				}
 			}
 
-
-			
+			if (m_state == STATE::END)
+			{
+				End();
+			}
 			// ESC키를 확인하는 함수
 			if (m_Input->IsEscapePressed() == true)
 			{
 				done = true;
 			}
-			if (m_Input->IsSpacePressed() == true)
-				Shoot = true;
-			else
-				Shoot = false;
+
 
 		}
 	}
@@ -279,10 +276,6 @@ bool SystemClass::HandleInput()
 		Camera::Get()->RotateDown();
 	if (m_Input->IsLookUpTurned())
 		Camera::Get()->RotateUp();
-
-
-
-	
 
 	return true;
 }
@@ -313,6 +306,11 @@ bool SystemClass::Frame()
 	result = m_Graphics->Render(F1pressed);
 	if (!result) { return false; }
 
+	//총알발사
+	if (m_Input->IsSpacePressed() == true)
+		Shoot = true;
+	else
+		Shoot = false;
 
 	//왼쪽 마우스 클릭시 그래픽들 반응
 	if (m_Input->IsLeftMouseButtonDown())
@@ -320,15 +318,15 @@ bool SystemClass::Frame()
 
 
 
-
-	
-	
-
-
-
 	return true;
 }
 
+void SystemClass::End()
+{
+	m_Input->Frame();
+	SAFE_SHUTDOWN(m_Sound);
+	m_Graphics->RenderEndScene();
+}
 // 윈도우의 시스템 메세지가 전달되는 곳.
 // 현재 단지 키가 눌려있는지, 뗴어지는지를 알 수 있고 이 정보를 m_Input객체에 전달한다.
 

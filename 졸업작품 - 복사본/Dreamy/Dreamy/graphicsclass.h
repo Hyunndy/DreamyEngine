@@ -50,7 +50,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
@@ -78,6 +78,9 @@ public:
 
 	bool RenderMainScene();
 	bool RenderLoadingScene();
+	bool RenderEndScene();
+
+	bool End();
 
 	//Picking 검사
 	//void TestIntersection(int, int, int, int);
@@ -94,8 +97,7 @@ public:
 	//D3DXVECTOR3 vVelocity = { 0.0f,0.97f,0.08f };
 	D3DXVECTOR3 vVelocity = { 0.0f,1.5f,0.5f };
 private:
-
-
+	void PreShutdown();
 	bool RenderRunningScene(bool);
 	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
 
@@ -104,13 +106,13 @@ private:
 	float CalculateBillboarding(D3DXVECTOR3,D3DXVECTOR3);
 
 private:
+	bool m_end = false; //게임 클리어인지 아닌지.
+private:
 	int width, height;
 	bool sibal = false;
 	bool shoot = false;
 	float dy, dz;
 	int dx=0;
-
-
 
 private:
 	FrustumClass* m_Frustum =  nullptr;
@@ -134,9 +136,11 @@ private:
 	ModelClass* m_wcube = nullptr;
 	ModelClass* m_circle = nullptr;
 	ModelClass* m_Billboarding = nullptr;
-	ModelClass* m_House = nullptr;
+	ModelClass* m_Mark = nullptr;
 	ModelClass* m_Tree = nullptr;
 
+	ModelClass* m_House = nullptr;
+	bool OffFire = false;
 
 private:
 	float fire_frametime, distortionScale, distortionBias;
@@ -149,7 +153,9 @@ private:
 	ModelClass* m_Fire = nullptr;
 	ModelClass* m_TFire = nullptr;
 	ModelClass* m_TFire2 = nullptr;
+	bool renderFire = false;
 	bool renderTFire = false;
+	bool renderTFire2 = false;
 
 
 private:
@@ -188,8 +194,13 @@ private:
 	//집에 있는 나무
 	InstancingClass* m_Instancing = nullptr;
 	InstancingClass* m_Instancing2 = nullptr;
+	bool OffTFire = false;
+
 	InstancingClass* m_Instancing3 = nullptr;
 	InstancingClass* m_Instancing4 = nullptr;
+	bool OffTFire2 = false;
+
+
 	InstancingClass* m_Instancing5 = nullptr;
 	InstancingClass* m_Instancing6 = nullptr;
 

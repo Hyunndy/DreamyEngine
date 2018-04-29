@@ -40,6 +40,7 @@ namespace STATE
 		MAIN,
 		LOADING,
 		RUNNING,
+		END,
 	};
 }
 
@@ -72,6 +73,7 @@ public:
 	bool Loading();
 	void Shutdown();
 	void Run();
+	void End();
 
 	
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM); // 윈도우로부터 오는 시스템 메세지들을 어플리케이션이 돌아가는 동안 전달하도록 한다.

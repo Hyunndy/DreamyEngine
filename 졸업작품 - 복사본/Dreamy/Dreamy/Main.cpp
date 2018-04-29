@@ -35,10 +35,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 		System->Loading();
 	}
 
-	if (System->m_state==STATE::RUNNING )
+	if (System->m_state==STATE::RUNNING || System->m_state==STATE::END)
 	{
 		System->Run();
 	}
+
+
 
 	//객체를 종료하고 메모리를 반환한다.
 	System->Shutdown();
