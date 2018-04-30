@@ -348,7 +348,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing->SetInsatanceVariable(-5.0f, 0.0f, 25.0f);
 	m_Instancing->SetInstancePosition(140.0f, 11.0f, 470.0f);
 
-	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/bark_0021.jpg");
+	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/tree_bark.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing2 = new InstancingClass;
@@ -368,7 +368,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing3->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
 	m_Instancing3->SetInstancePosition(285.0f, 16.0f, 350.0f);
 
-	result = m_Instancing3->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/bark_0021.jpg");
+	result = m_Instancing3->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/tree_bark.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing4 = new InstancingClass;
@@ -388,7 +388,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing5->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
 	m_Instancing5->SetInstancePosition(285.0f, 10.0f, 600.0f);
 
-	result = m_Instancing5->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/bark_0021.jpg");
+	result = m_Instancing5->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/tree_bark.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing6 = new InstancingClass;
@@ -409,7 +409,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing7->SetInsatanceVariable(25.0f, 0.0f, 0.0f);
 	m_Instancing7->SetInstancePosition(735.0f, 13.0f, 530.0f);
 
-	result = m_Instancing7->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/bark_0021.jpg");
+	result = m_Instancing7->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/tree_bark.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing8 = new InstancingClass;
@@ -484,13 +484,14 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//집에 난 불
 	m_Fire = new ModelClass;
 
-	result = m_Fire->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire01.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	result = m_Fire->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize fire effect object", L"Error", MB_OK); return false; }
 
-	m_Fire->Translation(157.0f, 49.0f, 429.0f);
+	m_Fire->Translation(157.0f, 76.0f, 429.0f);
 	//m_Fire->RotationY(CalculateBillboarding(CameraPos, firePosition));
 	m_Fire->RotationY(29.7f);
-	m_Fire->Scale(40.0f, 50.0f, 40.0f);
+	m_Fire->Scale(40.0f, 60.0f, 40.0f);
+
 	m_Fire->Multiply(m_Fire->GetScailingMatrix(), m_Fire->GetRotationYMatrix());
 	m_Fire->Multiply(m_Fire->GetFinalMatrix(), m_Fire->GetTranslationMatrix());
 	m_Fire->active = true;
@@ -498,21 +499,22 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//나무1에 난 불
 	m_TFire = new ModelClass;
 
-	result = m_TFire->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire01.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	result = m_TFire->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize m_TFire effect object", L"Error", MB_OK); return false; }
 
-	m_TFire->Translation(130.0f, 53.0f, 521.0f);
-	m_TFire->Scale(20.0f, 20.0f, 20.0f);
+	m_TFire->Translation(130.0f, 56.0f, 521.0f);
+	m_TFire->Scale(20.0f, 30.0f, 20.0f);
 	m_TFire->active = true;
 
 	//나무3에 난 불
 	m_TFire2 = new ModelClass;
 
-	result = m_TFire2->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire01.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	result = m_TFire2->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize m_TFire2 effect object", L"Error", MB_OK); return false; }
 
-	m_TFire2->Translation(260.0f, 56.0f, 348.0f);
-	m_TFire2->Scale(20.0f, 20.0f, 20.0f);
+	m_TFire2->Translation(260.0f, 60.0f, 348.0f);
+	m_TFire2->Scale(20.0f, 30.0f, 20.0f);
+
 	m_TFire2->active = true;
 	//--------------------------------------------------------------------------------------
 	
@@ -1193,7 +1195,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 불 빌보딩
 	//-----------------------------
-	renderFire = m_Frustum->CheckPoint(157.0f, 49.0f, 429.0f);
+	renderFire = m_Frustum->CheckPoint(157.0f, 57.0f, 429.0f);
 
 	if (m_Fire->active == true && m_Fire->active ==true)
 	{
@@ -1205,11 +1207,11 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (!result) { return false; }
 	}
 
-	renderTFire = m_Frustum->CheckPoint(130.0f, 53.0f, 521.0f);
+	renderTFire = m_Frustum->CheckPoint(130.0f, 56.0f, 521.0f);
 
 	if (renderTFire==true && m_TFire->active == true)
 	{
-		D3DXVECTOR3 TFirePosition = { 130.0f, 53.0f, 521.0f };
+		D3DXVECTOR3 TFirePosition = { 130.0f, 56.0f, 521.0f };
 		m_TFire->RotationY(CalculateBillboarding(CameraPos, TFirePosition));
 
 		m_TFire->Multiply(m_TFire->GetScailingMatrix(), m_TFire->GetRotationYMatrix());
@@ -1222,12 +1224,13 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 			fire_frametime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 		if (!result) { return false; }
 	}
-
-	renderTFire2 = m_Frustum->CheckPoint(260.0f, 56.0f, 348.0f);
+	//260 56 348
+	renderTFire2 = m_Frustum->CheckCube(260.0f, 60.0f, 340.0f, 3.0f);
 
 	if (m_TFire2->active == true && renderTFire2==true)
 	{
-		D3DXVECTOR3 TFire2Position = { 260.0f, 56.0f, 348.0f };
+
+		D3DXVECTOR3 TFire2Position = { 260.0f, 60.0f, 348.0f };
 		m_TFire2->RotationY(CalculateBillboarding(CameraPos, TFire2Position));
 
 		m_TFire2->Multiply(m_TFire2->GetScailingMatrix(), m_TFire2->GetRotationYMatrix());
@@ -1235,10 +1238,12 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 		m_TFire2->Render();
 
+
 		result = m_Shader->RenderFireShader(m_TFire2->GetIndexCount(), m_TFire2->GetFinalMatrix(), viewMatrix,
 			projectionMatrix, m_TFire2->GetTripleTexture1(), m_TFire2->GetTripleTexture2(), m_TFire2->GetTripleTexture3(),
 			fire_frametime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 		if (!result) { return false; }
+
 	}
 
 	// 2D

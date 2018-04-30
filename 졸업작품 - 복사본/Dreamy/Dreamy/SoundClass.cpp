@@ -343,7 +343,7 @@ bool SoundClass::PlayWaveFile(int i)
 
 		// 1차 버퍼의 오디오와의 믹싱을 수행한다.
 		// 3번째 인자가 1번 실행이면 0, 반복 싱행이면 1이다.
-		result = m_secondaryBuffer1->Play(0, 0, 0);
+		result = m_secondaryBuffer1->Play(0, 0, 1);
 
 		if (FAILED(result)) { return false; }
 	}
@@ -354,7 +354,7 @@ bool SoundClass::PlayWaveFile(int i)
 		if (FAILED(result)) { return false; }
 
 		// 1차 버퍼에서 볼륨을 컨트롤할 수 있게 description을 작성했으니 볼륨을 최대로 맞춘다.
-		result = m_secondaryBuffer2->SetVolume((DSBVOLUME_MAX)/5);
+		result = m_secondaryBuffer2->SetVolume((DSBVOLUME_MAX)/8);
 		if (FAILED(result)) { return false; }
 
 		result = m_secondaryBuffer2->SetFrequency(1);

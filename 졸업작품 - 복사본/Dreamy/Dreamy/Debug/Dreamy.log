@@ -55,20 +55,17 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(608): w
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50445): note: 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'의 이전 정의를 참조하십시오.
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': 매크로 재정의
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50454): note: 'D3D10_ERROR_FILE_NOT_FOUND'의 이전 정의를 참조하십시오.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(611): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(612): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(691): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1020): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1026): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1252): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1266): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1287): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1294): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1301): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(862): warning C4101: 'renderModel' :참조되지 않은 지역 변수입니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1496): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  SoundClass.cpp
-  코드를 생성하고 있습니다...
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\soundclass.cpp(52): warning C4715: 'SoundClass::Initialize': 모든 제어 경로에서 값을 반환하지는 않습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(613): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(614): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(693): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1022): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1028): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1257): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1271): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1292): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1299): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1306): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(864): warning C4101: 'renderModel' :참조되지 않은 지역 변수입니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1501): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   Dreamy.vcxproj -> C:\Users\user\Documents\GitHub\DreamyEngine\졸업작품 - 복사본\Dreamy\Debug\Dreamy.exe
   Dreamy.vcxproj -> C:\Users\user\Documents\GitHub\DreamyEngine\졸업작품 - 복사본\Dreamy\Debug\Dreamy.pdb (Full PDB)
