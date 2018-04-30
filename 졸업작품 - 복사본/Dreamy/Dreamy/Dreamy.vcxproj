@@ -271,6 +271,7 @@
     <ClInclude Include="SkyClass.h" />
     <ClInclude Include="SkyDomeShaderClass.h" />
     <ClInclude Include="SkyPlaneShaderClass.h" />
+    <ClInclude Include="SoundClass.h" />
     <ClInclude Include="SpecMapShaderClass.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdafx_fbx.h" />

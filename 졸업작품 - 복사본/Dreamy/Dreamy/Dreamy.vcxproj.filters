@@ -374,5 +374,6 @@
     </ClInclude>
     <ClInclude Include="D3D.h" />
     <ClInclude Include="UIManagerClass.h" />
+    <ClInclude Include="SoundClass.h" />
   </ItemGroup>
 </Project>

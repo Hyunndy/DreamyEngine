@@ -638,6 +638,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	{
 		if (dx == 129)
 		{
+			EffectSound = true;
 			m_Particle->active = true;
 			TFparticle = true;
 			m_TFire->active = false;
@@ -650,6 +651,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	{
 		if (dx == 129)
 		{
+			EffectSound = true;
 			m_Particle->active = true;
 			TF2particle = true;
 			m_TFire2->active = false;
@@ -663,6 +665,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	{
 		if (dx == 129)
 		{
+			EffectSound = true;
 			m_Particle->active = true;
 			Fparticle = true;
 			m_Fire->active = false;

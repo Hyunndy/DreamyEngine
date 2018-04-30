@@ -35,13 +35,19 @@ bool SoundClass::Initialize(HWND hwnd)
 	if (!result) { return false; }
 
 	//.wav오디오 파일을 로드하고 그 데이터로 2차버퍼를 초기화 한다.
-	result = LoadWaveFile("../Dreamy/sound03.wav", &m_secondaryBuffer1);
+	result = LoadWaveFile("../Dreamy/main.wav", &m_secondaryBuffer1);
+	if (!result) { return false; }
+
+	result = LoadWaveFile("../Dreamy/sound03.wav", &m_secondaryBuffer2);
+	if (!result) { return false; }
+
+	result = LoadWaveFile("../Dreamy/waterballoon.wav", &m_secondaryBuffer3);
 	if (!result) { return false; }
 
 	//.wav파일을 재생한다.
 	// 나중엔 이걸 다른데서 하면 되겠지!
-	result = PlayWaveFile();
-	if (!result) { return false; }
+	//result = PlayWaveFile();
+	//if (!result) { return false; }
 	
 }
 
@@ -317,31 +323,75 @@ bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuf
 - 2차 버퍼의 시작 부분으로 시작 위치를 지정했다. (아니면 가장 최근에 재생했던 부분부터 시작한다)
 - 볼륨을 세팅한다.
 ----------------------------------------------------------------------------------------------------------------*/
-bool SoundClass::PlayWaveFile()
+bool SoundClass::PlayWaveFile(int i)
 {
 	HRESULT result;
 
 
 	// 사운드 버퍼의 시작 부분을 정한다.
 	// 2차 버퍼의 시작 부분으로 시작 위치를 정함.
-	result = m_secondaryBuffer1->SetCurrentPosition(0);
-	if(FAILED(result)) { return false; }
+	if (i == 1)
+	{
+		result = m_secondaryBuffer1->SetCurrentPosition(0);
+		if (FAILED(result)) { return false; }
 
-	// 1차 버퍼에서 볼륨을 컨트롤할 수 있게 description을 작성했으니 볼륨을 최대로 맞춘다.
-	result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
-	if(FAILED(result)) { return false; } 
-	
-	result = m_secondaryBuffer1->SetFrequency(1);
+		// 1차 버퍼에서 볼륨을 컨트롤할 수 있게 description을 작성했으니 볼륨을 최대로 맞춘다.
+		result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result)) { return false; }
 
-	// 1차 버퍼의 오디오와의 믹싱을 수행한다.
-	// 3번째 인자가 1번 실행이면 0, 반복 싱행이면 1이다.
-	result = m_secondaryBuffer1->Play(0, 0, 1);
+		result = m_secondaryBuffer1->SetFrequency(1);
 
-	if(FAILED(result)) { return false; } 
-	
+		// 1차 버퍼의 오디오와의 믹싱을 수행한다.
+		// 3번째 인자가 1번 실행이면 0, 반복 싱행이면 1이다.
+		result = m_secondaryBuffer1->Play(0, 0, 0);
+
+		if (FAILED(result)) { return false; }
+	}
+
+	if (i == 2)
+	{
+		result = m_secondaryBuffer2->SetCurrentPosition(0);
+		if (FAILED(result)) { return false; }
+
+		// 1차 버퍼에서 볼륨을 컨트롤할 수 있게 description을 작성했으니 볼륨을 최대로 맞춘다.
+		result = m_secondaryBuffer2->SetVolume((DSBVOLUME_MAX)/5);
+		if (FAILED(result)) { return false; }
+
+		result = m_secondaryBuffer2->SetFrequency(1);
+
+		// 1차 버퍼의 오디오와의 믹싱을 수행한다.
+		// 3번째 인자가 1번 실행이면 0, 반복 싱행이면 1이다.
+		result = m_secondaryBuffer2->Play(0, 0, 1);
+
+		if (FAILED(result)) { return false; }
+	}
+
+	if (i == 3)
+	{
+
+		result = m_secondaryBuffer3->SetCurrentPosition(0);
+		if (FAILED(result)) { return false; }
+
+		// 1차 버퍼에서 볼륨을 컨트롤할 수 있게 description을 작성했으니 볼륨을 최대로 맞춘다.
+		result = m_secondaryBuffer3->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result)) { return false; }
+
+		result = m_secondaryBuffer3->SetFrequency(1);
+
+		// 1차 버퍼의 오디오와의 믹싱을 수행한다.
+		// 3번째 인자가 1번 실행이면 0, 반복 싱행이면 1이다.
+		result = m_secondaryBuffer3->Play(0, 0, 0);
+
+		if (FAILED(result)) { return false; }
+	}
 	
 	return true;
 
+}
+
+void SoundClass::ShutdownMainSound()
+{
+	ShutdownWaveFile(&m_secondaryBuffer1);
 }
 
 /*--------------------------------------------------------------------------------------------------------------
@@ -351,7 +401,8 @@ bool SoundClass::PlayWaveFile()
 void SoundClass::Shutdown()
 {
 	// 2차 버퍼를 해제한다.
-	ShutdownWaveFile(&m_secondaryBuffer1);
+	ShutdownWaveFile(&m_secondaryBuffer2);
+	ShutdownWaveFile(&m_secondaryBuffer3);
 
 	// DirectSound, 1차 버퍼를 해제한다.
 	ShutdownDirectSound();

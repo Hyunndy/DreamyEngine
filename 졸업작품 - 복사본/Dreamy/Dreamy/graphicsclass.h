@@ -51,7 +51,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
@@ -92,6 +92,7 @@ public:
 	bool click = false;
 	bool sibal = false;
 	int cibal = 0;
+	bool EffectSound = false;
 
 private:
 	void PreShutdown();

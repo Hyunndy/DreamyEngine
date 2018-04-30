@@ -76,6 +76,15 @@ bool SystemClass::Initialize()
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Grahpics object.", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
 
+	//// Sound 객체 생성
+	//-------------------------------------------------------------------------------------
+	m_Sound = new SoundClass;
+	if (!m_Sound) { return false; }
+
+	result = m_Sound->Initialize(m_hwnd);
+	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Sound object.", L"Error", MB_OK); return false; }
+	//-------------------------------------------------------------------------------------
+
 
 	// m_state상태 변경
 	//--------------------------------------------------------------------------------------
@@ -93,12 +102,18 @@ void SystemClass::Main()
 	bool result;
 	bool Start = false;
 
+
+
+	//메인화면 출력
 	result = m_Graphics->RenderMainScene();
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
 
+	//메인사운드 출력
+	result = m_Sound->PlayWaveFile(1);
+	if (!result) { MessageBox(m_hwnd, L"Could not initialize the main sound.", L"Error", MB_OK); }
+
 	while (Start==false)
 	{
-
 		// 키보드&마우스 상태를 갱신하도록 한다.
 		result = m_Input->Frame();
 
@@ -166,20 +181,16 @@ bool SystemClass::Loading()
 
 
 
-	//// Sound 객체 생성
-	//-------------------------------------------------------------------------------------
-	m_Sound = new SoundClass;
-	if (!m_Sound) { return false; }
-	
-	result = m_Sound->Initialize(m_hwnd);
-	if (!result) { MessageBox(m_hwnd, L"Could not initialize the Sound object.", L"Error", MB_OK); return false; }
-	//-------------------------------------------------------------------------------------
 
 
 
 	m_Input->SetMousePosition();
 	m_state = STATE::RUNNING;
-
+	if (m_state = STATE::RUNNING)
+	{
+		m_Sound->ShutdownMainSound();
+		m_Sound->PlayWaveFile(2);
+	}
 	return true;
 }
 
@@ -208,6 +219,7 @@ void SystemClass::Run()
 
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
+
 
 	// Loop until there is a quit message from the window or the user.
 	done = false;
@@ -321,6 +333,12 @@ bool SystemClass::Frame()
 
 	if (m_Graphics->End() == true)
 		m_state = STATE::END;
+
+	if (m_Graphics->EffectSound == true)
+	{
+		m_Sound->PlayWaveFile(3);
+		m_Graphics->EffectSound = false;
+	}
 
 	return true;
 }

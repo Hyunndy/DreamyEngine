@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _SOUNDCLASS_H_
-#define _SOUNDCLASS_H_
 
 //라이브러리
 #pragma comment(lib, "dsound.lib")
@@ -52,6 +50,9 @@ public:
 	bool Initialize(HWND);
 	void Shutdown();
 
+	bool PlayWaveFile(int i);
+	void ShutdownMainSound();
+
 private:
 	bool InitializeDirectSound(HWND);
 	void ShutdownDirectSound();
@@ -61,7 +62,7 @@ private:
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 
 
-	bool PlayWaveFile(); 
+
 
 
 private:
@@ -70,7 +71,9 @@ private:
 	IDirectSoundBuffer* m_primaryBuffer;
 
 	//사운드 갯수 만큼 2차 버퍼를 생성해야 한다.
-	IDirectSoundBuffer8* m_secondaryBuffer1;
+	IDirectSoundBuffer8* m_secondaryBuffer1; //메인
+	IDirectSoundBuffer8* m_secondaryBuffer2; //게임루프
+	IDirectSoundBuffer8* m_secondaryBuffer3; //효과음
+
 };
 
-#endif
