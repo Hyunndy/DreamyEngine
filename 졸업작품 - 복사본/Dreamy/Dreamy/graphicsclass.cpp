@@ -638,7 +638,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	//--------------------------------------------------------------------------------------
 	if (shoot == true && m_circle->active == true && m_TFire->active == true && CameraPos.x <= 180.0f &&CameraPos.z >= 490.0f&& CameraPos.z <= 560.0f)
 	{
-		if (dx == 129)
+		if (dx == 94)
 		{
 			EffectSound = true;
 			m_Particle->active = true;
@@ -651,7 +651,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	//230 280
 	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f && CameraPos.x >=230.0f && CameraPos.x <=280.0f)
 	{
-		if (dx == 129)
+		if (dx == 94)
 		{
 			EffectSound = true;
 			m_Particle->active = true;
@@ -665,7 +665,7 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 	// 157.0f, 49.0f, 429.0f
 	if (shoot == true && m_circle->active == true && m_Fire->active == true && CameraPos.x <= 215.0f && CameraPos.z >=385.0f && CameraPos.z <=465.0f)
 	{
-		if (dx == 129)
+		if (dx == 94)
 		{
 			EffectSound = true;
 			m_Particle->active = true;
@@ -767,15 +767,12 @@ bool GraphicsClass::Frame(int fps,  float frameTime, D3DXVECTOR3 pos, D3DXVECTOR
 void GraphicsClass::Shoot(float frametime)
 {
 
-		//dy += frameTime*0.00009f;
-		//dz += frameTime*0.0005f;
-
 		Accell = Gravity;
-		//5
-		//3 일때 제대로나옴 속도 0.95 0.08
 
-		//vVelocity = vVelocity + Accell *frameTime*0.00008f;
-		vVelocity = vVelocity + Accell*frametime*0.00017f;
+		if (dx <= 20)
+			vVelocity = vVelocity;
+		else
+			vVelocity = vVelocity + Accell*frametime*0.00085f;
 
 		vPosition = vPosition + vVelocity *frametime*0.00010f;
 
@@ -787,7 +784,7 @@ void GraphicsClass::Shoot(float frametime)
 
 		dx++;
 
-		if (dx == 130)
+		if (dx == 95)
 		{
 			shoot = false;
 			dx = 0;
@@ -795,7 +792,7 @@ void GraphicsClass::Shoot(float frametime)
 			dz = 0.0f;
 			Accell = { 0.0f, 0.0f, 0.0f };
 			vPosition = { 0.0f, 0.0f, 0.0f };
-			vVelocity = { 0.0f,1.5f,0.5f };
+			vVelocity = { 0.0f,3.0f,1.5f };
 			D3DXMatrixTranslation(&ShootMatrix, 0.0f, dy, dz);
 			D3DXMatrixIdentity(&Cube3WorldMatrix);
 
@@ -804,8 +801,7 @@ void GraphicsClass::Shoot(float frametime)
 			else if (Shoot2)
 				Balloon2 = false;
 			else if (Shoot1)
-				Balloon1 = false;
-			
+				Balloon1 = false;	
 		}
 	
 }
@@ -1195,7 +1191,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// 불 빌보딩
 	//-----------------------------
-	renderFire = m_Frustum->CheckPoint(157.0f, 57.0f, 429.0f);
+	renderFire = m_Frustum->CheckPoint(157.0f, 76.0f, 429.0f);
 
 	if (m_Fire->active == true && m_Fire->active ==true)
 	{
@@ -1207,7 +1203,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (!result) { return false; }
 	}
 
-	renderTFire = m_Frustum->CheckPoint(130.0f, 56.0f, 521.0f);
+	renderTFire = m_Frustum->CheckCube(130.0f, 54.0f, 521.0f, 5.0f);
 
 	if (renderTFire==true && m_TFire->active == true)
 	{
@@ -1225,7 +1221,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (!result) { return false; }
 	}
 	//260 56 348
-	renderTFire2 = m_Frustum->CheckCube(260.0f, 60.0f, 340.0f, 3.0f);
+	renderTFire2 = m_Frustum->CheckCube(260.0f, 57.0f, 340.0f, 5.0f);
 
 	if (m_TFire2->active == true && renderTFire2==true)
 	{

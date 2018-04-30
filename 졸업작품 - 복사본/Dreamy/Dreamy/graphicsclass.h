@@ -51,7 +51,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
@@ -110,11 +110,11 @@ private:
 	D3DXMATRIX Cube3WorldMatrix;
 	D3DXMATRIX ShootMatrix;
 
-	D3DXVECTOR3 Gravity = { 0.0f, -9.8f, 0.0f };
+
+	D3DXVECTOR3 Gravity = { 0.0f, -11.8f, 0.0f };
 	D3DXVECTOR3 Accell = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 vPosition = { 0.0f, 0.0f, 0.0f };
-	//D3DXVECTOR3 vVelocity = { 0.0f,0.97f,0.08f };
-	D3DXVECTOR3 vVelocity = { 0.0f,1.5f,0.5f };
+	D3DXVECTOR3 vVelocity = { 0.0f,3.0f,1.5f };
 	int width, height;
 	bool shoot = false;
 	float dy, dz;
