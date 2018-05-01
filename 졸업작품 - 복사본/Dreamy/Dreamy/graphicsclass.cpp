@@ -102,14 +102,12 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	wstring tPosePath = filePath + L"Horse.fbx";
 	wstring idlePath = filePath + L"Horse_Idle.fbx";
 	wstring runPath = filePath + L"Horse_Run.fbx";
-	//wstring walkPath = filePath + L"Horse_Walk.fbx";
-	//horsePos = { 333.0f, 10.0f, 349.0f };
-	//horse2Pos = { 235.0f, 10.0f, 500.0f };
+
 
 	//말1
 	m_horse = new ModelScene();
 
-	m_horse->TexturePath = filePath + L"Horse_D.png";	
+	m_horse->TexturePath = filePath + L"Horse_D.dds";	
 	m_horse->LoadScene(tPosePath, true, true, true, false);
 	m_horse->LoadScene(runPath, false, false, false, true);
 	
@@ -148,32 +146,6 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_npc->Multiply(m_npc->GetFinalMatrix(), m_npc->GetTranslationMatrix());
 	m_npc->SetWorldTransform(m_npc->GetFinalMatrix());
 
-	//wstring tPosePath2 = filePath + L"Elf.fbx";
-	//m_npc->TexturePath = filePath + L"Elf_D.png";
-	//
-	//wstring idlePath2 = filePath + L"Elf_Idle.fbx";
-	//
-	//m_npc->LoadScene(tPosePath2, true, true, true, false);
-	//m_npc->LoadScene(idlePath2, false, false, false, true);
-	//
-	//// Default Animation 설정
-	//m_npc->SetCurrentAnimation(idlePath2);
-	//
-	//D3DXMATRIX NpcWorldMatrix;
-	//D3DXMATRIX NpcTranslationMatrix;
-	//D3DXMATRIX NpcRotationMatrix;
-	//
-	//D3DXMatrixIdentity(&NpcWorldMatrix);
-	//D3DXMatrixIdentity(&NpcRotationMatrix);
-	//D3DXMatrixIdentity(&NpcTranslationMatrix);
-	//D3DXMatrixRotationY(&NpcRotationMatrix, -35.0f);
-	//D3DXMatrixTranslation(&NpcTranslationMatrix, 545.0f, 10.0f, 345.0f);
-	//D3DXMatrixMultiply(&NpcWorldMatrix, &NpcRotationMatrix, &NpcTranslationMatrix);
-	//m_npc->SetWorldTransform(NpcWorldMatrix);
-
-
-
-
 	//--------------------------------------------------------------------------------------
 
 	// OBJ모델
@@ -183,7 +155,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_cube = new ModelClass;
 	if (!m_cube) { return false; }
 	
-	result = m_cube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/water.png");
+	result = m_cube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/point.png");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
 	m_cube->Translation(513.0f, 30.0f, 410.0f);
@@ -195,7 +167,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_wcube = new ModelClass;
 	if (!m_wcube) { return false; }
 
-	result = m_wcube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/TreeTexture.jpg");
+	result = m_wcube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/point.png");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
 	m_wcube->Translation(766.0f, 11.0f, 470.0f);
@@ -207,7 +179,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_circle = new ModelClass;
 	if (!m_circle) { return false; }
 
-	result = m_circle->Initialize("../Dreamy/Data/sphere.txt", L"../Dreamy/Data/water.png");
+	result = m_circle->Initialize("../Dreamy/Data/sphere.txt", L"../Dreamy/Data/water.dds");
 	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
 
 	m_circle->Translation(685.0f, 20.0f, 415.0f);
@@ -219,7 +191,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//집
 	m_House = new ModelClass;
 
-	result = m_House->Initialize("../Dreamy/Data/BakerHouse.txt", L"../Dreamy/Data/BakerHouse.png");
+	result = m_House->Initialize("../Dreamy/Data/BakerHouse.txt", L"../Dreamy/Data/BakerHouse.dds");
 	//result = m_House->Initialize("../Dreamy/Data/House2.txt", L"../Dreamy/Data/BakerHouse.png");
 	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
 
@@ -315,7 +287,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_CrossHair = new ImageClass;
 	if (!m_CrossHair) { return false; }
 	
-    result = m_CrossHair->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/sibal.png", screenWidth, screenHeight);
+    result = m_CrossHair->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/Crosshair.png", screenWidth, screenHeight);
 	if (!result) { MessageBox(hwnd, L"Could not initialize Crosshair", L"Error", MB_OK); return false; }
 
 	m_MouseCursor = new ImageClass;
@@ -358,7 +330,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing2->SetInsatanceVariable(-5.0f, 0.0f, 25.0f);
 	m_Instancing2->SetInstancePosition(140.0f, 11.0f, 470.0f);
 
-	result = m_Instancing2->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.png");
+	result = m_Instancing2->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing3 = new InstancingClass;
@@ -378,7 +350,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing4->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
 	m_Instancing4->SetInstancePosition(285.0f, 16.0f, 350.0f);
 
-	result = m_Instancing4->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.png");
+	result = m_Instancing4->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing5 = new InstancingClass;
@@ -398,7 +370,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing6->SetInsatanceVariable(-25.0f, 0.0f, 0.0f);
 	m_Instancing6->SetInstancePosition(285.0f, 10.0f, 600.0f);
 
-	result = m_Instancing6->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.png");
+	result = m_Instancing6->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	//744 51 554 x축커지게
@@ -419,29 +391,9 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing8->SetInsatanceVariable(25.0f, 0.0f, 0.0f);
 	m_Instancing8->SetInstancePosition(735.0f, 13.0f, 530.0f);
 
-	result = m_Instancing8->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
+	result = m_Instancing8->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
-	//m_Instancing9 = new InstancingClass;
-	//if (!m_Instancing9) { return false; }
-	//
-	//m_Instancing9->SetInstanceCount(9);
-	//m_Instancing9->SetInsatanceVariable(20.0f, 0.0f, 0.0f);
-	//m_Instancing9->SetInstancePosition(722.0f, 13.0f, 548.0f);
-	//
-	//result = m_Instancing9->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/bark_0021.jpg");
-	//if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
-	//
-	//
-	//m_Instancing10 = new InstancingClass;
-	//if (!m_Instancing10) { return false; }
-	//
-	//m_Instancing10->SetInstanceCount(9);
-	//m_Instancing10->SetInsatanceVariable(20.0f, 0.0f, 0.0f);
-	//m_Instancing10->SetInstancePosition(722.0f, 13.0f, 548.0f);
-	//
-	//result = m_Instancing10->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.png");
-	//if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	//--------------------------------------------------------------------------------------
 
@@ -1142,15 +1094,6 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	result = m_Shader->RenderInstancingShader(m_Instancing8->GetVertexCount(), m_Instancing8->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing8->GetTexture());
 	if (!result) { return false; }
 
-	//m_Instancing9->Render();
-	//
-	//result = m_Shader->RenderInstancingShader(m_Instancing9->GetVertexCount(), m_Instancing9->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing9->GetTexture());
-	//if (!result) { return false; }
-	//
-	//m_Instancing10->Render();
-	//
-	//result = m_Shader->RenderInstancingShader(m_Instancing10->GetVertexCount(), m_Instancing10->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing10->GetTexture());
-	//if (!result) { return false; }
 
 	Rasterizer::Get()->SetOnCullMode();
 
@@ -1270,17 +1213,10 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	D3DXMatrixMultiply(&m_MouseCursor->FinalMatrix, &worldMatrix, &m_MouseCursor->ScaleMatrix);
 	m_Shader->RenderTextureShader(m_MouseCursor->GetIndexCount(), m_MouseCursor->FinalMatrix, ImageViewMatrix, orthoMatrix, m_MouseCursor->GetTexture());
 
-
-	//if (m_UI->active == true)
-	//{
-	//	m_UI->Render(0, 0);
-	//	if (!result) { return false; }
-	//	m_Shader->RenderTextureShader(m_UI->GetIndexCount(), worldMatrix, ImageViewMatrix, orthoMatrix, m_UI->GetTexture());
-	//	if (!result) { return false; }
-	//}
-
+	//UI
 	m_UIManager->renderUI(m_Shader->m_TextureShader, worldMatrix, ImageViewMatrix, orthoMatrix);
 
+	//물풍선UI
 	if (m_Balloon->active == true)
 	{
 		if (Balloon1 == true)
