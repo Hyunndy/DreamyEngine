@@ -24,7 +24,7 @@ bool MultiTextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/multitexture.vs", L"../Dreamy/multitexture.ps");
+	result = InitializeShader(device, hwnd, L"../shader/multitexture.vs", L"../shader/multitexture.ps");
 	if (!result) { return false; }
 
 	return true;

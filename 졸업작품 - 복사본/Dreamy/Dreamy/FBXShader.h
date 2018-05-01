@@ -1,9 +1,9 @@
 #pragma once
 
-#include "D3D.h"
-#include "FBXCameraBuffer.h"
-#include "FBXSunBuffer.h"
-#include "FBXWorldBuffer.h"
+#include "../Dreamy/System/D3D.h"
+#include "../Dreamy/FBXAnimation/FBXCameraBuffer.h"
+#include "../Dreamy/FBXAnimation/FBXSunBuffer.h"
+#include "../Dreamy/FBXAnimation/FBXWorldBuffer.h"
 
 class FBXShader
 {

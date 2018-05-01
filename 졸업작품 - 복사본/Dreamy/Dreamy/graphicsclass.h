@@ -21,29 +21,28 @@
 //////////////
 // INCLUDES //
 //////////////
-#pragma once
 
 
-#include "ShaderManagerClass.h"
-#include "ModelClass.h"
-#include "D3D.h"
+#include "../Dreamy/System/ShaderManagerClass.h"
+#include "../Dreamy/ObjModel/ModelClass.h"
+#include "../Dreamy/System/D3D.h"
 #include "FBXShader.h"
-#include "ModelScene.h"
-#include "TerrainClass.h"
+#include "../Dreamy/FBXAnimation/ModelScene.h"
+#include "../Dreamy/ObjModel/TerrainClass.h"
 #include "TerrainShaderClass.h"
-#include "LightClass.h"
-#include "FrustumClass.h"
+#include "../Dreamy/ObjModel/LightClass.h"
+#include "../Dreamy/ObjModel/FrustumClass.h"
 #include "SkyClass.h"
-#include "Rasterizer.h"
-#include "Blender.h"
-#include "ImageClass.h"
-#include "TextClass.h"
-#include "InstancingClass.h"
+#include "../Dreamy/System/Rasterizer.h"
+#include "../Dreamy/System/Blender.h"
+#include "../Dreamy/ObjModel/ImageClass.h"
+#include "../Dreamy/ObjModel/TextClass.h"
+#include "../Dreamy/ObjModel/InstancingClass.h"
 #include "MinimapClass.h"
-#include "ParticleSystem.h"
-#include "WaterClass.h"
-#include "RTTTextureClass.h"
-#include "UIManagerClass.h"
+#include "../Dreamy/ObjModel/ParticleSystem.h"
+#include "../Dreamy/ObjModel/WaterClass.h"
+#include "../Dreamy/ObjModel/RTTTextureClass.h"
+#include "../Dreamy/ObjModel/UIManagerClass.h"
 
 
 
@@ -51,7 +50,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 //수직 동기화(fps고정)
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;

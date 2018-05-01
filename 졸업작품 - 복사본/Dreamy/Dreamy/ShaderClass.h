@@ -22,7 +22,7 @@
 	- 자식 클래스에서 "무조건" 재정의가 되어야한다.
 
 */
-#include "D3D.h"
+#include "../Dreamy/System/D3D.h"
 
 class ShaderClass
 {

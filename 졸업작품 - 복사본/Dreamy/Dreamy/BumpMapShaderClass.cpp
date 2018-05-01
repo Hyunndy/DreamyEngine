@@ -26,7 +26,7 @@ bool BumpMapShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/bumpmap.vs", L"../Dreamy/bumpmap.ps");
+	result = InitializeShader(device, hwnd, L"../shader/bumpmap.vs", L"../shader/bumpmap.ps");
 	if (!result) { return false; }
 
 	return true;

@@ -22,7 +22,7 @@
 
 
 
-#include "TextureClass.h"
+#include "../Dreamy/ObjModel/TextureClass.h"
 
 
 class SkyClass

@@ -28,7 +28,7 @@ bool PointLightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 	bool result;
 
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"../Dreamy/shader/pointlight.vs", L"../Dreamy/shader/pointlight.ps");
+	result = InitializeShader(device, hwnd, L"../shader/pointlight.vs", L"../shader/pointlight.ps");
 	if (!result)
 	{
 		return false;

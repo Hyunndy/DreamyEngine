@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _BUMPMAPSHADERCLASS_H_
-#define _BUMPMAPSHADERCLASS_H_
+
+
 
 
 #include "ShaderClass.h"
@@ -47,4 +47,4 @@ private:
 
 };
 
-#endif
+

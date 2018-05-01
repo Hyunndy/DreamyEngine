@@ -20,7 +20,7 @@ ColorShaderClass::~ColorShaderClass()
 bool ColorShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	// 정점 및 픽셀 쉐이더를 초기화합니다.
-	return InitializeShader(device, hwnd, L"../Dreamy/color.vs", L"../Dreamy/color.ps");
+	return InitializeShader(device, hwnd, L"../shader/color.vs", L"../shader/color.ps");
 }
 
 

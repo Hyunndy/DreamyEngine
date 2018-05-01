@@ -34,7 +34,7 @@ bool ReflectionShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/reflection.vs", L"../Dreamy/reflection.ps");
+	result = InitializeShader(device, hwnd, L"../Dreamy/shader/reflection.vs", L"../Dreamy/shader/reflection.ps");
 	if (!result) { return false; }
 
 

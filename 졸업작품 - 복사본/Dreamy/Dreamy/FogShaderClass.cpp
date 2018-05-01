@@ -32,7 +32,7 @@ bool FogShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/fog.vs", L"../Dreamy/fog.ps");
+	result = InitializeShader(device, hwnd, L"../shader/fog.vs", L"../shader/fog.ps");
 	if (!result) { return false; }
 
 	return true;

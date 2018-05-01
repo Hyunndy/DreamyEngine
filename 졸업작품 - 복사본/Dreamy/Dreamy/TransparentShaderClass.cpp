@@ -30,7 +30,7 @@ bool TransparentShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitializeShader(device, hwnd, L"../Dreamy/transparent.vs", L"../Dreamy/transparent.ps");
+	result = InitializeShader(device, hwnd, L"../shader/transparent.vs", L"../shader/transparent.ps");
 	if (!result) { return false; }
 
 
