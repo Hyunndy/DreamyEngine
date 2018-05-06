@@ -3,6 +3,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+//--------------------------------------------------------------------------------
+// .obj -> .txt Parser
+// obj파일은 .TXT로 열었을 때 
+// V, VT, VN -> 정점, 텍스처좌표, 법선벡터와
+// F -> V/VT/VN 정점/텍스처좌표/법선벡터로 나타내지는 삼각형 표면을 나타내는 F줄이있다.
+//
+// 처음 이 Parser은 f줄에 삼각형 표면을 나타내기 위해 3개의 V/VT/VN만 있는 .obj모델만 parsing했다.
+// 하지만 obj파일이 점점 정교해지면서 f줄에 4개의 V/VT/VN이 있는것들이 늘어났다.
+//
+// 이 경우 정점이 1-2-3-4-1 순서로 연결된 사각형이라고 보면된다.
+// 그래서 123이 삼각형 하나, 134가 다른 삼각형으로 해서 삼각형 2개의 정보를 인덱스 버퍼에 기록해주어야 한다.
+//
+// 따라서 f가 3줄인 경우는 인덱스 버퍼에 삼각형 하나만 기록하고,
+// f가 4줄인 경우는 인덱스 버퍼에 삼각형 2개를 기록하도록 수정하였다.
+//--------------------------------------------------------------------------------
+
+
 //////////////
 // INCLUDES //
 //////////////
@@ -268,7 +285,7 @@ bool LoadDataStructures(char* filename, int vertexCount, int textureCount, int n
 			}
 		}
 
-		// Read in the faces.
+		// 여기서 f가 3줄인지 4줄인지 본다.
 		if (input == 'f' && input3 == 'f')
 		{
 			four3 = true;
@@ -289,6 +306,7 @@ bool LoadDataStructures(char* filename, int vertexCount, int textureCount, int n
 					}
 				}
 
+				//f가 4줄인 경우
 				if (four2 == true)
 				{
 					// Read the face data in backwards to convert it to a left hand system from right hand system.
@@ -300,6 +318,7 @@ bool LoadDataStructures(char* filename, int vertexCount, int textureCount, int n
 					faceIndex++;
 					count += 4;
 				}
+				//f가 3줄인 경우
 				else
 				{
 
@@ -379,6 +398,7 @@ bool LoadDataStructures(char* filename, int vertexCount, int textureCount, int n
 			<< texcoords[tIndex].x << ' ' << texcoords[tIndex].y << ' '
 			<< normals[nIndex].x << ' ' << normals[nIndex].y << ' ' << normals[nIndex].z << endl;
 
+		//f가 4줄인 경우 삼각형 2개의 정보를 인덱스 버퍼에 기록해준다.
 		if (faces[i].vIndex4 != 0 && faces[i].tIndex4 != 0 && faces[i].nIndex4 != 0)
 		{
 			vIndex = faces[i].vIndex1 - 1;

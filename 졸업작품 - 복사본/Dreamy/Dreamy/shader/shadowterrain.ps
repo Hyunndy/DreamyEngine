@@ -1,0 +1,152 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: terrain.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////
+// TEXTURES //
+//////////////
+Texture2D shaderTexture : register(t0);
+Texture2D normalTexture : register(t1);
+Texture2D depthMapTexture : register(t2); //빛의 관점에서 렌더링된 뎁스버퍼를 기록한 쉐도우맵.
+SamplerState SampleTypeClamp : register(s0); // clamp(도장)으로 찍는게 필요하다. 왜냐면 그림자가 wrapping하진 않잖아?
+SamplerState SampleTypeWrap  : register(s1);
+
+
+//////////////
+// SAMPLERS //
+//////////////
+
+
+
+//////////////////////
+// CONSTANT BUFFERS //
+//////////////////////
+cbuffer LightBuffer
+{
+    float4 diffuseColor;
+    float3 lightDirection;
+    float padding;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
+	float3 binormal : BINORMAL;
+	float4 color : COLOR;
+    ///////////////////////////////////////////////////////////////
+    float fogFactor : FOG;
+    ////////////////////////////////
+    float4 lightViewPosition : TEXCOORD1;
+    float3 lightPos : TEXCOORD2;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 ShadowTerrainPixelShader(PixelInputType input) : SV_TARGET
+{
+    float4 textureColor;
+    float3 lightDir;
+	float4 bumpMap;
+	float3 bumpNormal;
+    float lightIntensity;
+    float4 color;
+    ///////////////////////////////////////////////////////////////
+    float4 fogColor;
+    ///////////////////////////////////////////////////////////////
+    float bias;
+    float2 projectTexCoord;
+    float depthValue;
+    float lightDepthValue;
+    float shadowlightIntensity;
+    float4 shadowcolor;
+
+    
+    // 부동 소수점 정밀도 문제를 해결할 바이어스 값을 설정한다.
+    bias = 0.001f;
+
+    shadowcolor.x =1.0f;
+    shadowcolor.y = 1.0f;
+    shadowcolor.z =1.0f;
+    shadowcolor.w = 1.0f;
+
+    // 빛에 의해 투영된 텍스처 좌표를 계산한다.
+    projectTexCoord.x =  input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+
+    // 투영된 좌표가 0~1에 있는지 결정한다. 만약 있다면 이 픽셀은 빛의 뷰 범위 안에 있다.
+    if((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    {
+
+        // 투영 된 텍스처 좌표 위치에서 샘프러를 사용하여 깊이 텍스처에서 그림자맵 깊이 값을 샘플링한다.
+        depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
+
+
+        // 빛의 깊이를 계산한다.
+        lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
+
+        // 빛의 깊이에서 바이어스값을 뺀다.
+        lightDepthValue = lightDepthValue - bias;
+
+
+        // 섀도우 맵 값의 깊이와 빛의 깊이를 비교해서 이 픽셀이 그밎아니지 아닌지 결정한다.
+        // 빛이 객체 앞에 있으면 픽셀을 비추고, 그렇지 않으면 픽셀을 그림자로 그린다.
+        if(lightDepthValue < depthValue)
+        {
+            // 이 픽셀의 빛의 강도를 계산한다.
+            shadowlightIntensity = saturate(dot(input.normal, input.lightPos));
+
+            if(shadowlightIntensity > 0.0f)
+            {
+                // diffuse광의 색과 광 강도의 양에 따라 최종 색을 결정한다.
+                shadowcolor += (diffuseColor * shadowlightIntensity);
+
+                // 최종 빛의 색상을 채운다.
+                shadowcolor = saturate(shadowcolor);
+            }
+        }
+    }
+
+    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+    textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
+
+    ///////////////////////////////////////////////////////////////
+     // 안개 색을 회색으로 맞춘다.
+    fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);   
+
+    // Combine the color map value into the texture color.
+    textureColor = saturate(textureColor * input.color * 2.0f);
+
+    // Invert the light direction for calculations.
+    lightDir = -lightDirection;
+
+	// Calculate the amount of light on this pixel using the normal map.
+	bumpMap = normalTexture.Sample(SampleTypeWrap, input.tex);
+	bumpMap = (bumpMap * 2.0f) - 1.0f;
+	bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
+	bumpNormal = normalize(bumpNormal);
+	lightIntensity = saturate(dot(bumpNormal, lightDir));
+
+    // Determine the final amount of diffuse color based on the diffuse color combined with the light intensity.
+    color = saturate(diffuseColor * lightIntensity);
+
+    // Multiply the texture pixel and the final diffuse color to get the final pixel color result.
+    color = color * textureColor;
+
+  //  color = color * shadowcolor;    
+    ///////////////////////////////////////////////////////////////
+    color = input.fogFactor * color + (1.0 - input.fogFactor) * fogColor;
+
+
+
+    return color;
+}

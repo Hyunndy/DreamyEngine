@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlphaMapShaderClass.cpp" />
+    <ClCompile Include="DepthShaderClass.cpp" />
     <ClCompile Include="DiffuseInstancingShaderClass.cpp" />
     <ClCompile Include="FBXAnimation\AnimationFrames.cpp" />
     <ClCompile Include="FBXAnimation\FBXAnimationModel.cpp" />
@@ -57,11 +58,11 @@
     <ClCompile Include="ObjModel\TerrainClass.cpp" />
     <ClCompile Include="ObjModel\TextClass.cpp" />
     <ClCompile Include="ObjModel\TextureClass.cpp" />
-    <ClCompile Include="ObjModel\UIManagerClass.cpp" />
     <ClCompile Include="ObjModel\WaterClass.cpp" />
     <ClCompile Include="ParticleShaderClass.cpp" />
     <ClCompile Include="RefractionShaderClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
+    <ClCompile Include="ShadowShaderClass.cpp" />
     <ClCompile Include="SkyClass.cpp" />
     <ClCompile Include="SkyDomeShaderClass.cpp" />
     <ClCompile Include="SkyPlaneShaderClass.cpp" />
@@ -79,13 +80,16 @@
     <ClCompile Include="System\SystemClass.cpp" />
     <ClCompile Include="System\TimerClass.cpp" />
     <ClCompile Include="TerrainShaderClass.cpp" />
+    <ClCompile Include="TerrainShaderClass2.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="TranslateShaderClass.cpp" />
+    <ClCompile Include="UIManagerClass.cpp" />
     <ClCompile Include="WaterReflectionShaderClass.cpp" />
     <ClCompile Include="WaterShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlphaMapShaderClass.h" />
+    <ClInclude Include="DepthShaderClass.h" />
     <ClInclude Include="DiffuseInstancingShaderClass.h" />
     <ClInclude Include="FBXAnimation\AnimationFrames.h" />
     <ClInclude Include="FBXAnimation\FBX.h" />
@@ -130,11 +134,11 @@
     <ClInclude Include="ObjModel\TerrainClass.h" />
     <ClInclude Include="ObjModel\TextClass.h" />
     <ClInclude Include="ObjModel\TextureClass.h" />
-    <ClInclude Include="ObjModel\UIManagerClass.h" />
     <ClInclude Include="ObjModel\WaterClass.h" />
     <ClInclude Include="ParticleShaderClass.h" />
     <ClInclude Include="RefractionShaderClass.h" />
     <ClInclude Include="ShaderClass.h" />
+    <ClInclude Include="ShadowShaderClass.h" />
     <ClInclude Include="skyclass.h" />
     <ClInclude Include="SkyDomeShaderClass.h" />
     <ClInclude Include="SkyPlaneShaderClass.h" />
@@ -152,8 +156,10 @@
     <ClInclude Include="System\SystemClass.h" />
     <ClInclude Include="System\TimerClass.h" />
     <ClInclude Include="TerrainShaderClass.h" />
+    <ClInclude Include="TerrainShaderClass2.h" />
     <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="TranslateShaderClass.h" />
+    <ClInclude Include="UIManagerClass.h" />
     <ClInclude Include="WaterReflectionShaderClass.h" />
     <ClInclude Include="WaterShaderClass.h" />
   </ItemGroup>

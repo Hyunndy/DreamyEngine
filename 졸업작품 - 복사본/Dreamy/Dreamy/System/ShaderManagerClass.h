@@ -8,6 +8,8 @@
 #include "../DiffuseInstancingShaderClass.h"
 #include "../LightShaderClass.h"
 //#include "MultiTextureShaderClass.h"
+#include "../DepthShaderClass.h"
+#include "../ShadowShaderClass.h"
 #include "../AlphaMapShaderClass.h"
 //#include "BumpMapShaderClass.h"
 //#include "SpecMapShaderClass.h"
@@ -77,6 +79,11 @@ public:
 
 	bool RenderParticleShader( int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*);
 
+	bool RenderDepthShader(int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
+
+	bool RenderShadowShader(int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, ID3D11ShaderResourceView*,
+		ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4);
+
 	TextureShaderClass* m_TextureShader = nullptr;
 
 private:
@@ -99,6 +106,8 @@ private:
 	FireShaderClass* m_FireShader = nullptr;
 	InstancingShaderClass* m_InstancingShader = nullptr;
 	ParticleShaderClass* m_particleShader = nullptr;
+	DepthShaderClass* m_DepthShader = nullptr;
+	ShadowShaderClass* m_ShadowShader = nullptr;
 
 
 };

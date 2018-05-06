@@ -52,6 +52,9 @@ public:
 
 	bool PlayWaveFile(int i);
 	void ShutdownMainSound();
+	void Mute(bool);
+
+
 
 private:
 	bool InitializeDirectSound(HWND);
@@ -61,8 +64,8 @@ private:
 	bool LoadWaveFile(char*, IDirectSoundBuffer8**);
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 
-
-
+	bool m_Mute = false;
+	int PressTime = 0;
 
 
 private:

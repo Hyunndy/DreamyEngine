@@ -338,7 +338,7 @@ bool SoundClass::PlayWaveFile(int i)
 		// 1차 버퍼에서 볼륨을 컨트롤할 수 있게 description을 작성했으니 볼륨을 최대로 맞춘다.
 		result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
 		if (FAILED(result)) { return false; }
-
+	
 		result = m_secondaryBuffer1->SetFrequency(1);
 
 		// 1차 버퍼의 오디오와의 믹싱을 수행한다.
@@ -388,6 +388,30 @@ bool SoundClass::PlayWaveFile(int i)
 	return true;
 
 }
+
+void SoundClass::Mute(bool PressedF2)
+{
+	if (PressedF2)
+		PressTime++;
+	else
+		PressTime = 0;
+
+	if (PressTime == 1)
+	{
+		if (m_Mute == false)
+		{
+			m_secondaryBuffer1->SetVolume(DSBVOLUME_MIN);
+			m_Mute = true;
+		}
+		else
+		{
+			m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+			m_Mute = false;
+		}
+
+	}
+}
+
 
 void SoundClass::ShutdownMainSound()
 {

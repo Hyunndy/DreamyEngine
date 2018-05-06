@@ -150,6 +150,19 @@ bool ShaderManagerClass::Initialize( HWND hwnd)
 	m_particleShader->Initialize(hwnd);
 	if(!result) { MessageBox(hwnd, L"Could not initialize the instancingshader object.", L"Error", MB_OK); return false; }
 
+	m_DepthShader = new DepthShaderClass;
+	if (!m_DepthShader) { return true; }
+
+	m_DepthShader->Initialize(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the DepthShaderClass object.", L"Error", MB_OK); return false; }
+
+	m_ShadowShader = new ShadowShaderClass;
+	if (!m_ShadowShader) { return true; }
+
+	m_ShadowShader->Initialize(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize the DepthShaderClass object.", L"Error", MB_OK); return false; }
+
+
 	return true;
 }
 
@@ -174,6 +187,8 @@ void ShaderManagerClass::Shutdown()
 	SAFE_SHUTDOWN(m_SkydomeShader);
 	SAFE_SHUTDOWN(m_CloudShader);
 	SAFE_SHUTDOWN(m_particleShader);
+	SAFE_SHUTDOWN(m_DepthShader);
+	SAFE_SHUTDOWN(m_ShadowShader);
 	//if (m_AlphaMapShader) { m_AlphaMapShader->Shutdown(); delete m_AlphaMapShader; m_AlphaMapShader = 0; }
 	//if (m_BumpMapShader) { m_BumpMapShader->Shutdown(); delete m_BumpMapShader; m_BumpMapShader = 0; }
 	SAFE_SHUTDOWN(m_LightShader);
@@ -325,4 +340,19 @@ bool ShaderManagerClass::RenderDiffuseInstancingShader(int vertexCount, int inst
 {
 	return m_DiffuseInstancingShader->Render(vertexCount, instanceCount, worldMatrix, viewMatrix,
 		projectionMatrix, texture, lightDirection, diffuseColor);
+}
+
+bool ShaderManagerClass::RenderShadowShader(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix, D3DXMATRIX lightViewMatrix, D3DXMATRIX lightProjectionMatrix,
+	ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* depthMapTexture, D3DXVECTOR3 lightPosition,
+	D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor)
+{
+	return m_ShadowShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, texture,
+		depthMapTexture, lightPosition, ambientColor, diffuseColor);
+}
+
+bool ShaderManagerClass::RenderDepthShader(int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix,
+	D3DXMATRIX projectionMatrix)
+{
+	return m_DepthShader->Render(indexCount, worldMatrix, viewMatrix, projectionMatrix);
 }

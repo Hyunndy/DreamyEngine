@@ -82,9 +82,6 @@
     <ClCompile Include="ObjModel\TextureClass.cpp">
       <Filter>ObjModel</Filter>
     </ClCompile>
-    <ClCompile Include="ObjModel\UIManagerClass.cpp">
-      <Filter>ObjModel</Filter>
-    </ClCompile>
     <ClCompile Include="ObjModel\WaterClass.cpp">
       <Filter>ObjModel</Filter>
     </ClCompile>
@@ -185,6 +182,12 @@
     <ClCompile Include="MinimapClass.cpp">
       <Filter>ObjModel</Filter>
     </ClCompile>
+    <ClCompile Include="UIManagerClass.cpp">
+      <Filter>ObjModel</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowShaderClass.cpp" />
+    <ClCompile Include="DepthShaderClass.cpp" />
+    <ClCompile Include="TerrainShaderClass2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FBXAnimation\AnimationFrames.h">
@@ -289,9 +292,6 @@
     <ClInclude Include="ObjModel\TextureClass.h">
       <Filter>ObjModel</Filter>
     </ClInclude>
-    <ClInclude Include="ObjModel\UIManagerClass.h">
-      <Filter>ObjModel</Filter>
-    </ClInclude>
     <ClInclude Include="ObjModel\WaterClass.h">
       <Filter>ObjModel</Filter>
     </ClInclude>
@@ -394,6 +394,12 @@
       <Filter>ObjModel</Filter>
     </ClInclude>
     <ClInclude Include="graphicsclass.h" />
+    <ClInclude Include="UIManagerClass.h">
+      <Filter>ObjModel</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowShaderClass.h" />
+    <ClInclude Include="DepthShaderClass.h" />
+    <ClInclude Include="TerrainShaderClass2.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="FBXAnimation">

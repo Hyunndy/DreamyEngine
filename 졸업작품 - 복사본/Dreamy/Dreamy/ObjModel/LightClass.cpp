@@ -3,9 +3,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "lightclass.h"
 
+LightClass* LightClass::instance = NULL;
 
 LightClass::LightClass()
 {
+	m_ambientColor = { 0.05f, 0.05f, 0.05f, 1.0f };
+	m_diffuseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_position = { 0.5f, -1.0f, -0.25f };
+	m_specularColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_specularPower = 16.0f;
+	m_lookAt = { 0.0f, 0.0f, 0.0f };
+	GenerateProjectionMatrix(1024, 1024);
+
+}
+
+void LightClass::Delete()
+{
+	if (instance) {
+		delete (instance); (instance) = NULL;
+	}
 }
 
 
@@ -42,11 +58,61 @@ void LightClass::SetSpecularPower(float power)
 	return;
 }
 
-
-
-void LightClass::SetDirection(float x, float y, float z)
+void LightClass::SetLookAt(float x, float y, float z)
 {
-	m_direction = D3DXVECTOR3(x, y, z);
+	m_lookAt.x = x;
+	m_lookAt.y = y;
+	m_lookAt.z = z;
+	return;
+}
+void LightClass::GenerateViewMatrix()
+{
+	D3DXVECTOR3 up;
+
+
+	// Setup the vector that points upwards.
+	up.x = 0.0f;
+	up.y = 1.0f;
+	up.z = 0.0f;
+
+	// Create the view matrix from the three vectors.
+	D3DXMatrixLookAtLH(&m_viewMatrix, &m_position, &m_lookAt, &up);
+
+	return;
+}
+
+void LightClass::GenerateProjectionMatrix(float screenDepth, float screenNear)
+{
+	float fieldOfView, screenAspect;
+
+
+	// Setup field of view and screen aspect for a square light source.
+	fieldOfView = (float)D3DX_PI / 2.0f;
+	screenAspect = 1.0f;
+
+	// Create the projection matrix for the light.
+	D3DXMatrixPerspectiveFovLH(&m_projectionMatrix, fieldOfView, screenAspect, screenNear, screenDepth);
+
+	return;
+}
+
+void LightClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
+{
+	viewMatrix = m_viewMatrix;
+	return;
+}
+
+
+void LightClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
+{
+	projectionMatrix = m_projectionMatrix;
+	return;
+}
+
+
+void LightClass::SetPosition(float x, float y, float z)
+{
+	m_position = D3DXVECTOR3(x, y, z);
 	return;
 }
 
@@ -64,7 +130,7 @@ D3DXVECTOR4 LightClass::GetDiffuseColor()
 
 D3DXVECTOR3 LightClass::GetDirection()
 {
-	return m_direction;
+	return m_position;
 }
 
 D3DXVECTOR4 LightClass::GetSpecularColor()

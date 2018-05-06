@@ -1,6 +1,6 @@
 #pragma once
-#include "ImageClass.h"
-#include "../TextureShaderClass.h"
+#include "../Dreamy/ObjModel/ImageClass.h"
+#include "TextureShaderClass.h"
 
 class UIManagerClass
 

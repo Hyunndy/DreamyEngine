@@ -18,6 +18,7 @@
 
 #include "D3D.h"
 #include "../FBXAnimation/AnimationFrames.h"
+
 #include "Sampler.h"
 
 ///////////////////////
@@ -96,7 +97,7 @@ private:
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	SoundClass* m_Sound;
-	//FpsClass* m_FPS;
+
 	//CpuClass* m_Cpu;
 	//TimerClass* m_Timer;
 	Frames* m_Frame;

@@ -1,4 +1,4 @@
-Terrain Filename:../Dreamy/Terrain/terrain.r16
+Terrain Filename:../Dreamy/Terrain/terrain3.r16
 Terrain Height:1025
 Terrain Width:1025
 Terrain Scaling:300.0

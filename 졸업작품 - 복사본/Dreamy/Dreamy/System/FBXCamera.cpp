@@ -8,10 +8,10 @@ const float Camera::screenNear = 0.1f;
 const float Camera::screenDepth = 1000.0f;
 
 Camera::Camera()
-	: position(630.0f, 56.0f, 96.0f)
+	: position(595.0f, 56.0f, 226.0f)
 	, forward(0.0, 0, 0), right(0, 0, 0), up(0, 0, 0)
 	, rotate(0, 0)
-	, translationSpeed(100.0f), rotationSpeed(2.0f)
+	, translationSpeed(100.0f), rotationSpeed(1.8f)
 {
 	D3DXMatrixIdentity(&view);
 	D3DXMatrixIdentity(&projection);

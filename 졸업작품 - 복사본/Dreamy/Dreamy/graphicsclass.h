@@ -42,7 +42,10 @@
 #include "../Dreamy/ObjModel/ParticleSystem.h"
 #include "../Dreamy/ObjModel/WaterClass.h"
 #include "../Dreamy/ObjModel/RTTTextureClass.h"
-#include "../Dreamy/ObjModel/UIManagerClass.h"
+#include "UIManagerClass.h"
+//#include "TerrainShaderClass2.h"
+
+#include "../Dreamy/System/FpsClass.h"
 
 
 
@@ -55,6 +58,8 @@ const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
+const int SHADOWMAP_WIDTH = 1024;
+const int SHADOWMAP_HEIGHT = 1024;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +68,7 @@ const float SCREEN_NEAR = 0.1f;
 class GraphicsClass
 {
 public:
+	FpsClass* m_Timer = 0;
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
@@ -76,7 +82,7 @@ public:
 	void CheckIntersection(int, int, int, int);
 	void Shoot(float);
 
-	bool RenderMainScene();
+	bool RenderMainScene(int, int);
 	bool RenderLoadingScene();
 	bool RenderEndScene();
 
@@ -89,14 +95,14 @@ public:
 	bool F1pressed;
 	D3DXMATRIX minimapMatrix; // 미니맵 
 	bool click = false;
-	bool sibal = false;
-	int cibal = 0;
+	int UI_click = 0;
 	bool EffectSound = false;
 
 private:
 	void PreShutdown();
 	bool RenderRunningScene(bool);
 	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
+	bool RenderShadowToTexture(bool); // 그림자맵
 
 
 	void SetEffectVariable(float frametime); //이펙트 관련 변수 세팅
@@ -104,6 +110,7 @@ private:
 
 private:
 	bool m_end = false; //게임 클리어인지 아닌지.
+	int m_endTime = 0; // 불끄는데 걸린 시간
 private:
 	//물풍선 관련.
 	D3DXMATRIX Cube3WorldMatrix;
@@ -127,13 +134,15 @@ private:
 private:
 	TerrainClass* m_Terrain= nullptr;
 	TerrainShaderClass* m_TerrainShader= nullptr;
+	//TerrainShaderClass2* m_TerrainShader2 = nullptr;
 
-	
-	WaterClass* m_Water;
-	RTTTextureClass* m_RefractionTexture;
+	WaterClass* m_Water = nullptr;
 	D3DXMATRIX WaterWorldMatrix, WaterRotationMatrix, WaterreflectionViewMatrix;
 
 	SkyClass* m_Sky= nullptr;
+private:
+	RTTTextureClass* m_RefractionTexture =nullptr;
+	RTTTextureClass* m_ShadowMap = nullptr;
 
 private:
 	ModelClass* m_cube= nullptr;
@@ -142,6 +151,12 @@ private:
 	ModelClass* m_Billboarding = nullptr;
 	ModelClass* m_Mark = nullptr;
 	ModelClass* m_Tree = nullptr;
+	ModelClass* m_Barrel = nullptr;
+	ModelClass* m_Barrel2 = nullptr;
+	ModelClass* m_Barrel3 = nullptr;
+	ModelClass* m_Crate = nullptr;
+	ModelClass* m_Crate2 = nullptr;
+
 
 	ModelClass* m_House = nullptr;
 	bool OffFire = false;
@@ -154,29 +169,38 @@ private:
 	D3DXVECTOR2 distortion2;
 	D3DXVECTOR2 distortion3;
 
-	ModelClass* m_Fire = nullptr;
-	ModelClass* m_TFire = nullptr;
-	ModelClass* m_TFire2 = nullptr;
+	ModelClass* m_Fire = nullptr; //집불
+	ModelClass* m_TFire = nullptr;  //인스턴싱 1,2불
+	ModelClass* m_TFire2 = nullptr; //인스턴싱 3,4불
+	//160 651  x는+=30  z는<615
+	ModelClass* m_TFire3 = nullptr; //인스턴싱 5,6불
 	bool renderFire = false;
 	bool renderTFire = false;
 	bool renderTFire2 = false;
+	bool renderTFire3 = false;
 
 
 private:
 	D3DXVECTOR3 horsePos= { 333.0f, 20.0f, 349.0f };
 	D3DXVECTOR3 horse2Pos= { 235.0f, 10.0f, 500.0f };
+	D3DXVECTOR3 horse3Pos = { 670.0f, 51.0f, 464.0f };
 	ModelScene* m_horse= nullptr;
 	ModelScene* m_horse2 = nullptr;
+	ModelScene* m_horse3 = nullptr;
 	ModelScene* m_npc = nullptr;
 	bool renderhorse = false;
 	bool renderhorse2 = false;
+	bool renderhorse3 = false;
 	bool renderNpc = false;
 	bool starthorse = false;
 	bool starthorse2 = false;
+	bool starthorse3 = false;
 
 private:
 	ImageClass* m_Start= nullptr;
 	ImageClass* m_Loading= nullptr;
+	ImageClass* m_Ending = nullptr;
+
 	ImageClass* m_CrossHair= nullptr;
 
 	float MousePosX, MousePosY;
@@ -206,15 +230,23 @@ private:
 	InstancingClass* m_Instancing4 = nullptr;
 	bool OffTFire2 = false;
 
-
 	InstancingClass* m_Instancing5 = nullptr;
 	InstancingClass* m_Instancing6 = nullptr;
+	bool OffTFire3 = false;
+
+	//Barrel쪽나무
+	InstancingClass* m_Instancing9 = nullptr;
+	InstancingClass* m_Instancing10 = nullptr;
 
 	//강가에 있는 나무
 	InstancingClass* m_Instancing7 = nullptr;
 	InstancingClass* m_Instancing8 = nullptr;
-	InstancingClass* m_Instancing9 = nullptr;
-	InstancingClass* m_Instancing10 = nullptr;
+
+	InstancingClass* m_Instancing11 = nullptr;
+	InstancingClass* m_Instancing12 = nullptr;
+
+	InstancingClass* m_Instancing13 = nullptr;
+	InstancingClass* m_Instancing14 = nullptr;
 
 
 	MinimapClass* m_Minimap = nullptr;
@@ -224,9 +256,11 @@ private:
 
 private:
 	ParticleSystem* m_Particle = nullptr;
+	//파티클시스템 1개만 생성하고 모든 불에 써먹기 위해 bool변수로 위치를 조정한다.
 	bool Fparticle = false;
 	bool TFparticle = false;
 	bool TF2particle = false;
+	bool TF3particle = false;
 
 private:
 
@@ -235,6 +269,7 @@ private:
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXMATRIX ImageViewMatrix, ImageProjectionMatrix;
 	D3DXMATRIX cupViewMatrix;
+	D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
 
 private:
 	D3DXVECTOR3 CameraPos;

@@ -74,8 +74,8 @@ bool TextClass::Initialize( HWND hwnd, int screenWidth, int screenHeight,
 	result = InitializeSentence(&m_sentence2, 16);
 	if (!result) { return false; }
 
-	//result = InitializeSentence(&m_sentence3, 16);
-	//if (!result) { return false; }
+	result = InitializeSentence(&m_sentence3, 16);
+	if (!result) { return false; }
 
 	result = InitializeSentence(&m_sentence4, 16);
 	if (!result) { return false; }
@@ -93,7 +93,7 @@ bool TextClass::Initialize( HWND hwnd, int screenWidth, int screenHeight,
 	if (!result) { return false; }
 
 	// 사용할 문장을 업데이트 한다.
-	result = UpdateSentence(m_sentence1, "Dreamy", 30, 30, 1.0f, 0.0f, 0.0f);
+	result = UpdateSentence(m_sentence1, "Dreamy", 45, 100, 1.0f, 0.0f, 0.0f);
 	if (!result) { return false;}
 
 	return true;
@@ -346,7 +346,7 @@ bool TextClass::Render( D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
 	// Draw the first sentence.
 	result = RenderSentence( m_sentence1, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence2, worldMatrix, orthoMatrix);
-	//result = RenderSentence( m_sentence3, worldMatrix, orthoMatrix);
+	result = RenderSentence( m_sentence3, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence4, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence5, worldMatrix, orthoMatrix);
 	result = RenderSentence( m_sentence6, worldMatrix, orthoMatrix);
@@ -355,6 +355,11 @@ bool TextClass::Render( D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
 	if (!result) {	return false;	}
 
 	return true;
+}
+
+void TextClass::EndRender(D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
+{
+	RenderSentence(m_sentence9, worldMatrix, orthoMatrix);
 }
 
 void TextClass::ReleaseSentence(SentenceType** sentence)
@@ -383,18 +388,9 @@ void TextClass::ReleaseSentence(SentenceType** sentence)
 	return;
 }
 
-void TextClass::Shutdown()
+void TextClass::EndShutdown()
 {
-	// Release the first sentence.
-	ReleaseSentence(&m_sentence1);
-	ReleaseSentence(&m_sentence2);
-	//ReleaseSentence(&m_sentence3);
-	ReleaseSentence(&m_sentence4);
-	ReleaseSentence(&m_sentence5);
-	ReleaseSentence(&m_sentence6);
-	ReleaseSentence(&m_sentence7);
-	ReleaseSentence(&m_sentence8);
-
+	ReleaseSentence(&m_sentence9);
 	// Release the font shader object.
 	if (m_FontShader)
 	{
@@ -410,6 +406,20 @@ void TextClass::Shutdown()
 		delete m_Font;
 		m_Font = 0;
 	}
+}
+
+void TextClass::Shutdown()
+{
+	// Release the first sentence.
+	ReleaseSentence(&m_sentence1);
+	ReleaseSentence(&m_sentence2);
+	ReleaseSentence(&m_sentence3);
+	ReleaseSentence(&m_sentence4);
+	ReleaseSentence(&m_sentence5);
+	ReleaseSentence(&m_sentence6);
+	ReleaseSentence(&m_sentence7);
+	ReleaseSentence(&m_sentence8);
+
 
 	return;
 }
@@ -429,7 +439,7 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY)
 	strcat_s(mouseString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence7, mouseString, 30, 130, 1.0f, 1.0f, 1.0f);
+	result = UpdateSentence(m_sentence7, mouseString, 45, 184, 1.0f, 1.0f, 1.0f);
 	if (!result)
 	{
 		return false;
@@ -443,7 +453,7 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY)
 	strcat_s(mouseString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence8, mouseString, 110, 130, 1.0f, 1.0f, 1.0f);
+	result = UpdateSentence(m_sentence8, mouseString, 125, 184, 1.0f, 1.0f, 1.0f);
 	if (!result)
 	{
 		return false;
@@ -483,7 +493,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ)
 
 	// 1535, 35
 	// 1535, 55, 0.0f, 1.0f, 0.0f
-	result = UpdateSentence(m_sentence4, dataString, 30, 105, 0.0f, 1.0f, 0.0f);
+	result = UpdateSentence(m_sentence4, dataString, 45, 156, 0.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -494,7 +504,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ)
 	strcpy_s(dataString, "Y: ");
 	strcat_s(dataString, tempString);
 
-	result = UpdateSentence(m_sentence5, dataString, 78, 105, 0.0f, 1.0f, 0.0f);
+	result = UpdateSentence(m_sentence5, dataString, 93, 156, 0.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -505,7 +515,7 @@ bool TextClass::SetPosition(float posX, float posY, float posZ)
 	strcpy_s(dataString, "Z: ");
 	strcat_s(dataString, tempString);
 
-	result = UpdateSentence(m_sentence6, dataString, 120, 105, 0.0f, 1.0f, 0.0f);
+	result = UpdateSentence(m_sentence6, dataString, 135, 156, 0.0f, 1.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -572,7 +582,7 @@ bool TextClass::SetFps(int fps)
 	}
 
 	//
-	result = UpdateSentence(m_sentence2, fpsString, 30, 55, red, green, blue);
+	result = UpdateSentence(m_sentence2, fpsString, 45, 128, red, green, blue);
 	if (!result)
 	{
 		return false;
@@ -582,27 +592,50 @@ bool TextClass::SetFps(int fps)
 }
 
 
-//bool TextClass::SetCpu(int cpu)
-//{
-//	char tempString[16];
-//	char cpuString[16];
-//	bool result;
-//
-//
-//	// Convert the cpu integer to string format.
-//	_itoa_s(cpu, tempString, 10);
-//
-//	// Setup the cpu string.
-//	strcpy_s(cpuString, "Cpu: ");
-//	strcat_s(cpuString, tempString);
-//	strcat_s(cpuString, "%");
-//
-//	// Update the sentence vertex buffer with the new string information.
-//	result = UpdateSentence(m_sentence3, cpuString, 30, 80, 1.0f, 1.0f, 0.0f);
-//	if (!result)
-//	{
-//		return false;
-//	}
-//
-//	return true;
-//}
+bool TextClass::SetTime(int Time)
+{
+	char tempString[16];
+	char cpuString[16];
+	bool result;
+
+
+	// Convert the cpu integer to string format.
+	_itoa_s(Time, tempString, 10);
+
+	// Setup the cpu string.
+	strcpy_s(cpuString, "Time: ");
+	strcat_s(cpuString, tempString);
+	strcat_s(cpuString, " sec");
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence3, cpuString, 1465, 285, 1.0f, 1.0f, 1.0f);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool TextClass::SetEndTime(int Time)
+{
+	char tempString[16];
+	char cpuString[16];
+	bool result;
+
+
+	// Convert the cpu integer to string format.
+	_itoa_s(Time, tempString, 10);
+
+	strcat_s(cpuString, tempString);
+	
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence9, cpuString, 1465, 285, 1.0f, 0.0f, 0.0f);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}

@@ -15,15 +15,18 @@ FpsClass::~FpsClass(){}
 -----------------------------------------------------------------------------*/
 void FpsClass::Initialize()
 {
-	m_fps = 0;
-	m_count = 0;
+	m_time = 0;
 
-	//타이머를 시작한다.
-	m_startTime = timeGetTime();
 
 	return;
 }
 
+void FpsClass::Start()
+{
+
+	//타이머를 시작한다.
+	m_startTime = timeGetTime();
+}
 /*---------------------------------------------------------------------------
 이름 : Frame()
 용도 : 
@@ -32,17 +35,10 @@ void FpsClass::Initialize()
 -----------------------------------------------------------------------------*/
 void FpsClass::Frame()
 {
-	//프레임 마다 1씩 추가되는 count
-	m_count++;
-
 	//1초 이상 지났다면
 	if (timeGetTime() >= (m_startTime + 1000))
 	{
-		//프레임 수에 1초 당 증가한 프레임 수를 넣어준다.
-		m_fps = m_count;
-
-		//그리고 다음 1초간의 프레임을 재기 위해 0으로 초기화한다.
-		m_count = 0;
+		m_time += 1;
 
 		//다시 타이머를 돌린다.
 		m_startTime = timeGetTime();
@@ -53,12 +49,8 @@ void FpsClass::Frame()
 이름 : GetFps()
 용도 : 외부에서 FPS값을 얻기 위해 계속 호출되는 함수.
 -----------------------------------------------------------------------------*/
-int FpsClass::GetFps()
-{
-	return m_fps;
-}
 
-int FpsClass::GetFrameCount()
+int FpsClass::GetTime()
 {
-	return m_count;
+	return m_time;
 }

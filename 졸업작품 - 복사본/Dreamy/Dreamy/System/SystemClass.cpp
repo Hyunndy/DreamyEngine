@@ -100,13 +100,12 @@ bool SystemClass::Initialize()
 void SystemClass::Main()
 {
 	bool result;
+	int Mute = 0;
+	bool PressedF2 = false;
+	bool sibal = false;
 	bool Start = false;
 
-
-
-	//메인화면 출력
-	result = m_Graphics->RenderMainScene();
-	if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
+	m_Input->SetMousePosition();
 
 	//메인사운드 출력
 	result = m_Sound->PlayWaveFile(1);
@@ -116,12 +115,35 @@ void SystemClass::Main()
 	{
 		// 키보드&마우스 상태를 갱신하도록 한다.
 		result = m_Input->Frame();
+		m_Input->GetMouseLocation(mouseX, mouseY);
 
-		if (m_Input->IsF1Pressed() == true)
+		//메인화면 출력
+		result = m_Graphics->RenderMainScene(mouseX, mouseY);
+		if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
+
+		//if (m_Input->IsLeftMouseButtonDown() && (mouseX >= 1050.0f) && (mouseX <= 1160.0f) && (mouseY >= 800.0f) && (mouseY <= 495.0f))
+		//{
+		//	m_state = STATE::LOADING;
+		//	Start = true;
+		//}
+
+		if (m_Input->IsF2Pressed() == true)
+			PressedF2 = true;
+		else
+			PressedF2 = false;
+
+		m_Sound->Mute(PressedF2);
+		
+			
+		
+
+		if (m_Input->IsF1Pressed() == true )
 		{
 			m_state = STATE::LOADING;
 			Start = true;
 		}
+
+
 
 		if (m_Input->IsEscapePressed() == true)
 		{
@@ -181,10 +203,6 @@ bool SystemClass::Loading()
 
 
 
-
-
-
-	m_Input->SetMousePosition();
 	m_state = STATE::RUNNING;
 	if (m_state = STATE::RUNNING)
 	{
@@ -199,6 +217,7 @@ void SystemClass::Shutdown()
 {
 
 	//SAFE_SHUTDOWN(m_Sound);
+	
 	m_Frame->Delete();
 	SAFE_SHUTDOWN(m_Graphics);
 	SAFE_SHUTDOWN(m_Input);
@@ -419,8 +438,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	else
 	{
 		// 윈도우 모드라면 800x600으로 맞춘다.
-		screenWidth = 1280;
-		screenHeight = 800;
+		screenWidth = 1600;
+		screenHeight = 900;
 
 		// 창을 화면의 중간에 오게한다.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;

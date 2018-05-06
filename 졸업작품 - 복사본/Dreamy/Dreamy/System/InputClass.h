@@ -46,6 +46,7 @@ public:
 
 	bool IsEscapePressed(); // ESC버튼 눌렸는지 안눌렸는지
 	bool IsF1Pressed(); // F1버튼 눌렸는지 안눌렸는지
+	bool IsF2Pressed();
 	void GetMouseLocation(int&, int&);
 
 	bool IsSpacePressed();

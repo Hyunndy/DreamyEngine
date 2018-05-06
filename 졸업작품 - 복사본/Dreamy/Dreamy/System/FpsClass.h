@@ -22,11 +22,14 @@ public:
 	void Frame();
 	int GetFps();
 	int GetFrameCount();
+	int GetTime();
+	void Start();
 
 private: 
 
 	int m_fps, m_count;
 	unsigned long m_startTime;
+	int m_time;
 
 
 };

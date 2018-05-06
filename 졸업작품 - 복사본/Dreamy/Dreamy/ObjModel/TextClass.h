@@ -47,13 +47,16 @@ public:
 
 	bool Initialize(HWND, int, int, D3DXMATRIX);
 	void Shutdown();
+	void EndShutdown();
 	bool Render( D3DXMATRIX, D3DXMATRIX);
+	void EndRender(D3DXMATRIX, D3DXMATRIX);
 
 	//GraphicsClass에서 마우스,fps,cpu를 프레임 마다 얻어서 Text로 출력하려고 만든 함수들.
 	bool SetMousePosition(int, int);
 	bool SetPosition(float, float, float);
 	bool SetFps(int); 
-	bool SetCpu(int);
+	bool SetTime(int);
+	bool SetEndTime(int);
 
 
 
@@ -76,7 +79,7 @@ private:
 	SentenceType* m_sentence1= nullptr; // Title출력
 
 	SentenceType* m_sentence2=nullptr; // FPS출력
-	//SentenceType* m_sentence3=nullptr; // CPU출력
+	SentenceType* m_sentence3=nullptr; // Time출력
 						
 	SentenceType* m_sentence4=nullptr; // PosX
 	SentenceType* m_sentence5=nullptr; // PosY
@@ -84,6 +87,8 @@ private:
 							
 	SentenceType* m_sentence7=nullptr; // mouseposx
 	SentenceType* m_sentence8=nullptr; // mouseposy
+
+	SentenceType* m_sentence9 = nullptr; // 엔딩 몇 초 걸렸는지 출력
 
 	
 };

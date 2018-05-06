@@ -1,0 +1,102 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: light.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+/////////////
+Texture2D shaderTexture : register(t0);
+Texture2D depthMapTexture : register(t1); //빛의 관점에서 렌더링된 뎁스버퍼를 기록한 쉐도우맵.
+
+SamplerState SampleTypeClamp : register(s0); // clamp(도장)으로 찍는게 필요하다. 왜냐면 그림자가 wrapping하진 않잖아?
+SamplerState SampleTypeWrap  : register(s1);
+
+
+cbuffer LightBuffer
+{
+	float4 ambientColor;
+	float4 diffuseColor;
+};
+
+
+//////////////
+// TYPEDEFS //
+//////////////
+struct PixelInputType
+{
+    float4 position : SV_POSITION;
+    float2 tex : TEXCOORD0;
+    float3 normal : NORMAL;
+    float4 lightViewPosition : TEXCOORD1;
+    float3 lightPos : TEXCOORD2;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 ShadowPixelShader(PixelInputType input) : SV_TARGET
+{
+    float bias;
+    float4 color;
+    float2 projectTexCoord;
+    float depthValue;
+    float lightDepthValue;
+    float lightIntensity;
+    float4 textureColor;
+
+    // 부동 소수점 정밀도 문제를 해결할 바이어스 값을 설정한다.
+    bias = 0.001f;
+
+    // 모든 픽셀에 대해 기본 출력 색상을 ambientColor로 설정한다.
+    color = ambientColor;
+
+
+    // 빛에 의해 투영된 텍스처 좌표를 계산한다.
+    projectTexCoord.x =  input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+
+
+    // 투영된 좌표가 0~1에 있는지 결정한다. 만약 있다면 이 픽셀은 빛의 뷰 범위 안에 있다.
+    if((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    {
+
+
+        // 투영 된 텍스처 좌표 위치에서 샘프러를 사용하여 깊이 텍스처에서 그림자맵 깊이 값을 샘플링한다.
+        depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
+
+
+        // 빛의 깊이를 계산한다.
+        lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
+
+        // 빛의 깊이에서 바이어스값을 뺀다.
+        lightDepthValue = lightDepthValue - bias;
+
+
+        // 섀도우 맵 값의 깊이와 빛의 깊이를 비교해서 이 픽셀이 그밎아니지 아닌지 결정한다.
+        // 빛이 객체 앞에 있으면 픽셀을 비추고, 그렇지 않으면 픽셀을 그림자로 그린다.
+        if(lightDepthValue < depthValue)
+        {
+            // 이 픽셀의 빛의 강도를 계산한다.
+            lightIntensity = saturate(dot(input.normal, input.lightPos));
+
+            if(lightIntensity > 0.0f)
+            {
+                // diffuse광의 색과 광 강도의 양에 따라 최종 색을 결정한다.
+                color += (diffuseColor * lightIntensity);
+
+                // 최종 빛의 색상을 채운다.
+                color = saturate(color);
+            }
+        }
+    }
+
+    // 텍스처 컬러를 샘플링한다.
+    textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
+
+    // 빛과 텍스처 색상을 결합한다.
+    color = color * textureColor;
+
+    return color;
+}
