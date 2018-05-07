@@ -8,8 +8,6 @@
 
 GraphicsClass::GraphicsClass()
 {
-	dz = 0.0f;
-	dy = 0.0f;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -52,7 +50,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	Camera::Get()->GetView(&ImageViewMatrix);
 	Camera::Delete();
 	Camera::Get()->SetPosition(D3DXVECTOR3(0.0f, 3.0f, -10.0f));
-	Camera::Get()->GetView(&cupViewMatrix);
+	Camera::Get()->GetView(&BalloonViewMatrix);
 	Camera::Delete();
 	//-------------------------------------------------------------------------------------
 
@@ -85,39 +83,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 이름 : Loading()
 용도 : 실제로 렌더링 되는 애들 초기화
 ------------------------------------------------------------------------------------------*/
-bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
+bool GraphicsClass::FBXLoading()
 {
-	bool result;
-
-	// 로딩이미지 객체 생성 및 출력
-	//-------------------------------------------------------------------------------------
-	SAFE_SHUTDOWN(m_Start);
-
-	m_Loading = new ImageClass;
-
-	result = m_Loading->Initialize( screenWidth, screenHeight, L"../Dreamy/Data/Loading.jpg", screenWidth, screenHeight);
-	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
-
-	RenderLoadingScene();
-
-	m_Ending = new ImageClass;
-
-	result = m_Ending->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/End.jpg", screenWidth, screenHeight);
-	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
-
-	m_Timer = new FpsClass;
-
-	m_Timer->Initialize();
-	//-------------------------------------------------------------------------------------
-
-
-
 	// FBXAnimation
 	//--------------------------------------------------------------------------------------
 	FBXShader::CreateBuffer();
-	
+
 	wstring filePath = L"../Dreamy/Contents/Models/Sword and Shield Pack/";
-	
+
 	wstring tPosePath = filePath + L"Horse.fbx";
 	wstring idlePath = filePath + L"Horse_Idle.fbx";
 	wstring runPath = filePath + L"Horse_Run.fbx";
@@ -126,10 +99,10 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	//말1
 	m_horse = new ModelScene();
 
-	m_horse->TexturePath = filePath + L"Horse_D.dds";	
+	m_horse->TexturePath = filePath + L"Horse_D.dds";
 	m_horse->LoadScene(tPosePath, true, true, true, false);
 	m_horse->LoadScene(runPath, false, false, false, true);
-	
+
 	// Default Animation 설정
 	m_horse->SetCurrentAnimation(runPath);
 	m_horse->Scale(1.8f, 1.8f, 1.8f);
@@ -148,13 +121,13 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	//말3
 	m_horse3 = new ModelScene();
-		  
+
 	m_horse3->TexturePath = m_horse->TexturePath;
 	m_horse3->LoadScene(tPosePath, true, true, true, false);
 	m_horse3->LoadScene(runPath, false, false, false, true);
-	
+
 	m_horse3->SetCurrentAnimation(runPath);
-	
+
 	m_horse3->Scale(1.8f, 1.8f, 1.8f);
 
 	//npc
@@ -176,46 +149,51 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	//--------------------------------------------------------------------------------------
 
+	return true;
+}
+bool GraphicsClass::OBJLoading(HWND hwnd)
+{
+	bool result;
 	// OBJ모델
 	//--------------------------------------------------------------------------------------
-	
+
 	//큐브(현재 npc에게 붙어있음)
-	m_cube = new ModelClass;
-	if (!m_cube) { return false; }
-	
-	result = m_cube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/point.png");
-	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
+	m_NpcBox = new ModelClass;
+	if (!m_NpcBox) { return false; }
 
-	m_cube->Translation(513.0f, 30.0f, 410.0f);
+	result = m_NpcBox->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/point.png");
+	if (!result) { MessageBox(hwnd, L"Could not m_NpcBox object", L"Error", MB_OK); return false; }
+
+	m_NpcBox->Translation(513.0f, 30.0f, 410.0f);
 	//(513.0f, 55.0f, 405.0f
-	m_cube->Scale(1.5f, 1.5f, 1.5f);
+	m_NpcBox->Scale(1.5f, 1.5f, 1.5f);
 
-	m_cube->Multiply(m_cube->GetScailingMatrix(), m_cube->GetTranslationMatrix());
+	m_NpcBox->Multiply(m_NpcBox->GetScailingMatrix(), m_NpcBox->GetTranslationMatrix());
 
 	//호수 충돌
-	m_wcube = new ModelClass;
-	if (!m_wcube) { return false; }
+	m_WaterBox = new ModelClass;
+	if (!m_WaterBox) { return false; }
 
-	result = m_wcube->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/point.png");
-	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
+	result = m_WaterBox->Initialize("../Dreamy/Data/cube.txt", L"../Dreamy/Data/point.png");
+	if (!result) { MessageBox(hwnd, L"Could not m_NpcBox object", L"Error", MB_OK); return false; }
 
-	m_wcube->Translation(766.0f, 11.0f, 470.0f);
-	m_wcube->Scale(10.0f, 1.0f, 10.0f);
+	m_WaterBox->Translation(766.0f, 11.0f, 470.0f);
+	m_WaterBox->Scale(10.0f, 1.0f, 10.0f);
 
-	m_wcube->Multiply(m_wcube->GetScailingMatrix(), m_wcube->GetTranslationMatrix());
-	
+	m_WaterBox->Multiply(m_WaterBox->GetScailingMatrix(), m_WaterBox->GetTranslationMatrix());
+
 	//물풍선
 	m_circle = new ModelClass;
 	if (!m_circle) { return false; }
 
 	result = m_circle->Initialize("../Dreamy/Data/sphere.txt", L"../Dreamy/Data/water.dds");
-	if (!result) { MessageBox(hwnd, L"Could not m_cube object", L"Error", MB_OK); return false; }
+	if (!result) { MessageBox(hwnd, L"Could not m_NpcBox object", L"Error", MB_OK); return false; }
 
 	m_circle->Translation(685.0f, 25.0f, 415.0f);
-	m_circle->Scale(3.0f,3.0f, 3.0f);
+	m_circle->Scale(3.0f, 3.0f, 3.0f);
 	m_circle->Multiply(m_circle->GetScailingMatrix(), m_circle->GetTranslationMatrix());
-	
-	D3DXMatrixIdentity(&Cube3WorldMatrix);
+
+	D3DXMatrixIdentity(&BalloonWorldMatrix);
 
 	//집
 	m_House = new ModelClass;
@@ -227,14 +205,14 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_House->Translation(70.0f, 8.0f, 730.0f);
 	m_House->RotationY(-30.0f);
 	m_House->Multiply(m_House->GetRotationYMatrix(), m_House->GetTranslationMatrix());
-	
+
 	//Barrel
 	m_Barrel = new ModelClass;
 
 	result = m_Barrel->Initialize("../Dreamy/Data/Barrel.txt", L"../Dreamy/Data/BarrelTexture.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize m_Barrel object", L"Error", MB_OK); return false; }
 
-	m_Barrel->Translation(278.0f, 21.0f, 570.0f);
+	m_Barrel->Translation(260.0f, 21.0f, 570.0f);
 	m_Barrel->Scale(0.2f, 0.2f, 0.2f);
 	m_Barrel->Multiply(m_Barrel->GetScailingMatrix(), m_Barrel->GetTranslationMatrix());
 
@@ -244,7 +222,8 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Barrel2->Initialize("../Dreamy/Data/Barrel.txt", L"../Dreamy/Data/BarrelTexture.dds");
 	if (!result) { MessageBox(hwnd, L"m_Barrel2", L"Error", MB_OK); return false; }
 
-	m_Barrel2->Translation(279.5f, 19.5f, 552.0f);
+	//m_Barrel2->Translation(279.5f, 19.5f, 552.0f);
+	m_Barrel2->Translation(246.0f, 18.5f, 568.5f);
 	m_Barrel2->Scale(0.15f, 0.15f, 0.15f);
 	m_Barrel2->Multiply(m_Barrel2->GetScailingMatrix(), m_Barrel2->GetTranslationMatrix());
 
@@ -254,7 +233,8 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Barrel3->Initialize("../Dreamy/Data/Barrel.txt", L"../Dreamy/Data/BarrelTexture.dds");
 	if (!result) { MessageBox(hwnd, L"m_Barrel2", L"Error", MB_OK); return false; }
 
-	m_Barrel3->Translation(280.0f, 17.5f, 539.0f);
+	//m_Barrel3->Translation(280.0f, 17.5f, 539.0f);
+	m_Barrel3->Translation(236.0f, 16.5f, 568.0f);
 	m_Barrel3->Scale(0.1f, 0.1f, 0.1f);
 	m_Barrel3->Multiply(m_Barrel3->GetScailingMatrix(), m_Barrel3->GetTranslationMatrix());
 
@@ -281,34 +261,29 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	//--------------------------------------------------------------------------------------
 
-	// Light
-	//--------------------------------------------------------------------------------------
-	m_Light = new LightClass;
-	if (!m_Light) { return false; }
+	//빌보딩표지판
+	m_Billboarding = new ModelClass;
 
-	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
-	//m_Light->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetPosition(0.2f, -1.0f, 1.0f);
-	m_Light->SetLookAt(0.0f, 0.0f, 0.0f);
-	m_Light->GenerateProjectionMatrix(SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT);
-	// Get the view and orthographic matrices from the light object.
-	m_Light->GenerateViewMatrix();
-	m_Light->GetViewMatrix(lightViewMatrix);
-	m_Light->GetProjectionMatrix(lightProjectionMatrix);
+	result = m_Billboarding->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/Billboard.png");
+	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
 
-	m_Light->SetPosition(0.5f, -1.0f, -0.25f);
-	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
-	//--------------------------------------------------------------------------------------
+	m_Billboarding->Translation(480.0f, 105.0f, 537.0f);
+	m_Billboarding->Scale(1.5f, 1.5f, 1.5f);
 
-	// Frustum
-	//--------------------------------------------------------------------------------------
-	m_Frustum = new FrustumClass;
-	if (!m_Frustum) { return false; }
+	//느낌표
+	m_Mark = new ModelClass;
 
-	//--------------------------------------------------------------------------------------
+	result = m_Mark->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/Mark.png");
+	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
 
+	m_Mark->Translation(513.0f, 55.0f, 405.0f);
+	m_Mark->Scale(0.4f, 0.4f, 0.4f);
+
+	return true;
+}
+bool GraphicsClass::LandLoading(HWND hwnd)
+{
+	bool result;
 	// LandScape
 	//--------------------------------------------------------------------------------------
 	m_Terrain = new TerrainClass;
@@ -335,7 +310,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Sky->InitializeSky();
 	if (!result) { MessageBox(hwnd, L"Could not initialize Sky object", L"Error", MB_OK); return false; }
 
-	result = m_Sky->InitializeCloud( L"../Dreamy/Data/cloud002.dds");
+	result = m_Sky->InitializeCloud(L"../Dreamy/Data/cloud002.dds");
 	if (!result) { MessageBox(hwnd, L"Could not initialize Cloud object", L"Error", MB_OK); return false; }
 
 	//--------------------------------------------------------------------------------------
@@ -345,7 +320,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_ShadowMap = new RTTTextureClass;
 	if (!m_ShadowMap) { return false; }
 
-	result = m_ShadowMap->Initialize(screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+	result = m_ShadowMap->Initialize(width, height, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the m_ShadowMap render to texture object.", L"Error", MB_OK); return false; }
 	//-------------------------------------------------------------------------------------
 
@@ -357,7 +332,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	if (!m_RefractionTexture) { return false; }
 
 	// Initialize the refraction render to texture object.
-	result = m_RefractionTexture->Initialize( screenWidth, screenHeight, SCREEN_DEPTH, SCREEN_NEAR);
+	result = m_RefractionTexture->Initialize(width, height, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the refraction render to texture object.", L"Error", MB_OK); return false; }
 
 	// Create the water object.
@@ -365,7 +340,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	if (!m_Water) { return false; }
 
 	// Initialize the water object.
-	result = m_Water->Initialize( L"../Dreamy/Data/waternormal.dds", 11.0f, 55.0f);
+	result = m_Water->Initialize(L"../Dreamy/Data/waternormal.dds", 11.0f, 55.0f);
 	if (!result) { MessageBox(hwnd, L"Could not initialize the water object.", L"Error", MB_OK); return false; }
 
 
@@ -374,36 +349,11 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	D3DXMatrixMultiply(&WaterWorldMatrix, &WaterRotationMatrix, &WaterWorldMatrix);
 	//-------------------------------------------------------------------------------------
 
-	// Text
-	//--------------------------------------------------------------------------------------
-	m_Text = new TextClass;
-	if (!m_Text) { return false; }
-
-	result = m_Text->Initialize(hwnd, screenWidth, screenHeight, ImageViewMatrix);
-	if (!result) { MessageBox(hwnd, L"m_Text error", L"Error", MB_OK); return false; }
-	//--------------------------------------------------------------------------------------
-
-	// 2D이미지
-	//--------------------------------------------------------------------------------------
-	m_CrossHair = new ImageClass;
-	if (!m_CrossHair) { return false; }
-	
-    result = m_CrossHair->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/Crosshair3.png", screenWidth, screenHeight);
-	if (!result) { MessageBox(hwnd, L"Could not initialize Crosshair", L"Error", MB_OK); return false; }
-
-	m_UIManager = new UIManagerClass;
-	if (!m_UIManager) { return false; }
-
-	m_UIManager->Initialize(screenWidth, screenHeight);
-	if (!result) { MessageBox(hwnd, L"Could not initialize m_UIManager", L"Error", MB_OK); return false; }
-
-	m_Balloon = new ImageClass;
-	if (!m_Balloon) { return false; }
-
-	result = m_Balloon->Initialize(screenWidth, screenHeight, L"../Dreamy/Data/Balloon.png", 88, 85);
-	if (!result) { MessageBox(hwnd, L"ballon error", L"Error", MB_OK); return false; }
-	//--------------------------------------------------------------------------------------
-
+	return true;
+}
+bool GraphicsClass::InstancingLoading(HWND hwnd)
+{
+	bool result;
 	// 인스턴싱 객체들 생성
 	//--------------------------------------------------------------------------------------
 	m_Instancing = new InstancingClass;
@@ -413,7 +363,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Instancing->SetInsatanceVariable(-5.0f, 0.0f, 25.0f);
 	m_Instancing->SetInstancePosition(140.0f, 9.5f, 470.0f);
 
-	result = m_Instancing->Initialize( "../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/tree_bark.dds");
+	result = m_Instancing->Initialize("../Dreamy/Data/MapleTreeStem.txt", L"../Dreamy/Data/tree_bark.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
 
 	m_Instancing2 = new InstancingClass;
@@ -509,7 +459,7 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	result = m_Instancing10->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/green_leaf.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
-	
+
 	//----------------------
 	m_Instancing11 = new InstancingClass;
 	if (!m_Instancing11) { return false; }
@@ -552,9 +502,44 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 
 	result = m_Instancing14->Initialize("../Dreamy/Data/MapleTreeLeaves.txt", L"../Dreamy/Data/maple_leaf.dds");
 	if (!result) { MessageBox(hwnd, L"instancing", L"Error", MB_OK); return false; }
+	//--------------------------------------------------------------------------------------
+	return true;
+}
+bool GraphicsClass::ImageLoading(HWND hwnd)
+{
+	bool result;
 
+	m_Loading = new ImageClass;
 
+	result = m_Loading->Initialize(width, height, L"../Dreamy/Data/Loading.jpg", width, height);
+	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
 
+	RenderLoadingScene();
+
+	m_Ending = new ImageClass;
+
+	result = m_Ending->Initialize(width, height, L"../Dreamy/Data/End.jpg", width, height);
+	if (!result) { MessageBox(hwnd, L"Could not initialize model object", L"Error", MB_OK); return false; }
+
+	// 2D이미지
+	//--------------------------------------------------------------------------------------
+	m_CrossHair = new ImageClass;
+	if (!m_CrossHair) { return false; }
+
+	result = m_CrossHair->Initialize(width, height, L"../Dreamy/Data/Crosshair3.png", width, height);
+	if (!result) { MessageBox(hwnd, L"Could not initialize Crosshair", L"Error", MB_OK); return false; }
+
+	m_UIManager = new UIManagerClass;
+	if (!m_UIManager) { return false; }
+
+	m_UIManager->Initialize(width, height);
+	if (!result) { MessageBox(hwnd, L"Could not initialize m_UIManager", L"Error", MB_OK); return false; }
+
+	m_Balloon = new ImageClass;
+	if (!m_Balloon) { return false; }
+
+	result = m_Balloon->Initialize(width, height, L"../Dreamy/Data/Balloon.png", 88, 85);
+	if (!result) { MessageBox(hwnd, L"ballon error", L"Error", MB_OK); return false; }
 	//--------------------------------------------------------------------------------------
 
 	// 미니맵
@@ -562,36 +547,32 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	m_Minimap = new MinimapClass;
 	if (!m_Minimap) { return false; }
 
-	result = m_Minimap->Initialize( screenWidth, screenHeight, 1025, 1025);
+	result = m_Minimap->Initialize(width, height, 1025, 1025);
 	if (!result) { MessageBox(hwnd, L"minimap error", L"Error", MB_OK); return false; }
 	//--------------------------------------------------------------------------------------
 
+	// Text
+	//--------------------------------------------------------------------------------------
+	m_Text = new TextClass;
+	if (!m_Text) { return false; }
+
+	result = m_Text->Initialize(hwnd, width, height, ImageViewMatrix);
+	if (!result) { MessageBox(hwnd, L"m_Text error", L"Error", MB_OK); return false; }
+	//--------------------------------------------------------------------------------------
+
+
+	return true;
+}
+bool GraphicsClass::EffectLoading(HWND hwnd)
+{
+	bool result;
 	// 빌보딩 객체(파티클 등)
 	//--------------------------------------------------------------------------------------
 	m_Particle = new ParticleSystem;
 	if (!m_Particle) { return false; }
 
-	result = m_Particle->Initialize( L"../Dreamy/Data/star.dds");
+	result = m_Particle->Initialize(L"../Dreamy/Data/star.dds");
 	if (!result) { MessageBox(hwnd, L"Could not particle TitleText", L"Error", MB_OK); return false; }
-
-	//빌보딩
-	m_Billboarding = new ModelClass;
-
-	result = m_Billboarding->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/Billboard.png");
-	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
-
-	m_Billboarding->Translation(480.0f, 105.0f, 537.0f);
-	m_Billboarding->Scale(1.5f, 1.5f, 1.5f);
-
-	//느낌표
-	m_Mark = new ModelClass;
-
-	result = m_Mark->Initialize("../Dreamy/Data/square2.txt", L"../Dreamy/Data/Mark.png");
-	if (!result) { MessageBox(hwnd, L"Could not initialize tree object", L"Error", MB_OK); return false; }
-
-	m_Mark->Translation(513.0f, 55.0f, 405.0f);
-	m_Mark->Scale(0.4f, 0.4f, 0.4f);
-
 
 	//집에 난 불
 	m_Fire = new ModelClass;
@@ -636,19 +617,107 @@ bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result) { MessageBox(hwnd, L"Could not initialize m_TFire3 effect object", L"Error", MB_OK); return false; }
 
 	m_TFire3->Translation(160.0f, 56.0f, 651.0f);
-	m_TFire3->Scale(30.0f, 30.0f, 30.0f);
+	m_TFire3->Scale(20.0f, 30.0f, 30.0f);
 
 	m_TFire3->active = true;
+
+	//나무9에 난 불
+	m_TFire4 = new ModelClass;
+
+	result = m_TFire4->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	if (!result) { MessageBox(hwnd, L"Could not initialize m_TFire4 effect object", L"Error", MB_OK); return false; }
+
+	m_TFire4->Translation(345.0f, 55.0f, 493.0f);
+	m_TFire4->Scale(20.0f, 30.0f, 30.0f);
+
+	m_TFire4->active = true;
+
+	//242.0f, 18.5f, 568.5f);
+	//Barrel에 난 불 
+	m_BFire = new ModelClass;
+
+	result = m_BFire->InitializeTriple("../Dreamy/Data/square.txt", L"../Dreamy/Data/fire.dds", L"../Dreamy/Data/noise01.dds", L"../Dreamy/Data/alpha01.dds");
+	if (!result) { MessageBox(hwnd, L"Could not initialize m_BFire effect object", L"Error", MB_OK); return false; }
+
+	m_BFire->Translation(250.0f, 53.0f, 568.5f);
+	m_BFire->Scale(30.0f, 40.0f, 30.0f);
+
+	m_BFire->active = true;
+
 	//--------------------------------------------------------------------------------------
-	
+
+	return true;
+}
+bool GraphicsClass::OtherLoading(HWND hwnd)
+{
+	//타이머
+	m_Timer = new FpsClass;
+	if (!m_Timer) { return false; }
+	m_Timer->Initialize();
+
+	// Light
+	m_Light = new LightClass;
+	if (!m_Light) { return false; }
+
+	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
+	//m_Light->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetPosition(0.2f, -1.0f, 1.0f);
+	m_Light->SetLookAt(0.0f, 0.0f, 0.0f);
+	m_Light->GenerateProjectionMatrix(SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT);
+	// Get the view and orthographic matrices from the light object.
+	m_Light->GenerateViewMatrix();
+	m_Light->GetViewMatrix(lightViewMatrix);
+	m_Light->GetProjectionMatrix(lightProjectionMatrix);
+
+	m_Light->SetPosition(0.5f, -1.0f, -0.25f);
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(16.0f); // 반사강도값이 낮을수록 반사광 효과가 커진다!
+
+
+									  // Frustum
+	m_Frustum = new FrustumClass;
+	if (!m_Frustum) { return false; }
+
 	return true;
 }
 
-// 모든 그래픽 객체의 종료가 여기에서 일어난다.
+bool GraphicsClass::Loading(int screenWidth, int screenHeight, HWND hwnd)
+{
+	bool result;
+
+	// 로딩이미지 객체 생성 및 출력
+	//-------------------------------------------------------------------------------------
+	SAFE_SHUTDOWN(m_Start);
+
+	result = ImageLoading(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize 2DImage object", L"Error", MB_OK); return false; }
+
+	result = FBXLoading();
+	if (!result) { MessageBox(hwnd, L"Could not initialize fbx object", L"Error", MB_OK); return false; }
+
+	result = OBJLoading(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize obj object", L"Error", MB_OK); return false; }
+
+	result = LandLoading(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize landscape object", L"Error", MB_OK); return false; }
+
+	result = InstancingLoading(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize Instancing object", L"Error", MB_OK); return false; }
+
+	result = EffectLoading(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize effect object", L"Error", MB_OK); return false; }
+
+	result = OtherLoading(hwnd);
+	if (!result) { MessageBox(hwnd, L"Could not initialize Other object", L"Error", MB_OK); return false; }
+
+	return true;
+}
+
+// 엔딩 후 엔딩장면에 필요없는것들을 해제한다.
 void GraphicsClass::PreShutdown()
 {
 	FBXShader::DeleteBuffer();
-	SAFE_SHUTDOWN(m_UI);
 	SAFE_SHUTDOWN(m_UIManager);
 	SAFE_SHUTDOWN(m_Minimap);
 	SAFE_DELETE(m_horse);
@@ -667,6 +736,8 @@ void GraphicsClass::PreShutdown()
 	SAFE_SHUTDOWN(m_TFire);
 	SAFE_SHUTDOWN(m_TFire2);
 	SAFE_SHUTDOWN(m_TFire3);
+	SAFE_SHUTDOWN(m_TFire4);
+	SAFE_SHUTDOWN(m_BFire);
 	SAFE_SHUTDOWN(m_circle);
 	SAFE_SHUTDOWN(m_TerrainShader);
 	//SAFE_SHUTDOWN(m_TerrainShader2); 243 54 510
@@ -690,12 +761,12 @@ void GraphicsClass::PreShutdown()
 	SAFE_SHUTDOWN(m_Terrain);
 	SAFE_SHUTDOWN(m_House);
 	SAFE_SHUTDOWN(m_Sky);
-	SAFE_SHUTDOWN(m_cube);
-	SAFE_SHUTDOWN(m_wcube);
+	SAFE_SHUTDOWN(m_NpcBox);
+	SAFE_SHUTDOWN(m_WaterBox);
 	SAFE_SHUTDOWN(m_CrossHair);
 	SAFE_DELETE(m_Frustum);
 	SAFE_SHUTDOWN(m_MouseCursor);
-	SAFE_SHUTDOWN(m_Text);
+	m_Text->Shutdown();
 	SAFE_SHUTDOWN(m_Particle);
 	SAFE_SHUTDOWN(m_Loading);
 	SAFE_DELETE(m_Timer);
@@ -704,6 +775,7 @@ void GraphicsClass::PreShutdown()
 void GraphicsClass::Shutdown()
 {
 	m_Text->EndShutdown();
+	delete(m_Text);
 	SAFE_SHUTDOWN(m_Ending);
 	Rasterizer::Delete();
 	Blender::Delete();
@@ -729,7 +801,7 @@ bool GraphicsClass::Frame(int fps, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3
 	bool foundHeight;
 
 	if (click == false)
-		UI_click = 0;
+		n_click = 0;
 
 	if (m_circle->active == true)
 		m_Timer->Frame();
@@ -761,6 +833,7 @@ bool GraphicsClass::Frame(int fps, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3
 	if (!result) { return false; }
 	result = m_Text->SetTime(m_Timer->GetTime());
 	if (!result) { return false; }
+	m_endingTime = m_Timer->GetTime();
 	//--------------------------------------------------------------------------------------
 
 	// 물풍선
@@ -772,73 +845,10 @@ bool GraphicsClass::Frame(int fps, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3
 		Shoot(frameTime);
 	//--------------------------------------------------------------------------------------
 
-	// 물풍선 처리 130.0f, 53.0f, 521.0f
+	// 물풍선 처리 
 	//--------------------------------------------------------------------------------------
-	// 157.0f, 49.0f, 429.0f
-	if (shoot == true && m_circle->active == true && m_Fire->active == true && CameraPos.x <= 215.0f && CameraPos.z >= 385.0f && CameraPos.z <= 465.0f)
-	{
-		if (dx == 94)
-		{
-			EffectSound = true;
-			m_Particle->active = true;
-			Fparticle = true;
-			m_Fire->active = false;
-			OffFire = true;
-
-		}
-
-	}
-	if (shoot == true && m_circle->active == true && m_TFire->active == true && CameraPos.x <= 180.0f &&CameraPos.z >= 490.0f&& CameraPos.z <= 560.0f)
-	{
-		if (dx == 94)
-		{
-			EffectSound = true;
-			m_Particle->active = true;
-			TFparticle = true;
-			m_TFire->active = false;
-			OffTFire = true;
-		}
-	}
-
-	//230 280
-	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f && CameraPos.x >= 230.0f && CameraPos.x <= 280.0f)
-	{
-		if (dx == 94)
-		{
-			EffectSound = true;
-			m_Particle->active = true;
-			TF2particle = true;
-			m_TFire2->active = false;
-			OffTFire2 = true;
-		}
-	}
-
-	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f && CameraPos.x >= 230.0f && CameraPos.x <= 280.0f)
-	{
-		if (dx == 94)
-		{
-			EffectSound = true;
-			m_Particle->active = true;
-			TF2particle = true;
-			m_TFire2->active = false;
-			OffTFire2 = true;
-		}
-	}
-
-	if (shoot == true && m_circle->active == true && m_TFire3->active == true && CameraPos.z >= 615.0f && CameraPos.x >= 130.0f && CameraPos.x <= 190.0f)
-	{
-		if (dx == 94)
-		{
-			EffectSound = true;
-			m_Particle->active = true;
-			TF3particle = true;
-			m_TFire3->active = false;
-			OffTFire3 = true;
-		}
-	}
-
+	BalloonFrame();
 	//--------------------------------------------------------------------------------------
-
 
 	 // Model들 Frame처리
 	 // 프레임 처리 메모리에 직접타격있으니까 제발 액티브에서만하자!!!!!
@@ -847,7 +857,7 @@ bool GraphicsClass::Frame(int fps, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3
 	m_Minimap->PositionUpdate(CameraPos.x, CameraPos.z); //미니맵
 
 	//불
-	if (m_Fire->active == true || m_TFire->active == true || m_TFire2->active == true || m_TFire3->active ==true)
+	if (m_Fire->active == true || m_TFire->active == true || m_TFire2->active == true || m_TFire3->active ==true || m_TFire4->active==true || m_BFire->active==true)
 		SetEffectVariable(frameTime*0.0005f);
 
 	//호수
@@ -858,9 +868,22 @@ bool GraphicsClass::Frame(int fps, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3
 	if (m_Particle->active == true)
 		m_Particle->Frame(frameTime);
 	else
-		Fparticle = TFparticle = TF2particle = TF3particle = false;
+		Fparticle = TFparticle = TF2particle = TF3particle = TF4particle = BFparticle =false;
+
+	// 말들
+	HorseFrame(frameTime);
 
 
+	//--------------------------------------------------------------------------------------
+
+	return true;
+}
+/*------------------------------------------------------------------------------------------
+이름: ~~Frame()
+용도: 모델들의 frame처리 관련 함수들을 따로 뺌.
+------------------------------------------------------------------------------------------*/
+void GraphicsClass::HorseFrame(float frameTime)
+{
 	//말1
 	if (starthorse == true)
 	{
@@ -941,20 +964,105 @@ bool GraphicsClass::Frame(int fps, float frameTime, D3DXVECTOR3 pos, D3DXVECTOR3
 	//npc
 	if (renderNpc == true)
 		m_npc->Update(0.5f);
-	//--------------------------------------------------------------------------------------
-
-	return true;
 }
+void GraphicsClass::BalloonFrame()
+{
+	// 157.0f, 49.0f, 429.0f
+	if (shoot == true && m_circle->active == true && m_Fire->active == true && CameraPos.x <= 215.0f && CameraPos.z >= 385.0f && CameraPos.z <= 465.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			Fparticle = true;
+			m_Fire->active = false;
+			OffFire = true;
 
+		}
+
+	}
+	if (shoot == true && m_circle->active == true && m_TFire->active == true && CameraPos.x <= 180.0f &&CameraPos.z >= 490.0f&& CameraPos.z <= 560.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			TFparticle = true;
+			m_TFire->active = false;
+			OffTFire = true;
+		}
+	}
+
+	//230 280
+	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f && CameraPos.x >= 230.0f && CameraPos.x <= 280.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			TF2particle = true;
+			m_TFire2->active = false;
+			OffTFire2 = true;
+		}
+	}
+
+	if (shoot == true && m_circle->active == true && m_TFire2->active == true && CameraPos.z <= 385.0f && CameraPos.x >= 230.0f && CameraPos.x <= 280.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			TF2particle = true;
+			m_TFire2->active = false;
+			OffTFire2 = true;
+		}
+	}
+
+	if (shoot == true && m_circle->active == true && m_TFire3->active == true && CameraPos.z >= 615.0f && CameraPos.x >= 130.0f && CameraPos.x <= 190.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			TF3particle = true;
+			m_TFire3->active = false;
+			OffTFire3 = true;
+		}
+	}
+
+	if (shoot == true && m_circle->active == true && m_TFire4->active == true && CameraPos.x <= 370.0f && CameraPos.x >= 310.0f && CameraPos.z >= 470.0f && CameraPos.z <= 495.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			TF4particle = true;
+			m_TFire4->active = false;
+			OffTFire4 = true;
+		}
+	}
+
+	if (shoot == true && m_circle->active == true && m_BFire->active == true && CameraPos.x <= 280.0f && CameraPos.x >= 210.0f && CameraPos.z >= 535.0f && CameraPos.z <= 605.0f)
+	{
+		if (dx == 94)
+		{
+			isEffectSound = true;
+			m_Particle->active = true;
+			BFparticle = true;
+			m_BFire->active = false;
+			OffBFire = true;
+		}
+	}
+}
 void GraphicsClass::Shoot(float frametime)
 {
 
-		Accell = Gravity;
+		vAccell = vGravity;
 
 		if (dx <= 20)
 			vVelocity = vVelocity;
 		else
-			vVelocity = vVelocity + Accell*frametime*0.00085f;
+			vVelocity = vVelocity + vAccell*frametime*0.00085f;
 
 		vPosition = vPosition + vVelocity *frametime*0.00010f;
 
@@ -962,7 +1070,7 @@ void GraphicsClass::Shoot(float frametime)
 		dz = vPosition.z;
 
 		D3DXMatrixTranslation(&ShootMatrix, 0.0f, dy, dz);
-		D3DXMatrixMultiply(&Cube3WorldMatrix, &Cube3WorldMatrix, &ShootMatrix);
+		D3DXMatrixMultiply(&BalloonWorldMatrix, &BalloonWorldMatrix, &ShootMatrix);
 
 		dx++;
 
@@ -972,11 +1080,11 @@ void GraphicsClass::Shoot(float frametime)
 			dx = 0;
 			dy = 0.0f;
 			dz = 0.0f;
-			Accell = { 0.0f, 0.0f, 0.0f };
+			vAccell = { 0.0f, 0.0f, 0.0f };
 			vPosition = { 0.0f, 0.0f, 0.0f };
 			vVelocity = { 0.0f,3.0f,1.5f };
 			D3DXMatrixTranslation(&ShootMatrix, 0.0f, dy, dz);
-			D3DXMatrixIdentity(&Cube3WorldMatrix);
+			D3DXMatrixIdentity(&BalloonWorldMatrix);
 
 			if (Shoot3)
 				Balloon3 = false;
@@ -994,7 +1102,7 @@ void GraphicsClass::Shoot(float frametime)
 용도 : 러닝씬과 RTT씬을 그린다.
 - 반사를 할 때는 우선 RTT를 먼저하고 러닝씬을 로드해야 혼합된다.
 ------------------------------------------------------------------------------------------*/
-bool GraphicsClass::Render(bool Pressed)
+bool GraphicsClass::Render()
 {
 	//기본행렬
 	//-------------------------------------------------------------------------------------
@@ -1014,13 +1122,13 @@ bool GraphicsClass::Render(bool Pressed)
 	//-------------------------------------------------------------------------------------
 	if (m_Water->active == true)
 	{
-		result = RenderRefractionToTexture(Pressed);
+		result = RenderRefractionToTexture();
 		if (!result) { return false; }
 	}
 
 	// 메인 Scene
 	//-------------------------------------------------------------------------------------
-	result = RenderRunningScene(Pressed);
+	result = RenderRunningScene();
 	if (!result) { return false; }
 	//-------------------------------------------------------------------------------------
 	
@@ -1045,7 +1153,7 @@ bool GraphicsClass::Render(bool Pressed)
 
 안개는 ...나중에 ... 높이맵 했을 때 높이맵에만 셰이더를 씌우는게 나을듯.
 ------------------------------------------------------------------------------------------*/
-bool GraphicsClass::RenderRunningScene(bool Pressed)
+bool GraphicsClass::RenderRunningScene()
 {
 	bool result;
 	bool renderModel;
@@ -1238,7 +1346,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (!result) { return false; }
 	}
 	else
-		result = m_Shader->RenderLightShader(m_circle->GetIndexCount(), Cube3WorldMatrix, cupViewMatrix, projectionMatrix
+		result = m_Shader->RenderLightShader(m_circle->GetIndexCount(), BalloonWorldMatrix, BalloonViewMatrix, projectionMatrix
 			, m_circle->GetTexture(), D3DXVECTOR3(0.2, -1, 1), D3DXVECTOR4(0.9f, 0.9f, 0.9f, 1.0f), m_Light->GetDiffuseColor(), CameraPos
 			, m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 
@@ -1247,15 +1355,15 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 
 	// npc 충돌 박스
 	//-----------------------------
-	m_cube->active = m_Frustum->CheckPoint(515.0f, 30.0f, 415.0f);
+	m_NpcBox->active = m_Frustum->CheckPoint(515.0f, 30.0f, 415.0f);
 	
-	if (m_cube->active== true)
-		m_cube->Render();
+	if (m_NpcBox->active== true)
+		m_NpcBox->Render();
 
 	// 물 충돌 박스
 	//-----------------------------
 	if (m_Water->active)
-		m_wcube->Render();
+		m_WaterBox->Render();
 	
 	
 	// 집
@@ -1274,13 +1382,21 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	// Barrel
 	//-----------------------------
 	m_Barrel->Render();
-	result = m_Shader->RenderTextureShader(m_Barrel->GetIndexCount(), m_Barrel->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel->GetTexture());
-
 	m_Barrel2->Render();
-	result = m_Shader->RenderTextureShader(m_Barrel2->GetIndexCount(), m_Barrel2->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel2->GetTexture());
-
 	m_Barrel3->Render();
-	result = m_Shader->RenderTextureShader(m_Barrel3->GetIndexCount(), m_Barrel3->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel3->GetTexture());
+
+	if (OffBFire == false)
+	{
+		result = m_Shader->RenderDiffuseShader(m_Barrel->GetIndexCount(), m_Barrel->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
+		result = m_Shader->RenderDiffuseShader(m_Barrel2->GetIndexCount(), m_Barrel2->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel2->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
+		result = m_Shader->RenderDiffuseShader(m_Barrel3->GetIndexCount(), m_Barrel3->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel3->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(0.75f, 0.75f, 0.75f, 1.0f));
+	}
+	else
+	{
+		result = m_Shader->RenderDiffuseShader(m_Barrel->GetIndexCount(), m_Barrel->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f));
+		result = m_Shader->RenderDiffuseShader(m_Barrel2->GetIndexCount(), m_Barrel2->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel2->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f));
+		result = m_Shader->RenderDiffuseShader(m_Barrel3->GetIndexCount(), m_Barrel3->GetFinalMatrix(), viewMatrix, projectionMatrix, m_Barrel3->GetTexture(), D3DXVECTOR3(-0.5f, -1.0f, 0.0f), D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f));
+	}
 	//-------------------------------------------------------------------------------------
 
 	// Crate
@@ -1364,8 +1480,30 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		Blender::Get()->SetOff();
 	}
 
-	Blender::Get()->SetLinear();
+	if (OffTFire4 == false)
+	{
+		m_Instancing9->Render();
+		result = m_Shader->RenderDiffuseInstancingShader(m_Instancing9->GetVertexCount(), m_Instancing9->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing9->GetTexture(), D3DXVECTOR3(-0.9f, -1.0f, 0.0f), D3DXVECTOR4(0.79f, 0.79f, 0.79f, 1.0f));
+		if (!result) { return false; }
 
+		m_Instancing10->Render();
+		result = m_Shader->RenderDiffuseInstancingShader(m_Instancing10->GetVertexCount(), m_Instancing10->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing10->GetTexture(), D3DXVECTOR3(-0.10f, -1.0f, 0.0f), D3DXVECTOR4(0.710f, 0.710f, 0.710f, 1.0f));
+		if (!result) { return false; }
+	}
+	else
+	{
+		Blender::Get()->SetLinear();
+		m_Instancing9->Render();
+		result = m_Shader->RenderInstancingShader(m_Instancing9->GetVertexCount(), m_Instancing9->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing9->GetTexture());
+		if (!result) { return false; }
+
+		m_Instancing10->Render();
+		result = m_Shader->RenderInstancingShader(m_Instancing10->GetVertexCount(), m_Instancing10->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing10->GetTexture());
+		if (!result) { return false; }
+		Blender::Get()->SetOff();
+	}
+
+	Blender::Get()->SetLinear();
 
 	m_Instancing7->Render();
 	result = m_Shader->RenderInstancingShader(m_Instancing7->GetVertexCount(), m_Instancing7->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing7->GetTexture());
@@ -1375,13 +1513,7 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 	result = m_Shader->RenderInstancingShader(m_Instancing8->GetVertexCount(), m_Instancing8->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing8->GetTexture());
 	if (!result) { return false; }
 
-	m_Instancing9->Render();
-	result = m_Shader->RenderInstancingShader(m_Instancing9->GetVertexCount(), m_Instancing9->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing9->GetTexture());
-	if (!result) { return false; }
 
-	m_Instancing10->Render();
-	result = m_Shader->RenderInstancingShader(m_Instancing10->GetVertexCount(), m_Instancing10->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing10->GetTexture());
-	if (!result) { return false; }
 
 	m_Instancing11->Render();
 	result = m_Shader->RenderInstancingShader(m_Instancing11->GetVertexCount(), m_Instancing11->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, m_Instancing11->GetTexture());
@@ -1503,7 +1635,44 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 			projectionMatrix, m_TFire3->GetTripleTexture1(), m_TFire3->GetTripleTexture2(), m_TFire3->GetTripleTexture3(),
 			fire_frametime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
 		if (!result) { return false; }
+	}
 
+	renderTFire4 = m_Frustum->CheckCube(345.0f, 54.0f, 493.0f, 8.0f);
+
+	if (m_TFire4->active == true && renderTFire4 == true)
+	{
+
+		D3DXVECTOR3 TFire4Position = { 345.0f, 56.0f, 493.0f };
+		m_TFire4->RotationY(CalculateBillboarding(CameraPos, TFire4Position));
+
+		m_TFire4->Multiply(m_TFire4->GetScailingMatrix(), m_TFire4->GetRotationYMatrix());
+		m_TFire4->Multiply(m_TFire4->GetFinalMatrix(), m_TFire4->GetTranslationMatrix());
+
+		m_TFire4->Render();
+
+		result = m_Shader->RenderFireShader(m_TFire4->GetIndexCount(), m_TFire4->GetFinalMatrix(), viewMatrix,
+			projectionMatrix, m_TFire4->GetTripleTexture1(), m_TFire4->GetTripleTexture2(), m_TFire4->GetTripleTexture3(),
+			fire_frametime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+		if (!result) { return false; }
+	}
+
+	renderBFire = m_Frustum->CheckCube(250.0f, 51.0f, 568.5f, 8.0f);
+
+	if (m_BFire->active == true && renderBFire == true)
+	{
+
+		D3DXVECTOR3 BFirePosition = { 250.0f, 53.0f, 568.5f };
+		m_BFire->RotationY(CalculateBillboarding(CameraPos, BFirePosition));
+
+		m_BFire->Multiply(m_BFire->GetScailingMatrix(), m_BFire->GetRotationYMatrix());
+		m_BFire->Multiply(m_BFire->GetFinalMatrix(), m_BFire->GetTranslationMatrix());
+
+		m_BFire->Render();
+
+		result = m_Shader->RenderFireShader(m_BFire->GetIndexCount(), m_BFire->GetFinalMatrix(), viewMatrix,
+			projectionMatrix, m_BFire->GetTripleTexture1(), m_BFire->GetTripleTexture2(), m_BFire->GetTripleTexture3(),
+			fire_frametime, scrollSpeeds, scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+		if (!result) { return false; }
 	}
 
 	// 2D
@@ -1585,6 +1754,12 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 		if (TF3particle == true)
 			ParticlePosition = { 160.0f, 22.0f, 651.0f };
 
+		if (TF4particle == true)
+			ParticlePosition = { 345.0f, 22.0f, 496.0f };
+
+		if (BFparticle == true)
+			ParticlePosition = { 247.0f, 22.0f, 568.5f };
+		
 		m_Particle->Translation(ParticlePosition.x, ParticlePosition.y, ParticlePosition.z);
 		m_Particle->RotationY(CalculateBillboarding(CameraPos, ParticlePosition));
 		m_Particle->Multiply(m_Particle->GetRotationYMatrix(), m_Particle->GetTranslationMatrix());
@@ -1613,32 +1788,23 @@ bool GraphicsClass::RenderRunningScene(bool Pressed)
 //-------------------------------------------------------------------------------------
 void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth, int m_screenHeight)
 {
-	UI_click++;
+	n_click++;
 
-	if (UI_click ==1)
+	if (n_click ==1)
 	{
-		if (m_cube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
-		{
+		if (m_NpcBox->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
 			m_UIManager->active();
-			//m_Particle->active = true;
-			//m_UI->active = true;
-		}
 		else 
 			m_UIManager->unactive();
-
-		//m_UI->active = false;
-
 
 		if (m_circle->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos))
 		{
 			m_circle->active = true;
 			m_Timer->Start();
 			m_Balloon->active = true;
-
 		}
 
-
-		if (m_wcube->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos) == true && m_Balloon->active == true)
+		if (m_WaterBox->TestIntersection(mouseX, mouseY, m_screenWidth, m_screenHeight, projectionMatrix, viewMatrix, worldMatrix, CameraPos) == true && m_Balloon->active == true)
 		{
 			if (Shoot0)
 				Balloon1 = true;
@@ -1695,7 +1861,7 @@ void GraphicsClass::CheckIntersection(int mouseX, int mouseY, int m_screenWidth,
 //이름: RenderRefractionToTexture()
 //용도: 호수 내부의 모습을 RTT로 굴절(Refraction)한다.
 //-------------------------------------------------------------------------------------
-bool GraphicsClass::RenderRefractionToTexture(bool Pressed)
+bool GraphicsClass::RenderRefractionToTexture()
 {
 	D3DXVECTOR4 clipPlane;
 
@@ -1802,8 +1968,10 @@ bool GraphicsClass::RenderMainScene(int mouseX, int mouseY)
 	return true;
 }
 
-
-
+/*----------------------------------------------------------------------------------------
+이름 : CalculateBillboarding()
+용도 : 빌보딩 계산 함수.
+------------------------------------------------------------------------------------------*/
 float GraphicsClass::CalculateBillboarding(D3DXVECTOR3 cameraPosition, D3DXVECTOR3 BillboardPosition)
 {
 	float angle;
@@ -1814,6 +1982,10 @@ float GraphicsClass::CalculateBillboarding(D3DXVECTOR3 cameraPosition, D3DXVECTO
 	return rotation;
 }
 
+/*----------------------------------------------------------------------------------------
+이름 : SetEffectVariable
+용도 : Effect변수 계산 함수
+------------------------------------------------------------------------------------------*/
 void GraphicsClass::SetEffectVariable(float frametime)
 {
 	// 불꽃 이펙트
@@ -1838,6 +2010,10 @@ void GraphicsClass::SetEffectVariable(float frametime)
 
 }
 
+/*----------------------------------------------------------------------------------------
+이름 : RenderEndScene()
+용도 : 엔딩화면을 그린다.
+------------------------------------------------------------------------------------------*/
 bool GraphicsClass::RenderEndScene()
 {
 	bool result;
@@ -1850,8 +2026,6 @@ bool GraphicsClass::RenderEndScene()
 	Blender::Get()->SetLinear();
 	DepthStencil::Get()->SetOffState();
 
-	m_Text->EndRender(MainSceneworldMatrix, orthoMatrix);
-	m_Text->SetTime(m_endTime);
 
 	result = m_Ending->Render(0, 0);
 	if (!result) { return false; }
@@ -1859,6 +2033,8 @@ bool GraphicsClass::RenderEndScene()
 	result = m_Shader->RenderTextureShader(m_Ending->GetIndexCount(), MainSceneworldMatrix, ImageViewMatrix, orthoMatrix, m_Ending->GetTexture());
 	if (!result) { return false; }
 
+	m_Text->EndRender(MainSceneworldMatrix, orthoMatrix);
+	m_Text->SetEndTime(m_endingTime);
 
 	D3D::Get()->EndScene();
 
@@ -1867,12 +2043,11 @@ bool GraphicsClass::RenderEndScene()
 
 bool GraphicsClass::End()
 {
-	if (OffFire == true && OffTFire == true && OffTFire2 == true && OffTFire3 ==true&&m_UIManager->m_UI[0]->active==true)
+	if (OffFire == true && OffTFire == true && OffTFire2 == true && OffTFire3 ==true && OffTFire4 ==true&& OffBFire==true&&m_UIManager->m_UI[0]->active==true)
 	{
-		m_endTime = m_Timer->GetTime();
 		PreShutdown();
-		m_end = true;
+		isEnd = true;
 	}
 
-	return m_end;
+	return isEnd;
 }

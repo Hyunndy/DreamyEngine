@@ -78,9 +78,9 @@ public:
 
 	void Shutdown();
 	bool Frame(int, float, D3DXVECTOR3, D3DXVECTOR3, int, int, bool);// + 카메라 회전
-	bool Render(bool);
+	bool Render();
 	void CheckIntersection(int, int, int, int);
-	void Shoot(float);
+
 
 	bool RenderMainScene(int, int);
 	bool RenderLoadingScene();
@@ -88,43 +88,56 @@ public:
 
 	bool End();
 
-	//Picking 검사
-	//void TestIntersection(int, int, int, int);
-	//bool RaySphereIntersect(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDirection, float radius);
+
 public:
-	bool F1pressed;
-	D3DXMATRIX minimapMatrix; // 미니맵 
 	bool click = false;
-	int UI_click = 0;
-	bool EffectSound = false;
+	int  n_click = 0;
+	bool isEffectSound = false;
 
 private:
+	bool isEnd = false; //게임 클리어인지 아닌지.
+	int  m_endingTime = 0; // 불끄는데 걸린 시간
+
+private:
+	bool FBXLoading();
+	bool OBJLoading(HWND);
+	bool LandLoading(HWND);
+	bool InstancingLoading(HWND);
+	bool ImageLoading(HWND);
+	bool EffectLoading(HWND);
+	bool OtherLoading(HWND);
+
 	void PreShutdown();
-	bool RenderRunningScene(bool);
-	bool RenderRefractionToTexture(bool); // 호수 굴절 텍스처
-	bool RenderShadowToTexture(bool); // 그림자맵
+	bool RenderRunningScene();
+	bool RenderRefractionToTexture(); // 호수 굴절 텍스처
+	bool RenderShadowToTexture(); // 그림자맵
 
-
-	void SetEffectVariable(float frametime); //이펙트 관련 변수 세팅
 	float CalculateBillboarding(D3DXVECTOR3,D3DXVECTOR3);
 
 private:
-	bool m_end = false; //게임 클리어인지 아닌지.
-	int m_endTime = 0; // 불끄는데 걸린 시간
-private:
 	//물풍선 관련.
-	D3DXMATRIX Cube3WorldMatrix;
-	D3DXMATRIX ShootMatrix;
+	D3DXMATRIX BalloonWorldMatrix, BalloonViewMatrix, ShootMatrix;
 
-
-	D3DXVECTOR3 Gravity = { 0.0f, -11.8f, 0.0f };
-	D3DXVECTOR3 Accell = { 0.0f, 0.0f, 0.0f };
+	D3DXVECTOR3 vGravity = { 0.0f, -11.8f, 0.0f };
+	D3DXVECTOR3 vAccell = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 vPosition = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 vVelocity = { 0.0f,3.0f,1.5f };
-	int width, height;
+	int width=0, height=0;
 	bool shoot = false;
-	float dy, dz;
+	float dy =0.0f, dz=0.0f;
 	int dx=0;
+
+	void Shoot(float);
+	void BalloonFrame();
+
+	//물풍선 UI관련
+	ImageClass* m_Balloon = nullptr;
+	bool Balloon1 = false, Balloon2 = false, Balloon3 = false;
+
+	#define Shoot0 ( Balloon1==false && Balloon2 == false && Balloon3 == false)
+	#define Shoot1 ( Balloon1==true && Balloon2==false && Balloon3 ==false)
+	#define Shoot2 ( Balloon1==true && Balloon2==true && Balloon3 ==false)
+	#define Shoot3 ( Balloon1==true && Balloon2==true && Balloon3 ==true)
 
 private:
 	FrustumClass* m_Frustum =  nullptr;
@@ -145,23 +158,27 @@ private:
 	RTTTextureClass* m_ShadowMap = nullptr;
 
 private:
-	ModelClass* m_cube= nullptr;
-	ModelClass* m_wcube = nullptr;
+	//OBJ모델
+	ModelClass* m_NpcBox= nullptr; //npc충돌박스
+	ModelClass* m_WaterBox = nullptr; //호수충돌박스
 	ModelClass* m_circle = nullptr;
 	ModelClass* m_Billboarding = nullptr;
 	ModelClass* m_Mark = nullptr;
 	ModelClass* m_Tree = nullptr;
-	ModelClass* m_Barrel = nullptr;
-	ModelClass* m_Barrel2 = nullptr;
-	ModelClass* m_Barrel3 = nullptr;
 	ModelClass* m_Crate = nullptr;
 	ModelClass* m_Crate2 = nullptr;
 
+	ModelClass* m_Barrel = nullptr;
+	ModelClass* m_Barrel2 = nullptr;
+	ModelClass* m_Barrel3 = nullptr;
+	bool OffBFire = false;
 
 	ModelClass* m_House = nullptr;
 	bool OffFire = false;
 
 private:
+	//불
+	void SetEffectVariable(float frametime); //이펙트 관련 변수 세팅
 	float fire_frametime, distortionScale, distortionBias;
 	D3DXVECTOR3 scrollSpeeds;
 	D3DXVECTOR3 scales;
@@ -172,53 +189,53 @@ private:
 	ModelClass* m_Fire = nullptr; //집불
 	ModelClass* m_TFire = nullptr;  //인스턴싱 1,2불
 	ModelClass* m_TFire2 = nullptr; //인스턴싱 3,4불
-	//160 651  x는+=30  z는<615
 	ModelClass* m_TFire3 = nullptr; //인스턴싱 5,6불
+	ModelClass* m_TFire4 = nullptr; //인스턴싱 9,10불
+	ModelClass* m_BFire = nullptr; // Barrel에 붙은 불
+
 	bool renderFire = false;
 	bool renderTFire = false;
 	bool renderTFire2 = false;
 	bool renderTFire3 = false;
-
+	bool renderTFire4 = false;
+	bool renderBFire = false;
 
 private:
 	D3DXVECTOR3 horsePos= { 333.0f, 20.0f, 349.0f };
 	D3DXVECTOR3 horse2Pos= { 235.0f, 10.0f, 500.0f };
 	D3DXVECTOR3 horse3Pos = { 670.0f, 51.0f, 464.0f };
+
 	ModelScene* m_horse= nullptr;
 	ModelScene* m_horse2 = nullptr;
 	ModelScene* m_horse3 = nullptr;
 	ModelScene* m_npc = nullptr;
+	
+	//프러스텀 컬링을 위한 bool변수들
 	bool renderhorse = false;
 	bool renderhorse2 = false;
 	bool renderhorse3 = false;
 	bool renderNpc = false;
+
+	//플레이어의 시선안에 있어야 애니메이션이 시작되게 하기 위한 bool 변수들.
 	bool starthorse = false;
 	bool starthorse2 = false;
 	bool starthorse3 = false;
 
+	//움직임 제어 함수
+	void HorseFrame(float);
+
 private:
+	//2D화면들
 	ImageClass* m_Start= nullptr;
 	ImageClass* m_Loading= nullptr;
 	ImageClass* m_Ending = nullptr;
-
 	ImageClass* m_CrossHair= nullptr;
-
+	UIManagerClass* m_UIManager = nullptr;
+	
 	float MousePosX, MousePosY;
 	ImageClass* m_MouseCursor= nullptr;
-
-private:
-	ImageClass* m_Balloon = nullptr;
-	bool Balloon1 = false, Balloon2 = false, Balloon3 = false;
-
-	#define Shoot0 ( Balloon1==false && Balloon2 == false && Balloon3 == false)
-	#define Shoot1 ( Balloon1==true && Balloon2==false && Balloon3 ==false)
-	#define Shoot2 ( Balloon1==true && Balloon2==true && Balloon3 ==false)
-	#define Shoot3 ( Balloon1==true && Balloon2==true && Balloon3 ==true)
-
-private:
-	ImageClass* m_UI =nullptr;
-	UIManagerClass* m_UIManager = nullptr;
-
+	MinimapClass* m_Minimap = nullptr;
+	TextClass* m_Text = nullptr;
 
 private:
 	//집에 있는 나무
@@ -226,10 +243,12 @@ private:
 	InstancingClass* m_Instancing2 = nullptr;
 	bool OffTFire = false;
 
+	//집의 왼쪽에 있는 나무
 	InstancingClass* m_Instancing3 = nullptr;
 	InstancingClass* m_Instancing4 = nullptr;
 	bool OffTFire2 = false;
 
+	//집의 오른쪽에 있는 나무
 	InstancingClass* m_Instancing5 = nullptr;
 	InstancingClass* m_Instancing6 = nullptr;
 	bool OffTFire3 = false;
@@ -237,6 +256,7 @@ private:
 	//Barrel쪽나무
 	InstancingClass* m_Instancing9 = nullptr;
 	InstancingClass* m_Instancing10 = nullptr;
+	bool OffTFire4 = false;
 
 	//강가에 있는 나무
 	InstancingClass* m_Instancing7 = nullptr;
@@ -248,12 +268,6 @@ private:
 	InstancingClass* m_Instancing13 = nullptr;
 	InstancingClass* m_Instancing14 = nullptr;
 
-
-	MinimapClass* m_Minimap = nullptr;
-
-private:
-	TextClass* m_Text = nullptr;
-
 private:
 	ParticleSystem* m_Particle = nullptr;
 	//파티클시스템 1개만 생성하고 모든 불에 써먹기 위해 bool변수로 위치를 조정한다.
@@ -261,14 +275,13 @@ private:
 	bool TFparticle = false;
 	bool TF2particle = false;
 	bool TF3particle = false;
-
-private:
-
+	bool TF4particle = false;
+	bool BFparticle = false;
 
 private:
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXMATRIX ImageViewMatrix, ImageProjectionMatrix;
-	D3DXMATRIX cupViewMatrix;
+	D3DXMATRIX minimapMatrix; // 미니맵 
 	D3DXMATRIX lightViewMatrix, lightProjectionMatrix;
 
 private:

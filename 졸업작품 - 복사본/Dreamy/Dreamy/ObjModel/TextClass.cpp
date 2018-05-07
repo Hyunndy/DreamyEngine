@@ -92,6 +92,9 @@ bool TextClass::Initialize( HWND hwnd, int screenWidth, int screenHeight,
 	result = InitializeSentence(&m_sentence8, 16);
 	if (!result) { return false; }
 
+	result = InitializeSentence(&m_sentence9, 16);
+	if (!result) { return false; }
+
 	// 사용할 문장을 업데이트 한다.
 	result = UpdateSentence(m_sentence1, "Dreamy", 45, 100, 1.0f, 0.0f, 0.0f);
 	if (!result) { return false;}
@@ -626,12 +629,12 @@ bool TextClass::SetEndTime(int Time)
 
 	// Convert the cpu integer to string format.
 	_itoa_s(Time, tempString, 10);
-
+	strcpy_s(cpuString, "Time: ");
 	strcat_s(cpuString, tempString);
 	
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence9, cpuString, 1465, 285, 1.0f, 0.0f, 0.0f);
+	result = UpdateSentence(m_sentence9, cpuString, 1375, 433, 1.0f, 0.0f, 0.0f);
 	if (!result)
 	{
 		return false;

@@ -55,19 +55,19 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(608): w
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50445): note: 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'의 이전 정의를 참조하십시오.
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': 매크로 재정의
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50454): note: 'D3D10_ERROR_FILE_NOT_FOUND'의 이전 정의를 참조하십시오.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(294): warning C4244: '인수': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(753): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(754): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(855): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1233): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1242): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1525): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1539): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1546): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1553): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1561): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1051): warning C4101: 'renderModel' :참조되지 않은 지역 변수입니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1811): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(667): warning C4244: '인수': 'const int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(825): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(826): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(865): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1341): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1350): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1694): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1708): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1715): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1722): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1730): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1159): warning C4101: 'renderModel' :참조되지 않은 지역 변수입니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\graphicsclass.cpp(1979): warning C4244: '=': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   TextClass.cpp
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\dxgitype.h(12): warning C4005: 'DXGI_STATUS_OCCLUDED': 매크로 재정의
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50092): note: 'DXGI_STATUS_OCCLUDED'의 이전 정의를 참조하십시오.
@@ -125,8 +125,8 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(608): w
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50445): note: 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'의 이전 정의를 참조하십시오.
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': 매크로 재정의
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50454): note: 'D3D10_ERROR_FILE_NOT_FOUND'의 이전 정의를 참조하십시오.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\objmodel\textclass.cpp(564): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
-c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\objmodel\textclass.cpp(565): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\objmodel\textclass.cpp(567): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
+c:\users\user\documents\github\dreamyengine\졸업작품 - 복사본\dreamy\dreamy\objmodel\textclass.cpp(568): warning C4305: '=': 'double'에서 'float'(으)로 잘립니다.
   코드를 생성하고 있습니다...
   Dreamy.vcxproj -> C:\Users\user\Documents\GitHub\DreamyEngine\졸업작품 - 복사본\Dreamy\Debug\Dreamy.exe
   Dreamy.vcxproj -> C:\Users\user\Documents\GitHub\DreamyEngine\졸업작품 - 복사본\Dreamy\Debug\Dreamy.pdb (Full PDB)

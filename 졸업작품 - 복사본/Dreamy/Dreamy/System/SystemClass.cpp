@@ -331,7 +331,7 @@ bool SystemClass::Frame()
 	
 
 	//result = m_Graphics->Render(F1pressed);
-	result = m_Graphics->Render(F1pressed);
+	result = m_Graphics->Render();
 	if (!result) { return false; }
 
 	//ÃÑ¾Ë¹ß»ç
@@ -353,10 +353,10 @@ bool SystemClass::Frame()
 	if (m_Graphics->End() == true)
 		m_state = STATE::END;
 
-	if (m_Graphics->EffectSound == true)
+	if (m_Graphics->isEffectSound == true)
 	{
 		m_Sound->PlayWaveFile(3);
-		m_Graphics->EffectSound = false;
+		m_Graphics->isEffectSound = false;
 	}
 
 	return true;
