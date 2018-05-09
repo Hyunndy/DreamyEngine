@@ -774,8 +774,11 @@ void GraphicsClass::PreShutdown()
 
 void GraphicsClass::Shutdown()
 {
-	m_Text->EndShutdown();
-	delete(m_Text);
+	if (m_Text)
+	{
+		m_Text->EndShutdown();
+		delete(m_Text);
+	}
 	SAFE_SHUTDOWN(m_Ending);
 	Rasterizer::Delete();
 	Blender::Delete();
@@ -934,32 +937,32 @@ void GraphicsClass::HorseFrame(float frameTime)
 			m_horse2->turn = false;
 	}
 
-	//¸»3
-	if (starthorse3 == true)
-	{
-		float horse3Y;
-		if (m_Terrain->GetHeightAtPosition(horse3Pos.x, horse3Pos.z, horse3Y))
-			horse3Pos.y = horse3Y + 2.0f;
-
-		//800
-		m_horse3->Update(1.0f);
-
-		if (m_horse3->turn == false)
-		{
-			horse3Pos.x = horse3Pos.x - frameTime*0.02f;
-			horse3Pos.z = horse3Pos.z - frameTime*0.04f;
-		}
-		else
-		{
-			horse3Pos.x = horse3Pos.x + frameTime*0.02f;
-			horse3Pos.z = horse3Pos.z + frameTime*0.04f;
-		}
-
-		if (horse3Pos.x <= 540.0f && horse3Pos.z <= 185.0f)
-			m_horse3->turn = true;
-		if (horse3Pos.x >= 671.0f  && horse3Pos.z >= 464.0f)
-			m_horse3->turn = false;
-	}
+	////¸»3
+	//if (starthorse3 == true)
+	//{
+	//	float horse3Y;
+	//	if (m_Terrain->GetHeightAtPosition(horse3Pos.x, horse3Pos.z, horse3Y))
+	//		horse3Pos.y = horse3Y + 2.0f;
+	//
+	//	//800
+	//	m_horse3->Update(1.0f);
+	//
+	//	if (m_horse3->turn == false)
+	//	{
+	//		horse3Pos.x = horse3Pos.x - frameTime*0.02f;
+	//		horse3Pos.z = horse3Pos.z - frameTime*0.04f;
+	//	}
+	//	else
+	//	{
+	//		horse3Pos.x = horse3Pos.x + frameTime*0.02f;
+	//		horse3Pos.z = horse3Pos.z + frameTime*0.04f;
+	//	}
+	//
+	//	if (horse3Pos.x <= 540.0f && horse3Pos.z <= 185.0f)
+	//		m_horse3->turn = true;
+	//	if (horse3Pos.x >= 671.0f  && horse3Pos.z >= 464.0f)
+	//		m_horse3->turn = false;
+	//}
 
 	//npc
 	if (renderNpc == true)
@@ -1306,25 +1309,25 @@ bool GraphicsClass::RenderRunningScene()
 	}
 
 	//¸»3
-	if (renderhorse3 = m_Frustum->CheckSphere(horse3Pos.x, horse3Pos.y, horse3Pos.z, 3.0f))
-		starthorse3 = true;
-
-	if (starthorse3 == true)
-	{
-		D3DXMATRIX ROT3;
-		if (m_horse3->turn == false)
-			D3DXMatrixRotationAxis(&ROT3, &D3DXVECTOR3(0, 1, 0), 2.5f);
-		else
-			D3DXMatrixRotationAxis(&ROT3, &D3DXVECTOR3(0, 1, 0), 5.5f);
-
-		m_horse3->Translation(horse3Pos.x, horse3Pos.y, horse3Pos.z);
-		m_horse3->Multiply(m_horse3->GetScailingMatrix(), ROT3);
-		m_horse3->Multiply(m_horse3->GetFinalMatrix(), m_horse3->GetTranslationMatrix());
-
-		m_horse3->SetWorldTransform(m_horse3->GetFinalMatrix());
-
-		m_horse3->Render();
-	}
+//if (renderhorse3 = m_Frustum->CheckSphere(horse3Pos.x, horse3Pos.y, horse3Pos.z, 3.0f))
+//	starthorse3 = true;
+//
+//if (starthorse3 == true)
+//{
+//	D3DXMATRIX ROT3;
+//	if (m_horse3->turn == false)
+//		D3DXMatrixRotationAxis(&ROT3, &D3DXVECTOR3(0, 1, 0), 2.5f);
+//	else
+//		D3DXMatrixRotationAxis(&ROT3, &D3DXVECTOR3(0, 1, 0), 5.5f);
+//
+//	m_horse3->Translation(horse3Pos.x, horse3Pos.y, horse3Pos.z);
+//	m_horse3->Multiply(m_horse3->GetScailingMatrix(), ROT3);
+//	m_horse3->Multiply(m_horse3->GetFinalMatrix(), m_horse3->GetTranslationMatrix());
+//
+//	m_horse3->SetWorldTransform(m_horse3->GetFinalMatrix());
+//
+//	m_horse3->Render();
+//}
 
 	// OBJ¸ðµ¨
 	//-------------------------------------------------------------------------------------

@@ -99,60 +99,86 @@ bool SystemClass::Initialize()
 ---------------------------------------------------------------------------------------------------------------*/
 void SystemClass::Main()
 {
+	MSG msg;
+
 	bool result;
 	int Mute = 0;
 	bool PressedF2 = false;
-	bool sibal = false;
 	bool Start = false;
-
-	m_Input->SetMousePosition();
 
 	//메인사운드 출력
 	result = m_Sound->PlayWaveFile(1);
 	if (!result) { MessageBox(m_hwnd, L"Could not initialize the main sound.", L"Error", MB_OK); }
 
-	while (Start==false)
+	// Initialize the message structure.
+	ZeroMemory(&msg, sizeof(MSG));
+
+
+	while (!Start)
 	{
-		// 키보드&마우스 상태를 갱신하도록 한다.
-		result = m_Input->Frame();
-		m_Input->GetMouseLocation(mouseX, mouseY);
+		// Handle the windows messages.
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 
-		//메인화면 출력
-		result = m_Graphics->RenderMainScene(mouseX, mouseY);
-		if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
-
-		//if (m_Input->IsLeftMouseButtonDown() && (mouseX >= 1050.0f) && (mouseX <= 1160.0f) && (mouseY >= 800.0f) && (mouseY <= 495.0f))
-		//{
-		//	m_state = STATE::LOADING;
-		//	Start = true;
-		//}
-
-		if (m_Input->IsF2Pressed() == true)
-			PressedF2 = true;
 		else
-			PressedF2 = false;
+		{
+				// 키보드&마우스 상태를 갱신하도록 한다.
+				result = m_Input->Frame();
+				m_Input->GetMouseLocation(mouseX, mouseY);
 
-		m_Sound->Mute(PressedF2);
-		
+				//f1클릭은 보험용..
+				if (m_Input->IsF1Pressed() == true)
+				{
+					m_state = STATE::LOADING;
+					Start = true;
+				}
+
+				//Start클릭하면 로딩으로 넘어가게
+				if (m_Input->IsLeftMouseButtonDown())
+				{
+					if (mouseX >= 1050 && mouseX <= 1150 && mouseY >= 420 && mouseY <= 480)
+					{
+						m_state = STATE::LOADING;
+						Start = true;
+					}
+				}
+	
+				//Option클릭하면 Sound Off
+				if (m_Input->IsLeftMouseButtonDown())
+				{
+				
+					if (mouseX >= 990 && mouseX <= 1210 && mouseY >= 510 && mouseY <= 600)
+
+						PressedF2 = true;
+				}
+				else
+					PressedF2 = false;
+
+
+				m_Sound->Mute(PressedF2);
+
+
+				//메인화면 출력
+				result = m_Graphics->RenderMainScene(mouseX, mouseY);
+				if (!result) { MessageBox(m_hwnd, L"Could not initialize the main scene object.", L"Error", MB_OK); }
 			
-		
+				//ESC누르면 Exit
+				if (m_Input->IsEscapePressed() == true)
+				{
+					Start = true;
+				}
+			}
 
-		if (m_Input->IsF1Pressed() == true )
-		{
-			m_state = STATE::LOADING;
-			Start = true;
+
 		}
-
-
-
-		if (m_Input->IsEscapePressed() == true)
-		{
-			Start = true;
-		}
-	}
-
 	return;
 }
+
+
+
 
 
 /*--------------------------------------------------------------------------------------------------------------
